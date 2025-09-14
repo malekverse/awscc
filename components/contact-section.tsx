@@ -22,11 +22,10 @@ export function ContactSection() {
         <FadeInSection>
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">
-              Contactez-Nous
+              Contact Us
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-pretty">
-              Une question ? Une idée de projet ? N'hésitez pas à nous contacter. Nous serons ravis de vous accueillir
-              dans notre communauté scientifique.
+              Do you have questions or want to join our community? Don't hesitate to contact us!
             </p>
           </div>
         </FadeInSection>
@@ -41,7 +40,7 @@ export function ContactSection() {
             <FadeInSection>
               <Card className="dark:bg-secondary/60 dark:border-gray-700 rounded-xl border-[#E9E1FF] dark:border-gray-700 shadow-lg overflow-hidden">
                 <CardHeader>
-                  <CardTitle className="text-2xl bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Envoyez-nous un Message</CardTitle>
+                  <CardTitle className="text-2xl bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Send us a Message</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form className="space-y-6">
@@ -49,15 +48,15 @@ export function ContactSection() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Prénom
+                          First Name
                         </label>
-                        <Input id="firstName" placeholder="Votre prénom" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
+                        <Input id="firstName" placeholder="Your first name" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
                       </div>
                       <div>
                         <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                          Nom
+                          Last Name
                         </label>
-                        <Input id="lastName" placeholder="Votre nom" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
+                        <Input id="lastName" placeholder="Your last name" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
                       </div>
                     </div>
 
@@ -65,25 +64,25 @@ export function ContactSection() {
                       <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Email
                       </label>
-                      <Input id="email" type="email" placeholder="votre.email@exemple.com" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
+                      <Input id="email" type="email" placeholder="your.email@example.com" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
                     </div>
 
                     <div>
                       <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Sujet
+                        Subject
                       </label>
-                      <Input id="subject" placeholder="Sujet de votre message" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
+                      <Input id="subject" placeholder="Subject of your message" className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
                     </div>
 
                     <div>
                       <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Message
                       </label>
-                      <Textarea id="message" placeholder="Décrivez votre demande ou votre projet..." rows={5} className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
+                      <Textarea id="message" placeholder="Describe your request or project..." rows={5} className="dark:bg-secondary/70 dark:border-gray-600 dark:text-white dark:placeholder-gray-400 focus:border-[#9B6DFF] focus:ring-[#9B6DFF] rounded-lg" />
                     </div>
 
                     <Button className="w-full bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:opacity-90 text-white rounded-lg shadow-md">
-                      Envoyer le Message
+                      Send Message
                     </Button>
                   </form>
                 </CardContent>
@@ -94,7 +93,7 @@ export function ContactSection() {
             <FadeInSection>
               <Card className="dark:bg-secondary/60 dark:border-gray-700 rounded-xl border-[#E9E1FF] dark:border-gray-700 shadow-lg overflow-hidden">
                 <CardHeader>
-                  <CardTitle className="text-xl bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Suivez-nous</CardTitle>
+                  <CardTitle className="text-xl bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Follow Us</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex space-x-4">
@@ -128,7 +127,7 @@ export function ContactSection() {
                     </Button>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mt-4">
-                    Restez connecté pour les dernières actualités et événements du club.
+                    Stay connected for the latest news and club events.
                   </p>
                 </CardContent>
               </Card>
@@ -140,7 +139,7 @@ export function ContactSection() {
             <FadeInSection>
               <Card className="dark:bg-secondary/60 dark:border-gray-700 rounded-xl border-[#E9E1FF] dark:border-gray-700 shadow-lg overflow-hidden">
                 <CardHeader>
-                  <CardTitle className="text-xl bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Contactez-nous</CardTitle>
+                  <CardTitle className="text-xl bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Contact Us</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">

@@ -10,54 +10,54 @@ import { FadeInSection } from "@/components/ui/fade-in-section"
 export function EventsSection() {
   const upcomingEvents = [
     {
-      title: "Atelier Robotique Avancée",
-      date: "15 Mars 2025",
+      title: "Advanced Robotics Workshop",
+      date: "March 15, 2025",
       time: "14:00 - 17:00",
-      location: "Lab Robotique ESPRIT",
-      participants: "25 places",
-      description: "Découvrez les techniques avancées de programmation robotique avec Arduino et capteurs.",
-      type: "Atelier",
-      status: "Ouvert",
+      location: "ESPRIT Robotics Lab",
+      participants: "25 spots",
+      description: "Discover advanced robotics programming techniques with Arduino and sensors.",
+      type: "Workshop",
+      status: "Open",
     },
     {
-      title: "Conférence IA & Machine Learning",
-      date: "22 Mars 2025",
+      title: "AI & Machine Learning Conference",
+      date: "March 22, 2025",
       time: "10:00 - 12:00",
-      location: "Amphithéâtre A",
-      participants: "100 places",
-      description: "Conférence sur les dernières avancées en intelligence artificielle par des experts du domaine.",
-      type: "Conférence",
-      status: "Ouvert",
+      location: "Auditorium A",
+      participants: "100 spots",
+      description: "Conference on the latest advances in artificial intelligence by field experts.",
+      type: "Conference",
+      status: "Open",
     },
     {
-      title: "Nuit des Étoiles 2025",
-      date: "5 Avril 2025",
+      title: "Stargazing Night 2025",
+      date: "April 5, 2025",
       time: "20:00 - 02:00",
-      location: "Terrasse ESPRIT",
-      participants: "Illimité",
-      description: "Soirée d'observation astronomique avec télescopes et ateliers découverte.",
-      type: "Événement",
-      status: "Bientôt",
+      location: "ESPRIT Terrace",
+      participants: "Unlimited",
+      description: "Astronomical observation evening with telescopes and discovery workshops.",
+      type: "Event",
+      status: "Soon",
     },
     {
-      title: "Camp Scientifique d'Été",
-      date: "15-22 Juillet 2025",
-      time: "Séjour complet",
+      title: "Summer Science Camp",
+      date: "July 15-22, 2025",
+      time: "Full stay",
       location: "Hammamet",
-      participants: "50 places",
-      description: "Une semaine intensive de projets scientifiques, ateliers et activités de loisirs.",
+      participants: "50 spots",
+      description: "An intensive week of scientific projects, workshops and leisure activities.",
       type: "Camp",
-      status: "Inscriptions ouvertes",
+      status: "Registration Open",
     },
   ]
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case "Atelier":
+      case "Workshop":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
-      case "Conférence":
+      case "Conference":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
-      case "Événement":
+      case "Event":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
       case "Camp":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
@@ -68,11 +68,11 @@ export function EventsSection() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Ouvert":
+      case "Open":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
-      case "Bientôt":
+      case "Soon":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
-      case "Inscriptions ouvertes":
+      case "Registration Open":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
       default:
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
@@ -93,11 +93,11 @@ export function EventsSection() {
         <FadeInSection>
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">
-              Événements à Venir
+              Upcoming Events
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-pretty">
-              Participez à nos ateliers, conférences et événements pour enrichir vos connaissances et rencontrer d'autres
-              passionnés de science.
+              Join our workshops, conferences and events to enrich your knowledge and meet other
+              science enthusiasts.
             </p>
           </div>
         </FadeInSection>
@@ -141,14 +141,14 @@ export function EventsSection() {
 
                   <div className="flex space-x-3">
                     <Button className="flex-1 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:opacity-90 text-white rounded-lg shadow-md">
-                      S'inscrire
+                      Register
                     </Button>
                     <LinkButton
                       href="/evenements"
                       variant="outline"
                       className="border-[#9B6DFF] text-[#7C4DFF] hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white dark:border-[#9B6DFF] dark:text-[#9B6DFF] dark:hover:text-white bg-transparent rounded-lg"
                     >
-                      Détails
+                      Details
                     </LinkButton>
                   </div>
                 </CardContent>
@@ -161,20 +161,20 @@ export function EventsSection() {
         <FadeInSection>
           <div className="mt-16 text-center">
             <div className="bg-[#E9E1FF]/20 dark:bg-secondary/60 rounded-2xl p-8 border border-[#E9E1FF] dark:border-gray-700 shadow-lg">
-              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Restez Informé</h3>
+              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Stay Informed</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Abonnez-vous à notre calendrier pour ne manquer aucun événement
+                Subscribe to our calendar to never miss an event
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button className="bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:opacity-90 text-white rounded-lg shadow-md">
                   <Calendar className="mr-2 h-4 w-4" />
-                  Ajouter au Calendrier
+                  Add to Calendar
                 </Button>
                 <Button
                   variant="outline"
                   className="border-[#9B6DFF] text-[#7C4DFF] hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white dark:border-[#9B6DFF] dark:text-[#9B6DFF] dark:hover:text-white bg-transparent rounded-lg"
                 >
-                  Newsletter Mensuelle
+                  Monthly Newsletter
                 </Button>
               </div>
             </div>

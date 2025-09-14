@@ -11,36 +11,36 @@ import Link from "next/link"
 export function ProjectsSection() {
   const projects = [
     {
-      title: "Robot Autonome de Navigation",
+      title: "Autonomous Navigation Robot",
       description:
-        "Développement d'un robot capable de naviguer de manière autonome en utilisant des capteurs et l'intelligence artificielle.",
-      category: "Robotique",
-      status: "En cours",
+        "Development of a robot capable of autonomous navigation using sensors and artificial intelligence.",
+      category: "Robotics",
+      status: "In Progress",
       icon: <Cpu className="h-6 w-6 group-hover:text-white" />,
       technologies: ["Arduino", "Python", "OpenCV", "Machine Learning"],
     },
     {
-      title: "Plateforme de Gestion Étudiante",
-      description: "Application web complète pour la gestion des activités du club et l'inscription aux événements.",
-      category: "Informatique",
-      status: "Terminé",
+      title: "Student Management Platform",
+      description: "Complete web application for managing club activities and event registration.",
+      category: "Computer Science",
+      status: "Completed",
       icon: <Rocket className="h-6 w-6 group-hover:text-white" />,
       technologies: ["React", "Node.js", "MongoDB", "Express"],
     },
     {
-      title: "Observatoire Virtuel",
-      description: "Système de télescope automatisé avec interface web pour l'observation astronomique à distance.",
-      category: "Astronomie",
-      status: "En cours",
+      title: "Virtual Observatory",
+      description: "Automated telescope system with web interface for remote astronomical observation.",
+      category: "Astronomy",
+      status: "In Progress",
       icon: <Telescope className="h-6 w-6 group-hover:text-white" />,
-      technologies: ["Python", "Raspberry Pi", "Astronomie", "IoT"],
+      technologies: ["Python", "Raspberry Pi", "Astronomy", "IoT"],
     },
     {
-      title: "Système de Monitoring Énergétique",
+      title: "Energy Monitoring System",
       description:
-        "Solution IoT pour surveiller et optimiser la consommation énergétique des bâtiments universitaires.",
-      category: "Écologie",
-      status: "Planifié",
+        "IoT solution to monitor and optimize energy consumption in university buildings.",
+      category: "Ecology",
+      status: "Planned",
       icon: <Zap className="h-6 w-6 group-hover:text-white" />,
       technologies: ["IoT", "Sensors", "Data Analytics", "Sustainability"],
     },
@@ -48,11 +48,11 @@ export function ProjectsSection() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Terminé":
+      case "Completed":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
-      case "En cours":
+      case "In Progress":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
-      case "Planifié":
+      case "Planned":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
       default:
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
@@ -61,13 +61,13 @@ export function ProjectsSection() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "Robotique":
+      case "Robotics":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
-      case "Informatique":
+      case "Computer Science":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
-      case "Astronomie":
+      case "Astronomy":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
-      case "Écologie":
+      case "Ecology":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
       default:
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
@@ -89,11 +89,11 @@ export function ProjectsSection() {
         <FadeInSection>
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">
-              Nos Projets & Activités
+              Our Projects & Activities
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-pretty">
-              Découvrez les projets innovants développés par nos membres dans les domaines de la robotique, de
-              l'informatique et de l'astronomie.
+              Discover the innovative projects developed by our members in the fields of robotics,
+              computer science and astronomy.
             </p>
           </div>
         </FadeInSection>
@@ -139,7 +139,7 @@ export function ProjectsSection() {
                     size="sm"
                     className="w-full group-hover:bg-gradient-to-r group-hover:from-[#9B6DFF] group-hover:to-[#7C4DFF] group-hover:border-[#9B6DFF] group-hover:text-white hover:text-white transition-colors duration-300 bg-transparent dark:border-gray-600 dark:text-gray-300 rounded-lg"
                   >
-                    Voir les détails
+                    View Details
                   </LinkButton>
                 </CardContent>
               </Card>
@@ -151,33 +151,33 @@ export function ProjectsSection() {
         <FadeInSection>
           <div className="bg-white dark:bg-secondary/60 rounded-2xl p-8 border border-[#E9E1FF] dark:border-gray-700 shadow-lg">
             <h3 className="text-2xl font-bold mb-8 text-center bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">
-              Nos Activités Régulières
+              Our Regular Activities
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                   <Cpu className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Ateliers Techniques</h4>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Technical Workshops</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Sessions pratiques hebdomadaires sur les dernières technologies
+                  Weekly hands-on sessions on the latest technologies
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                   <Telescope className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Nuit des Étoiles</h4>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Stargazing Night</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Événement annuel d'observation astronomique ouvert au public
+                  Annual astronomical observation event open to the public
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                   <Rocket className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Camps Scientifiques</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Séjours d'été intensifs avec projets pratiques</p>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Science Camps</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Intensive summer stays with practical projects</p>
               </div>
             </div>
             <div className="text-center mt-8">
@@ -185,7 +185,7 @@ export function ProjectsSection() {
                 <Button
                   className="bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] text-white hover:opacity-90 border-[#9B6DFF] rounded-lg shadow-md"
                 >
-                  Voir plus de projets
+                  View More Projects
                 </Button>
               </Link>
             </div>

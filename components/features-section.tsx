@@ -11,10 +11,10 @@ export function FeaturesSection() {
     >
       <div className="mx-auto flex max-w-[58rem] flex-col items-center space-y-4 text-center">
         <h2 className="font-heading text-3xl leading-[1.1] sm:text-3xl md:text-6xl font-bold bg-gradient-to-r from-[var(--primary-gradient-from)] to-[var(--primary-gradient-to)] text-transparent bg-clip-text">
-          Nos Activités
+          Our Activities
         </h2>
         <p className="max-w-[85%] leading-normal text-foreground sm:text-lg sm:leading-7">
-          Découvrez les différentes activités proposées par notre club AWS Cloud.
+          Discover the various activities offered by our AWS Cloud club.
         </p>
       </div>
       <div className="mx-auto grid justify-center gap-6 sm:grid-cols-2 md:max-w-[64rem] md:grid-cols-3">
@@ -25,11 +25,11 @@ export function FeaturesSection() {
             </div>
             <CardTitle className="text-xl font-bold">Cloud Computing</CardTitle>
             <CardDescription className="text-foreground/80">
-              Exploration des services AWS et architectures cloud.
+              Exploration of AWS services and cloud architectures.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Apprenez à déployer, gérer et optimiser des applications dans le cloud AWS à travers des ateliers pratiques.</p>
+            <p>Learn to deploy, manage and optimize applications in the AWS cloud through hands-on workshops.</p>
           </CardContent>
         </Card>
         <Card className="group">
@@ -39,11 +39,11 @@ export function FeaturesSection() {
             </div>
             <CardTitle className="text-xl font-bold">Big Data & IA</CardTitle>
             <CardDescription className="text-foreground/80">
-              Analyse de données et intelligence artificielle.
+              Data analysis and artificial intelligence.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Explorez les technologies de traitement de données massives et d'intelligence artificielle sur AWS.</p>
+            <p>Explore big data processing technologies and artificial intelligence on AWS.</p>
           </CardContent>
         </Card>
         <Card className="group">
@@ -53,11 +53,11 @@ export function FeaturesSection() {
             </div>
             <CardTitle className="text-xl font-bold">DevOps</CardTitle>
             <CardDescription className="text-foreground/80">
-              Automatisation, CI/CD et infrastructure as code.
+              Automation, CI/CD and infrastructure as code.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p>Maîtrisez les pratiques DevOps modernes et les outils d'automatisation pour le déploiement continu sur AWS.</p>
+            <p>Master modern DevOps practices and automation tools for continuous deployment on AWS.</p>
           </CardContent>
         </Card>
       </div>

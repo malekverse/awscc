@@ -7,7 +7,7 @@ export function AboutSection() {
   // Hardcoded translations since language context is having issues
   const t = {
     home: "Home",
-    about: "À propos",
+    about: "About",
     features: "Activities",
     projects: "Projects",
     events: "Events",
