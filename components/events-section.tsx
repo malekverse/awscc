@@ -4,50 +4,50 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { LinkButton } from "@/components/ui/link-button"
-import { Calendar, MapPin, Users, Clock } from "lucide-react"
+import { Calendar, MapPin, Users, Clock, Cloud, Shield, Server, Database } from "lucide-react"
 import { FadeInSection } from "@/components/ui/fade-in-section"
 
 export function EventsSection() {
   const upcomingEvents = [
     {
-      title: "Advanced Robotics Workshop",
-      date: "March 15, 2025",
-      time: "14:00 - 17:00",
-      location: "ESPRIT Robotics Lab",
-      participants: "25 spots",
-      description: "Discover advanced robotics programming techniques with Arduino and sensors.",
+      title: "Fullstack Web Development Workshop",
+      date: "TBA",
+      time: "TBA",
+      location: "ISIMS",
+      participants: "45 spots",
+      description: "Comprehensive workshop covering modern fullstack development with cloud integration and AWS services.",
       type: "Workshop",
-      status: "Open",
+      status: "Soon",
     },
     {
-      title: "AI & Machine Learning Conference",
-      date: "March 22, 2025",
-      time: "10:00 - 12:00",
-      location: "Auditorium A",
-      participants: "100 spots",
-      description: "Conference on the latest advances in artificial intelligence by field experts.",
+      title: "Cloud & Cyber Security Summit",
+      date: "TBA",
+      time: "TBA",
+      location: "ISIMS",
+      participants: "80 spots",
+      description: "Learn about cloud security, cyber threats, AWS security services, and best practices for securing digital infrastructure.",
       type: "Conference",
-      status: "Open",
+      status: "Soon",
     },
     {
-      title: "Stargazing Night 2025",
-      date: "April 5, 2025",
-      time: "20:00 - 02:00",
-      location: "ESPRIT Terrace",
-      participants: "Unlimited",
-      description: "Astronomical observation evening with telescopes and discovery workshops.",
+      title: "AWS Community Day 2025",
+      date: "TBA",
+      time: "TBA",
+      location: "ISIMS",
+      participants: "200 spots",
+      description: "Join fellow cloud enthusiasts for a full day of AWS sessions, networking, and community building.",
       type: "Event",
       status: "Soon",
     },
     {
-      title: "Summer Science Camp",
-      date: "July 15-22, 2025",
-      time: "Full stay",
-      location: "Hammamet",
-      participants: "50 spots",
-      description: "An intensive week of scientific projects, workshops and leisure activities.",
-      type: "Camp",
-      status: "Registration Open",
+      title: "Hackathon 2025",
+      date: "TBA",
+      time: "TBA",
+      location: "Surprise Location",
+      participants: "100 spots",
+      description: "48-hour coding challenge focused on building innovative cloud solutions and AWS-powered applications.",
+      type: "Hackathon",
+      status: "Soon",
     },
   ]
 
@@ -59,8 +59,8 @@ export function EventsSection() {
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
       case "Event":
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
-      case "Camp":
-        return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
+      case "Hackathon":
+         return "bg-[#FF6B6B]/10 text-[#FF6B6B] dark:bg-[#FF6B6B]/20 dark:text-[#FF6B6B]"
       default:
         return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#9B6DFF]/20 dark:text-[#9B6DFF]"
     }
@@ -96,8 +96,7 @@ export function EventsSection() {
               Upcoming Events
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-pretty">
-              Join our workshops, conferences and events to enrich your knowledge and meet other
-              science enthusiasts.
+              Join our AWS workshops, cloud conferences and certification events to advance your cloud skills and connect with fellow cloud enthusiasts.
             </p>
           </div>
         </FadeInSection>
@@ -158,12 +157,15 @@ export function EventsSection() {
         </div>
 
         {/* Calendar Integration */}
-        <FadeInSection>
+        {/* <FadeInSection>
           <div className="mt-16 text-center">
             <div className="bg-[#E9E1FF]/20 dark:bg-secondary/60 rounded-2xl p-8 border border-[#E9E1FF] dark:border-gray-700 shadow-lg">
-              <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Stay Informed</h3>
+              <div className="flex items-center justify-center mb-4">
+                <Cloud className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF] mr-3" />
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] bg-clip-text text-transparent">Stay Informed</h3>
+              </div>
               <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Subscribe to our calendar to never miss an event
+                Subscribe to our calendar to never miss an AWS Cloud Club event
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button className="bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:opacity-90 text-white rounded-lg shadow-md">
@@ -179,7 +181,7 @@ export function EventsSection() {
               </div>
             </div>
           </div>
-        </FadeInSection>
+        </FadeInSection> */}
       </div>
     </section>
   )

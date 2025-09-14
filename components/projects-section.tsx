@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { LinkButton } from "@/components/ui/link-button"
-import { ExternalLink, Cpu, Telescope, Rocket, Zap } from "lucide-react"
+import { ExternalLink, Cloud, Database, Server, Shield } from "lucide-react"
 import { FadeInSection } from "@/components/ui/fade-in-section"
 import { Button } from "./ui/button"
 import Link from "next/link"
@@ -11,38 +11,38 @@ import Link from "next/link"
 export function ProjectsSection() {
   const projects = [
     {
-      title: "Autonomous Navigation Robot",
+      title: "Serverless Student Portal",
       description:
-        "Development of a robot capable of autonomous navigation using sensors and artificial intelligence.",
-      category: "Robotics",
+        "Cloud-native student management platform built with AWS Lambda, API Gateway, and DynamoDB for scalable club operations.",
+      category: "Cloud Computing",
       status: "In Progress",
-      icon: <Cpu className="h-6 w-6 group-hover:text-white" />,
-      technologies: ["Arduino", "Python", "OpenCV", "Machine Learning"],
+      icon: <Server className="h-6 w-6 group-hover:text-white" />,
+      technologies: ["AWS Lambda", "DynamoDB", "API Gateway", "React"],
     },
     {
-      title: "Student Management Platform",
-      description: "Complete web application for managing club activities and event registration.",
-      category: "Computer Science",
+      title: "AWS Cloud Learning Platform",
+      description: "Interactive learning platform for AWS certifications with hands-on labs and progress tracking.",
+      category: "Education",
       status: "Completed",
-      icon: <Rocket className="h-6 w-6 group-hover:text-white" />,
-      technologies: ["React", "Node.js", "MongoDB", "Express"],
+      icon: <Cloud className="h-6 w-6 group-hover:text-white" />,
+      technologies: ["AWS Amplify", "Cognito", "S3", "CloudFront"],
     },
     {
-      title: "Virtual Observatory",
-      description: "Automated telescope system with web interface for remote astronomical observation.",
-      category: "Astronomy",
+      title: "Multi-Cloud Cost Optimizer",
+      description: "Automated tool to analyze and optimize cloud spending across AWS, Azure, and GCP environments.",
+      category: "DevOps",
       status: "In Progress",
-      icon: <Telescope className="h-6 w-6 group-hover:text-white" />,
-      technologies: ["Python", "Raspberry Pi", "Astronomy", "IoT"],
+      icon: <Database className="h-6 w-6 group-hover:text-white" />,
+      technologies: ["AWS Cost Explorer", "Python", "Terraform", "CloudWatch"],
     },
     {
-      title: "Energy Monitoring System",
+      title: "Smart Campus IoT Network",
       description:
-        "IoT solution to monitor and optimize energy consumption in university buildings.",
-      category: "Ecology",
+        "IoT infrastructure using AWS IoT Core to monitor campus facilities and optimize resource usage.",
+      category: "IoT & Cloud",
       status: "Planned",
-      icon: <Zap className="h-6 w-6 group-hover:text-white" />,
-      technologies: ["IoT", "Sensors", "Data Analytics", "Sustainability"],
+      icon: <Shield className="h-6 w-6 group-hover:text-white" />,
+      technologies: ["AWS IoT Core", "Lambda", "TimeStream", "QuickSight"],
     },
   ]
 
@@ -61,13 +61,13 @@ export function ProjectsSection() {
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case "Robotics":
+      case "Cloud Computing":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
-      case "Computer Science":
+      case "Education":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
-      case "Astronomy":
+      case "DevOps":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
-      case "Ecology":
+      case "IoT & Cloud":
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
       default:
         return "bg-[#9B6DFF]/10 text-[#7C4DFF] dark:bg-[#9B6DFF]/30 dark:text-[#9B6DFF]"
@@ -92,8 +92,8 @@ export function ProjectsSection() {
               Our Projects & Activities
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-pretty">
-              Discover the innovative projects developed by our members in the fields of robotics,
-              computer science and astronomy.
+              Discover the innovative cloud computing projects developed by our members using AWS services,
+              DevOps practices, and modern cloud architectures.
             </p>
           </div>
         </FadeInSection>
@@ -133,14 +133,14 @@ export function ProjectsSection() {
                       </Badge>
                     ))}
                   </div>
-                  <LinkButton
+                  {/* <LinkButton
                     href="/projets"
                     variant="outline"
                     size="sm"
                     className="w-full group-hover:bg-gradient-to-r group-hover:from-[#9B6DFF] group-hover:to-[#7C4DFF] group-hover:border-[#9B6DFF] group-hover:text-white hover:text-white transition-colors duration-300 bg-transparent dark:border-gray-600 dark:text-gray-300 rounded-lg"
                   >
                     View Details
-                  </LinkButton>
+                  </LinkButton> */}
                 </CardContent>
               </Card>
             </FadeInSection>
@@ -156,31 +156,31 @@ export function ProjectsSection() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <Cpu className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
+                  <Cloud className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Technical Workshops</h4>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">AWS Workshops</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Weekly hands-on sessions on the latest technologies
+                  Weekly hands-on sessions on AWS services and cloud architecture
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <Telescope className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
+                  <Shield className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Stargazing Night</h4>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Certification Bootcamps</h4>
                 <p className="text-gray-600 dark:text-gray-300 text-sm">
-                  Annual astronomical observation event open to the public
+                  Intensive preparation sessions for AWS certification exams
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <Rocket className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
+                  <Server className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Science Camps</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Intensive summer stays with practical projects</p>
+                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Cloud Hackathons</h4>
+                <p className="text-gray-600 dark:text-gray-300 text-sm">Competitive events building innovative cloud solutions</p>
               </div>
             </div>
-            <div className="text-center mt-8">
+            {/* <div className="text-center mt-8">
               <Link href="/projets">
                 <Button
                   className="bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] text-white hover:opacity-90 border-[#9B6DFF] rounded-lg shadow-md"
@@ -188,7 +188,7 @@ export function ProjectsSection() {
                   View More Projects
                 </Button>
               </Link>
-            </div>
+            </div> */}
           </div>
         </FadeInSection>
       </div>
