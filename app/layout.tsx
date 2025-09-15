@@ -10,7 +10,7 @@ import JsonLd from "@/components/json-ld"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://awscc-isims.vercel.app'),
+  metadataBase: new URL('https://awscc.tn'),
   title: {
     default: "AWS Cloud Club ISIMS",
     template: "%s | AWS Cloud Club ISIMS"

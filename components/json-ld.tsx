@@ -6,8 +6,8 @@ export default function JsonLd() {
     "@type": "Organization",
     name: "AWS Cloud Club ISIMS",
     alternateName: "AWSCC ISIMS",
-    url: "https://awscc-isims.vercel.app",
-    logo: "https://awscc-isims.vercel.app/src/assets/logo.jpg", // Make sure this path is correct
+    url: "https://awscc.tn",
+    logo: "https://awscc.tn/src/assets/logo.jpg", // Make sure this path is correct
     sameAs: [
       "https://www.linkedin.com/company/awscc-isims",
       "https://www.instagram.com/awscc.isims",
@@ -24,10 +24,10 @@ export default function JsonLd() {
     },
     contactPoint: {
       "@type": "ContactPoint",
-      telephone: "+216-00-000-000", // Replace with a real number if available
+      telephone: "+216-94-181-481", // Replace with a real number if available
       contactType: "student support",
-      email: "awscc.isims@gmail.com", // Replace with real email
-      availableLanguage: ["English", "French", "Arabic"]
+      email: "awscloudclubisims@gmail.com", // Replace with real email
+      availableLanguage: ["English", "French"]
     },
     foundingDate: "2023",
     keywords: "AWS, Cloud Computing, ISIMS, DevOps, AI, Student Club, AWSCC, Tunisia, Technology, Education",

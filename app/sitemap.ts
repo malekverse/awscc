@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://awscc-isims.tn'
+  const baseUrl = 'https://awscc.tn'
   
   return [
     {

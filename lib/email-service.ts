@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 import { FormValues } from '@/app/join/page';
+import { ContactFormValues } from '@/components/contact-form';
+import Groq from 'groq-sdk';
 
 // Email configuration
 const transporter = nodemailer.createTransport({
@@ -142,12 +144,12 @@ const createHtmlEmailContent = (userData: FormValues) => {
             <li>Start exploring AWS resources and documentation</li>
           </ul>
           
-          <a href="https://awscc-isims.tn/resources" style="color: white; text-decoration: none;" class="button">Explore Us</a>
+          <a href="https://awscc.tn" style="color: white; text-decoration: none;" class="button">Explore Us</a>
           
           <div class="contact">
             <p><strong>Need assistance?</strong></p>
             <p>If you have any questions or need support, please don't hesitate to contact us at:</p>
-            <p>Email: <a href="mailto:awscc.isims@gmail.com">awscc.isims@gmail.com</a></p>
+            <p>Email: <a href="mailto:awscloudclubisims@gmail.com">awscloudclubisims@gmail.com</a></p>
           </div>
         </div>
         <div class="footer">
@@ -186,11 +188,242 @@ const createTextEmailContent = (userData: FormValues) => {
     
     Need assistance?
     If you have any questions or need support, please don't hesitate to contact us at:
-    Email: awscc.isims@gmail.com
+    Email: awscloudclubisims@gmail.com
     
     © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
     This email was sent to ${userData.email} because you registered for AWS Cloud Club membership.
   `;
+};
+
+// Initialize Groq client
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
+// Generate AI response using Groq
+const generateAIResponse = async (contactData: ContactFormValues): Promise<string> => {
+  try {
+    const prompt = `You are the AWS Cloud Club ISIMS AI Assistant. A user has contacted us with the following information:
+
+Name: ${contactData.name}
+Email: ${contactData.email}
+Company: ${contactData.company || 'Not specified'}
+Subject: ${contactData.subject}
+Message: ${contactData.message}
+
+Generate a professional, helpful, and personalized response email. The response should:
+1. Thank them for contacting AWS Cloud Club ISIMS
+2. Acknowledge their specific inquiry or message
+3. Provide relevant information or next steps based on their message
+4. Maintain a professional yet friendly tone
+5. Include appropriate contact information for follow-up
+6. Be concise but comprehensive (200-400 words)
+
+Sign the email as "AWS Cloud Club ISIMS AI Assistant".`;
+
+    const completion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content: "You are an AI assistant for AWS Cloud Club ISIMS. Respond to contact inquiries professionally and concisely.\n\nContact Information:\n- Email: awscc.isims@gmail.com\n- Website: awscc.tn\n- Join link: awscc.tn/join\n\nGuidelines:\n1. Keep responses short and to the point (2-3 sentences max)\n2. Be friendly but professional\n3. For membership: Direct to awscc.tn/join\n4. For updates: Mention awscc.tn website\n5. Include contact email only if specifically relevant\n6. Never include a subject line in your response\n7. Focus on actionable next steps\n\nExample response style:\n\"Thank you for your interest in AWS Cloud Club ISIMS! To join our community, please visit awscc.tn/join and complete the membership form. We'll review your application and get back to you soon.\""
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 500,
+    });
+
+    return completion.choices[0]?.message?.content || '';
+  } catch (error) {
+    console.error('Error generating AI response:', error);
+    // Return fallback message
+    return `Thank you for contacting AWS Cloud Club ISIMS! We've received your message and will get back to you soon. Visit awscc.tn/join to join our community or check awscc.tn for updates.\n\nBest regards,\nAWS Cloud Club ISIMS Team`;
+  }
+};
+
+// Create HTML email content for contact responses
+const createContactHtmlEmailContent = (contactData: ContactFormValues, aiResponse: string) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Thank you for contacting AWS Cloud Club ISIMS</title>
+      <style>
+        /* Base styles */
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+          background-color: #f9f9f9;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+        }
+        .header {
+          background: linear-gradient(to right, #9B6DFF, #7C4DFF);
+          padding: 20px;
+          text-align: center;
+          color: white;
+          border-radius: 8px 8px 0 0;
+        }
+        .content {
+          padding: 20px;
+          border-left: 1px solid #E9E1FF;
+          border-right: 1px solid #E9E1FF;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px 20px;
+          text-align: center;
+          font-size: 14px;
+          color: #666;
+          border-radius: 0 0 8px 8px;
+          border: 1px solid #E9E1FF;
+          border-top: none;
+        }
+        h1 {
+          color: #ffffff;
+          margin: 0;
+          font-size: 24px;
+        }
+        h2 {
+          color: #7C4DFF;
+          margin-top: 0;
+        }
+        .ai-response {
+          background-color: #f9f5ff;
+          padding: 20px;
+          border-radius: 8px;
+          margin: 20px 0;
+          border-left: 4px solid #7C4DFF;
+          white-space: pre-line;
+        }
+        .contact-info {
+          background-color: #f0f9ff;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 15px 0;
+        }
+        .footer-links {
+          margin-top: 10px;
+        }
+        .footer-links a {
+          color: #7C4DFF;
+          text-decoration: none;
+          margin: 0 10px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>AWS Cloud Club ISIMS</h1>
+          <p style="margin: 5px 0 0 0; opacity: 0.9;">Thank you for contacting us!</p>
+        </div>
+        
+        <div class="content">
+          <div class="ai-response">
+            ${aiResponse.replace(/\n/g, '<br>')}
+          </div>
+          
+          <div class="contact-info">
+            <h3 style="color: #7C4DFF; margin-top: 0;">Your Message Details:</h3>
+            <p><strong>Subject:</strong> ${contactData.subject}</p>
+            <p><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
+            ${contactData.company ? `<p><strong>Company:</strong> ${contactData.company}</p>` : ''}
+          </div>
+          
+          <p style="margin-top: 20px;">
+            If you need immediate assistance or have additional questions, please don't hesitate to reach out to us directly:
+          </p>
+          
+          <div class="contact-info">
+            <p><strong>Email:</strong> awscc.isims@gmail.com</p>
+            <p><strong>Website:</strong> <a href="https://awscc.tn" style="color: #7C4DFF;">awscc.tn</a></p>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>© ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
+          <p>This email was sent to ${contactData.email} in response to your contact form submission.</p>
+          <div class="footer-links">
+            <a href="https://awscc.tn/politique-de-confidentialite">Privacy Policy</a>
+            <a href="https://awscc.tn/conditions-utilisation">Terms of Use</a>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// Create plain text email content for contact responses
+const createContactTextEmailContent = (contactData: ContactFormValues, aiResponse: string) => {
+  return `
+    AWS Cloud Club ISIMS - Thank you for contacting us!
+    
+    ${aiResponse}
+    
+    Your Message Details:
+    Subject: ${contactData.subject}
+    Submitted: ${new Date().toLocaleDateString()}
+    ${contactData.company ? `Company: ${contactData.company}` : ''}
+    
+    If you need immediate assistance or have additional questions, please contact us:
+    Email: awscc.isims@gmail.com
+    Website: https://awscc.tn
+    
+    © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
+    This email was sent to ${contactData.email} in response to your contact form submission.
+  `;
+};
+
+// Send contact email function
+export const sendContactEmail = async (contactData: ContactFormValues) => {
+  try {
+    // Skip sending in development if no email credentials
+    if (process.env.NODE_ENV !== 'production' && !process.env.EMAIL_USER) {
+      console.log('Development mode: Would have sent contact response email to', contactData.email);
+      console.log('Contact details:', {
+        name: contactData.name,
+        subject: contactData.subject,
+        company: contactData.company
+      });
+      return true;
+    }
+
+    // Generate AI response
+    const aiResponse = await generateAIResponse(contactData);
+    
+    // Prepare email options
+    const mailOptions = {
+      from: `"AWS Cloud Club ISIMS AI Assistant" <${process.env.EMAIL_USER}>`,
+      to: contactData.email,
+      subject: `Re: ${contactData.subject} - AWS Cloud Club ISIMS`,
+      text: createContactTextEmailContent(contactData, aiResponse),
+      html: createContactHtmlEmailContent(contactData, aiResponse),
+    };
+    
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Contact response email sent:', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('Error sending contact email:', error);
+    // Don't throw error to prevent blocking form submission
+    return false;
+  }
 };
 
 // Send welcome email function

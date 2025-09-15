@@ -3,7 +3,7 @@ Allow: /
 Disallow: /api/
 
 # Host
-Host: https://awscc-isims-esprit.tn
+Host: https://awscc.tn
 
 # Sitemaps
-Sitemap: https://awscc-isims.tn/sitemap.xml
+Sitemap: https://awscc.tn/sitemap.xml
