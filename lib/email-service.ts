@@ -328,6 +328,7 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
     <body>
       <div class="container">
         <div class="header">
+          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
           <h1>AWS Cloud Club ISIMS</h1>
           <p style="margin: 5px 0 0 0; opacity: 0.9;">Thank you for contacting us!</p>
         </div>

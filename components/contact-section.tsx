@@ -106,7 +106,7 @@ export function ContactSection() {
           
           
 
-                    {/* Contact Form + Social Media below it */}
+          {/* Contact Form + Social Media below it */}
           <div className="space-y-8">
             {/* Contact Form */}
             <FadeInSection>
@@ -116,13 +116,13 @@ export function ContactSection() {
                 </CardHeader>
                 <CardContent>
                   {submitStatus !== 'idle' && (
-                    <Alert className={`mb-6 ${submitStatus === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+                    <Alert className={`mb-6 ${submitStatus === 'success' ? 'border-primary/60 bg-primary/30' : 'border-red-200 bg-red-50'}`}>
                       {submitStatus === 'success' ? (
-                        <CheckCircle className="h-4 w-4 text-green-600" />
+                        <CheckCircle className="h-4 w-4 text-gray-200" />
                       ) : (
                         <AlertCircle className="h-4 w-4 text-red-600" />
                       )}
-                      <AlertDescription className={submitStatus === 'success' ? 'text-green-800' : 'text-red-800'}>
+                      <AlertDescription className={submitStatus === 'success' ? 'text-gray-200' : 'text-red-800'}>
                         {submitMessage}
                       </AlertDescription>
                     </Alert>
