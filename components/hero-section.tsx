@@ -4,6 +4,7 @@ import { ArrowRight, Star, CloudCog } from "lucide-react"
 
 import { StarIcon } from "@/components/ui/star-icon";
 import { CloudShape } from "@/components/ui/cloud-shape";
+import Link from "next/link";
 
 export function HeroSection() {
   // Temporarily hardcoded translations
@@ -109,13 +110,17 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:from-[#8A5CFF] hover:to-[#6B3CFF] text-white border-none">
-              {t.joinUs}
-            </Button>
-            <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10">
-              {t.projects}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href={"/join"}>
+              <Button size="lg" className="bg-gradient-to-r cursor-pointer from-[#9B6DFF] to-[#7C4DFF] hover:from-[#8A5CFF] hover:to-[#6B3CFF] text-white border-none">
+                {t.joinUs}
+              </Button>
+            </Link>
+            <Link href={"#projets"}>
+              <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10">
+                {t.projects}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
 
           {/* Feature Icons */}

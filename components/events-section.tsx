@@ -139,13 +139,14 @@ export function EventsSection() {
                   </div>
 
                   <div className="flex space-x-3">
-                    <Button className="flex-1 bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:opacity-90 text-white rounded-lg shadow-md">
-                      Register
+                    <Button className="flex-1 cursor-[not-allowed] bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] hover:opacity-90 text-white rounded-lg shadow-md">
+                      Registration will be open soon
                     </Button>
                     <LinkButton
-                      href="/evenements"
+                      href="#"
+                      // href="/evenements"
                       variant="outline"
-                      className="border-[#9B6DFF] text-[#7C4DFF] hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white dark:border-[#9B6DFF] dark:text-[#9B6DFF] dark:hover:text-white bg-transparent rounded-lg"
+                      className="border-[#9B6DFF] cursor-[not-allowed] text-[#7C4DFF] hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white dark:border-[#9B6DFF] dark:text-[#9B6DFF] dark:hover:text-white bg-transparent rounded-lg"
                     >
                       Details
                     </LinkButton>
