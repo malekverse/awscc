@@ -21,22 +21,28 @@ export function AnimatedNavLink({
   className,
   activeClassName
 }: AnimatedNavLinkProps) {
+  const isMobileStyle = className?.includes('block w-full');
+  
   return (
     <Link
       href={href}
-      className="relative py-2 px-1 transition-colors duration-200"
+      className={cn(
+        "relative transition-colors duration-200",
+        isMobileStyle ? "" : "py-2 px-1",
+        className
+      )}
       onClick={onClick}
     >
       <span
         className={cn(
           'relative z-10',
-          className,
+          !isMobileStyle && 'relative z-10',
           isActive && activeClassName
         )}
       >
         {children}
       </span>
-      {isActive && (
+      {isActive && !isMobileStyle && (
         <motion.span
           layoutId="navbar-underline"
           className="absolute bottom-0 left-0 w-full h-0.5 bg-primary"
@@ -49,11 +55,13 @@ export function AnimatedNavLink({
           }}
         />
       )}
-      <motion.span
-        className="absolute inset-0 rounded-md z-0"
-        initial={false}
-        transition={{ duration: 0.2 }}
-      />
+      {!isMobileStyle && (
+        <motion.span
+          className="absolute inset-0 rounded-md z-0"
+          initial={false}
+          transition={{ duration: 0.2 }}
+        />
+      )}
     </Link>
   );
 }

@@ -39,7 +39,7 @@ const t = {
   const languageOptions = [
     { code: "fr" as const, name: "Français", flag: "🇫🇷" },
     { code: "en" as const, name: "English", flag: "🇺🇸" },
-    { code: "ar" as const, name: "العربية", flag: "🇹🇳" },
+    // { code: "ar" as const, name: "العربية", flag: "🇹🇳" },
   ]
 
   const navigation = [
@@ -135,7 +135,7 @@ const t = {
             <Button variant="ghost" size="sm" onClick={toggleTheme}>
               {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </Button>
-            <DropdownMenu>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm">
                   {language.toUpperCase()}
@@ -156,7 +156,7 @@ const t = {
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
             <Button variant="ghost" size="sm" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
@@ -172,30 +172,43 @@ const t = {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-white dark:bg-gray-900 border-t dark:border-gray-700">
+            <div className="px-4 pt-4 pb-6 space-y-3 bg-background/98 backdrop-blur-md border-t border-border shadow-lg">
               {navigation.map((item, index) => (
                 <motion.div
                   key={item.name}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1, duration: 0.3 }}
+                  className="relative"
                 >
                   <AnimatedNavLink
                     href={item.href}
                     isActive={activeSection === item.id}
                     onClick={() => setIsMenuOpen(false)}
+                    className="block w-full px-4 py-3 text-base font-medium text-foreground/80 hover:text-primary hover:bg-primary/5 rounded-lg transition-all duration-200"
+                    activeClassName="text-primary bg-primary/10 font-semibold"
                   >
                     {item.name}
                   </AnimatedNavLink>
                 </motion.div>
               ))}
+              
+              {/* Separator */}
               <motion.div 
-                className="px-3 py-2"
+                className="border-t border-border my-4"
+                initial={{ opacity: 0, scaleX: 0 }}
+                animate={{ opacity: 1, scaleX: 1 }}
+                transition={{ delay: navigation.length * 0.1, duration: 0.3 }}
+              />
+              
+              {/* CTA Button */}
+              <motion.div 
+                className="px-2 pt-2"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navigation.length * 0.1, duration: 0.3 }}
+                transition={{ delay: (navigation.length + 1) * 0.1, duration: 0.3 }}
               >
-                <Button asChild className="w-full bg-[#1D4E89] hover:bg-[#1D4E89]/90 text-white dark:bg-blue-600 dark:hover:bg-blue-700">
+                <Button asChild className="w-full h-12 text-base font-semibold bg-gradient-to-r from-[var(--primary-gradient-from)] to-[var(--primary-gradient-to)] hover:opacity-90 text-white shadow-lg hover:shadow-xl transition-all duration-200">
                   <a href="/join">{t.joinUs}</a>
                 </Button>
               </motion.div>

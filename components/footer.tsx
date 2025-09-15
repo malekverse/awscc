@@ -21,13 +21,13 @@ export function Footer() {
                artificial intelligence, and data science, leveraging the full potential of AWS technologies.
             </p>
             <div className="flex space-x-4">
-              <Link href="#" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">
+              <Link href="https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136" target="_blank" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">
+              <Link href="https://www.instagram.com/awscc_isims" target="_blank" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">
+              <Link href="https://www.linkedin.com/company/102401226/" target="_blank" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">
                 <Linkedin className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-blue-200 hover:text-blue-400 transition-colors duration-200">

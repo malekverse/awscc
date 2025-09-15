@@ -12,6 +12,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Youtube, Loader2, Send, CheckCircle, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { FadeInSection } from "@/components/ui/fade-in-section"
+import Link from "next/link"
 
 // Define contact form schema
 const contactFormSchema = z.object({
@@ -242,27 +243,33 @@ export function ContactSection() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex space-x-4">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="p-3 hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white hover:border-[#9B6DFF] bg-transparent dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:border-[#9B6DFF] rounded-lg"
-                    >
-                      <Facebook className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="p-3 hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white hover:border-[#9B6DFF] bg-transparent dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:border-[#9B6DFF] rounded-lg"
-                    >
-                      <Instagram className="h-5 w-5" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="p-3 hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white hover:border-[#9B6DFF] bg-transparent dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:border-[#9B6DFF] rounded-lg"
-                    >
-                      <Linkedin className="h-5 w-5" />
-                    </Button>
+                    <Link href="https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136" target="_blank">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="p-3 hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white hover:border-[#9B6DFF] bg-transparent dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:border-[#9B6DFF] rounded-lg"
+                      >
+                        <Facebook className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                    <Link href="https://www.instagram.com/awscc_isims" target="_blank">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="p-3 hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white hover:border-[#9B6DFF] bg-transparent dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:border-[#9B6DFF] rounded-lg"
+                      >
+                        <Instagram className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                    <Link href="https://www.linkedin.com/company/102401226/" target="_blank">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="p-3 hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white hover:border-[#9B6DFF] bg-transparent dark:border-gray-600 dark:text-gray-300 dark:hover:text-white dark:hover:border-[#9B6DFF] rounded-lg"
+                      >
+                        <Linkedin className="h-5 w-5" />
+                      </Button>
+                    </Link>
                     <Button
                       size="sm"
                       variant="outline"

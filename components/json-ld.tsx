@@ -7,11 +7,11 @@ export default function JsonLd() {
     name: "AWS Cloud Club ISIMS",
     alternateName: "AWSCC ISIMS",
     url: "https://awscc.tn",
-    logo: "https://awscc.tn/src/assets/logo.jpg", // Make sure this path is correct
+    logo: "https://awscc.tn/src/assests/logo.jpg", // Make sure this path is correct
     sameAs: [
-      "https://www.linkedin.com/company/awscc-isims",
-      "https://www.instagram.com/awscc.isims",
-      "https://github.com/awscc-isims" // Optional: Add/remove as needed
+      "https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136",
+      "https://www.instagram.com/awscc_isims",
+      "https://www.linkedin.com/company/102401226/",
     ],
     description: "AWS Cloud Club ISIMS – A student-led community focused on AWS technologies, cloud computing, DevOps, and AI. Join us to learn, build, and grow your cloud skills.",
     address: {
