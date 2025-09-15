@@ -296,7 +296,7 @@ export function ContactSection() {
                     </div>
                     <div className="flex items-center">
                       <Mail className="h-5 w-5 text-[#9B6DFF] dark:text-[#9B6DFF] mr-2" />
-                      <span className="text-sm text-gray-600 dark:text-gray-300">contact@awsclubisims.com</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">awscloudclubisims@gmail.com</span>
                     </div>
                     <div className="flex items-center">
                       <Phone className="h-5 w-5 text-[#9B6DFF] dark:text-[#9B6DFF] mr-2" />
@@ -311,6 +311,7 @@ export function ContactSection() {
             <FadeInSection>
               <Card className="dark:bg-secondary/60 dark:border-gray-700 rounded-xl border-[#E9E1FF] dark:border-gray-700 shadow-lg overflow-hidden">
                 <CardContent className="p-0">
+                  
                   <iframe
                     width="100%"
                     height="300"
@@ -318,7 +319,7 @@ export function ContactSection() {
                     loading="lazy"
                     className="dark:invert-[92%] contrast-100"
                     referrerPolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3235.5613034246097!2d10.58562687654088!3d35.77731767259043!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130212a8a39c26c9%3A0x652d9f2a609d2770!2sInstitut%20Sup%C3%A9rieur%20d&#39;Informatique%20et%20de%20Math%C3%A9matiques%20de%20Monastir!5e0!3m2!1sen!2stn!4v1707008804326!5m2!1sen!2stn"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d52394.823941943265!2d10.798433460438497!3d34.83922545469302!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1301d19db21e2b53%3A0x771c533873752407!2z2KfZhNmF2LnZh9ivINin2YTYudin2YTZiiDZhNmE2KXYudmE2KfZhdmK2Kkg2YjYp9mE2YXZhNiq2YrZhdmK2K_ZitinINio2LXZgdin2YLYsw!5e0!3m2!1sar!2stn!4v1757899183354!5m2!1sar!2stn"
                     allowFullScreen={false}
                     aria-hidden="false"
                     tabIndex={0}
