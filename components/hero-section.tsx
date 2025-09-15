@@ -62,16 +62,16 @@ export function HeroSection() {
 
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        {/* Cloud shapes */}
-        <CloudShape className="absolute top-20 left-10" size={120} fill="#E9E1FF" />
+        {/* Cloud shapes - hidden on mobile */}
+        <CloudShape className="absolute top-20 left-10 hidden md:block" size={120} fill="#E9E1FF" />
         <CloudShape 
-          className="absolute top-40 right-20" 
+          className="absolute top-40 right-20 hidden md:block" 
           size={100} 
           fill="#E9E1FF" 
           style={{ animationDelay: "1.5s" }}
         />
         <CloudShape 
-          className="absolute bottom-20 left-20" 
+          className="absolute bottom-20 left-20 hidden md:block" 
           size={150} 
           fill="#E9E1FF" 
           style={{ animationDelay: "2.5s" }}
