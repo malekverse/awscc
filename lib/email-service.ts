@@ -292,6 +292,10 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
           border: 1px solid #E9E1FF;
           border-top: none;
         }
+        .logo {
+          max-width: 150px;
+          margin-bottom: 10px;
+        }
         h1 {
           color: #ffffff;
           margin: 0;
@@ -330,7 +334,7 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
         <div class="header">
           <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
           <h1>AWS Cloud Club ISIMS</h1>
-          <p style="margin: 5px 0 0 0; opacity: 0.9;">Thank you for contacting us!</p>
+          <p style="margin: 5px 0 0 0; opacity: 0.9; color: white;">Thank you for contacting us!</p>
         </div>
         
         <div class="content">

@@ -118,11 +118,11 @@ export function ContactSection() {
                   {submitStatus !== 'idle' && (
                     <Alert className={`mb-6 ${submitStatus === 'success' ? 'border-primary/60 bg-primary/30' : 'border-red-200 bg-red-50'}`}>
                       {submitStatus === 'success' ? (
-                        <CheckCircle className="h-4 w-4 text-gray-200" />
+                        <CheckCircle className="h-4 w-4 dark:text-gray-200 text-primary" />
                       ) : (
                         <AlertCircle className="h-4 w-4 text-red-600" />
                       )}
-                      <AlertDescription className={submitStatus === 'success' ? 'text-gray-200' : 'text-red-800'}>
+                      <AlertDescription className={submitStatus === 'success' ? 'dark:text-gray-200 text-primary' : 'text-red-800'}>
                         {submitMessage}
                       </AlertDescription>
                     </Alert>
