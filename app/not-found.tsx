@@ -15,7 +15,7 @@ export default function NotFound() {
   return (
     <>
       <Header />
-      <main className="pt-16 md:pt-24 pb-16 md:pb-20 min-h-[calc(100vh-200px)] relative overflow-hidden">
+      <main className="pt-16 pt-24 md:pt-24 pb-16 md:pb-20 min-h-[calc(100vh-200px)] relative overflow-hidden">
         {/* Wool texture background overlay */}
           <div className="absolute inset-0 z-0 opacity-10 pointer-events-none bg-repeat" 
             style={{
