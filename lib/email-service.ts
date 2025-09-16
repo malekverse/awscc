@@ -3,6 +3,15 @@ import { FormValues } from '@/app/join/page';
 import { ContactFormValues } from '@/components/contact-form';
 import Groq from 'groq-sdk';
 
+// Define OCTeamFormValues interface
+interface OCTeamFormValues {
+  fullName: string;
+  email: string;
+  phone: string;
+  department: 'Sponsoring' | 'Media' | 'Logistics';
+  institute: string;
+}
+
 // Email configuration
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -162,6 +171,157 @@ const createHtmlEmailContent = (userData: FormValues) => {
   `;
 };
 
+// HTML email template for OC Team registrations
+const createOCTeamHtmlEmailContent = (userData: OCTeamFormValues) => {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome to the OC Team for ATNC!</title>
+      <style>
+        /* Base styles */
+        body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          margin: 0;
+          padding: 0;
+          background-color: #f9f9f9;
+        }
+        .container {
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #ffffff;
+        }
+        .header {
+          background: linear-gradient(to right, #9B6DFF, #7C4DFF);
+          padding: 20px;
+          text-align: center;
+          color: white;
+          border-radius: 8px 8px 0 0;
+        }
+        .content {
+          padding: 20px;
+          border-left: 1px solid #E9E1FF;
+          border-right: 1px solid #E9E1FF;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px 20px;
+          text-align: center;
+          font-size: 14px;
+          color: #666;
+          border-radius: 0 0 8px 8px;
+          border: 1px solid #E9E1FF;
+          border-top: none;
+        }
+        h1 {
+          color: #ffffff;
+          margin: 0;
+          font-size: 24px;
+        }
+        h2 {
+          color: #7C4DFF;
+          margin-top: 0;
+        }
+        .logo {
+          max-width: 150px;
+          margin-bottom: 10px;
+        }
+        .button {
+          display: inline-block;
+          background: linear-gradient(to right, #9B6DFF, #7C4DFF);
+          color: white;
+          text-decoration: none;
+          padding: 10px 20px;
+          border-radius: 5px;
+          margin: 20px 0;
+          font-weight: bold;
+        }
+        .benefits {
+          background-color: #f9f5ff;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 15px 0;
+          border-left: 4px solid #7C4DFF;
+        }
+        .benefits ul {
+          margin: 10px 0;
+          padding-left: 20px;
+        }
+        .contact {
+          margin-top: 20px;
+          padding-top: 15px;
+          border-top: 1px solid #eee;
+        }
+        @media only screen and (max-width: 600px) {
+          .container {
+            width: 100%;
+          }
+          .header {
+            padding: 15px;
+          }
+          h1 {
+            font-size: 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <h1>Welcome to the OC Team for ATNC!</h1>
+        </div>
+        <div class="content">
+          <h2>Hello ${userData.fullName},</h2>
+          <p>We are glad to have you with us in the OC team for the AWS National Tunisia Camp (ATNC) event!</p>
+          
+          <p>Your registration for the ${userData.department} department has been successfully processed.</p>
+          
+          <div class="benefits">
+            <strong>Team Benefits:</strong>
+            <ul>
+              <li>Gain valuable event organization experience</li>
+              <li>Network with AWS professionals and community leaders</li>
+              <li>Contribute to the success of a national AWS event</li>
+              <li>Develop teamwork and leadership skills</li>
+              <li>Receive recognition for your contribution</li>
+              <li>Receive an internship certificate from our partner S.A.S.</li>
+              <li>Opportunity for employment with our partner S.A.S.</li>
+              <li>Priority consideration for future events or projects with our partners</li>
+            </ul>
+          </div>
+          
+          <p><strong>Next Steps:</strong></p>
+          <p>We'll be in touch soon with details about upcoming team meetings and your specific responsibilities. In the meantime, you can:</p>
+          <ul>
+            <li>Follow us on social media for the latest updates</li>
+            <li>Prepare for your role in the ${userData.department} department</li>
+            <li>Start thinking about ideas to contribute to the event</li>
+          </ul>
+          
+          <a href="https://awscc.tn" style="color: white; text-decoration: none;" class="button">Learn More</a>
+          
+          <div class="contact">
+            <p><strong>Need assistance?</strong></p>
+            <p>If you have any questions or need support, please don't hesitate to contact us at:</p>
+            <p>Email: <a href="mailto:awscloudclubisims@gmail.com">awscloudclubisims@gmail.com</a></p>
+          </div>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
+          <p>This email was sent to ${userData.email} because you registered for the OC team for the ATNC event.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
 // Plain text email version
 const createTextEmailContent = (userData: FormValues) => {
   return `
@@ -192,6 +352,39 @@ const createTextEmailContent = (userData: FormValues) => {
     
     © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
     This email was sent to ${userData.email} because you registered for AWS Cloud Club membership.
+  `;
+};
+
+// Plain text email version for OC Team registrations
+const createOCTeamTextEmailContent = (userData: OCTeamFormValues) => {
+  return `
+    Welcome to the OC Team for ATNC!
+    
+    Hello ${userData.fullName},
+    
+    We are glad to have you with us in the OC team for the AWS National Tunisia Camp (ATNC) event!
+    
+    Your registration for the ${userData.department} department has been successfully processed.
+    
+    Team Benefits:
+    * Gain valuable event organization experience
+    * Network with AWS professionals and community leaders
+    * Contribute to the success of a national AWS event
+    * Develop teamwork and leadership skills
+    * Receive recognition for your contribution
+    
+    Next Steps:
+    We'll be in touch soon with details about upcoming team meetings and your specific responsibilities. In the meantime, you can:
+    * Follow us on social media for the latest updates
+    * Prepare for your role in the ${userData.department} department
+    * Start thinking about ideas to contribute to the event
+    
+    Need assistance?
+    If you have any questions or need support, please don't hesitate to contact us at:
+    Email: awscloudclubisims@gmail.com
+    
+    © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
+    This email was sent to ${userData.email} because you registered for the OC team for the ATNC event.
   `;
 };
 
@@ -461,6 +654,41 @@ export const sendWelcomeEmail = async (userData: FormValues) => {
     return true;
   } catch (error) {
     console.error('Error sending welcome email:', error);
+    // Don't throw error to prevent blocking form submission
+    return false;
+  }
+};
+
+// Send OC Team welcome email function
+export const sendOCTeamWelcomeEmail = async (userData: OCTeamFormValues) => {
+  try {
+    // Skip sending in development if no email credentials
+    if (process.env.NODE_ENV !== 'production' && !process.env.EMAIL_USER) {
+      console.log('Development mode: Would have sent OC Team welcome email to', userData.email);
+      console.log('To enable email sending, set the following environment variables:');
+      console.log('- EMAIL_HOST');
+      console.log('- EMAIL_PORT');
+      console.log('- EMAIL_SECURE');
+      console.log('- EMAIL_USER');
+      console.log('- EMAIL_PASSWORD');
+      return true;
+    }
+    
+    // Prepare email options
+    const mailOptions = {
+      from: `"AWS Cloud Club" <${process.env.EMAIL_USER}>`,
+      to: userData.email,
+      subject: 'Welcome to the OC Team for ATNC!',
+      text: createOCTeamTextEmailContent(userData),
+      html: createOCTeamHtmlEmailContent(userData),
+    };
+    
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('OC Team welcome email sent:', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('Error sending OC Team welcome email:', error);
     // Don't throw error to prevent blocking form submission
     return false;
   }

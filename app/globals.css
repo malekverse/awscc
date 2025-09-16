@@ -229,3 +229,21 @@
     filter: drop-shadow(0 0 2px rgba(155, 109, 255, 0.4));
   }
 }
+
+@keyframes wool-unravel {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 100;
+  }
+}
+
+@keyframes wool-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-15px) scale(1.05);
+  }
+}

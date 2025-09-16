@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { sendWelcomeEmail } from '@/lib/email-service';
+import { sendOCTeamWelcomeEmail } from '@/lib/email-service';
 import { connectToDatabase } from '@/lib/mongodb';
-import Member from '@/models/Member';
+import OCTeamMember from '@/models/OCTeamMember';
 
 // Initialize Google Sheets client
 const initializeGoogleSheets = async () => {
@@ -16,13 +16,13 @@ const initializeGoogleSheets = async () => {
     });
 
     // Initialize the sheet
-    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID || '', client);
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SHEET_ID_OC || '', client);
     await doc.loadInfo(); // Load document properties and worksheets
     
-    // Get the first sheet or create one if it doesn't exist
+    // Get the OC Team sheet or create one if it doesn't exist
     let sheet = doc.sheetsByIndex[0];
     if (!sheet) {
-      sheet = await doc.addSheet({ title: 'AWS Cloud Club Membership Applications' });
+      sheet = await doc.addSheet({ title: 'OC Team Event Registrations' });
     }
     
     // Define the headers we want to use
@@ -31,25 +31,13 @@ const initializeGoogleSheets = async () => {
       'Full Name',
       'Email',
       'Phone',
-      'Date of Birth',
-      'Current Role',
-      'Organization',
-      'LinkedIn',
-      'Experience Level',
-      'AWS Certifications',
-      'Other Cloud Platforms',
-      'Why Join',
-      'Areas of Interest',
-      'Other Interests',
-      'Contribution',
-      'Meeting Preference',
-      'Heard From',
-      'Other Source',
+      'Department',
+      'Institute/City',
       'Paid'
     ];
     
     // Check if headers exist by getting the first row
-    await sheet.loadCells('A1:R1');
+    await sheet.loadCells('A1:G1');
     const firstCell = sheet.getCell(0, 0);
     
     // If the first cell is empty, set the header row
@@ -70,34 +58,16 @@ export async function POST(request: NextRequest) {
     const data = await request.json();
     
     // Log the form data for debugging
-    console.log('Form submission received:', data);
+    console.log('OC Team form submission received:', data);
     
-    // Prepare data for Google Sheets
-    // Convert interests array to string
-    const interestsString = Array.isArray(data.interests) ? data.interests.join(', ') : data.interests;
-    
-    // Format data for Google Sheets API
+    // Format data for storage
     const formattedData = {
       fullName: data.fullName,
       email: data.email,
-      phone: data.phone || '',
-      dob: data.dob,
-      role: data.role,
-      organization: data.organization || '',
-      linkedin: data.linkedin || '',
-      experience: data.experience,
-      certifications: data.certifications || '',
-      otherPlatforms: data.otherPlatforms || '',
-      whyJoin: data.whyJoin,
-      interests: Array.isArray(data.interests) ? data.interests : [data.interests],
-      interestsString: interestsString,
-      otherInterest: data.otherInterest || '',
-      contribution: data.contribution,
-      meetingPreference: data.meetingPreference,
-      heardFrom: data.heardFrom,
-      otherSourceText: data.otherSourceText || '',
+      phone: data.phone,
+      department: data.department,
+      institute: data.institute,
       submissionDate: new Date().toISOString(),
-      agreement: data.agreement,
       paid: false,
     };
     
@@ -105,33 +75,20 @@ export async function POST(request: NextRequest) {
     try {
       await connectToDatabase();
       
-      // Create a new member document
-      const newMember = new Member({
+      // Create a new OC team member document
+      const newOCTeamMember = new OCTeamMember({
         fullName: formattedData.fullName,
         email: formattedData.email,
         phone: formattedData.phone,
-        dob: formattedData.dob,
-        role: formattedData.role,
-        organization: formattedData.organization,
-        linkedin: formattedData.linkedin,
-        experience: formattedData.experience,
-        certifications: formattedData.certifications,
-        otherPlatforms: formattedData.otherPlatforms,
-        whyJoin: formattedData.whyJoin,
-        interests: formattedData.interests,
-        otherInterest: formattedData.otherInterest,
-        contribution: formattedData.contribution,
-        meetingPreference: formattedData.meetingPreference,
-        heardFrom: formattedData.heardFrom,
-        otherSourceText: formattedData.otherSourceText,
-        agreement: formattedData.agreement,
+        department: formattedData.department,
+        institute: formattedData.institute,
         paid: formattedData.paid,
         submissionDate: new Date(formattedData.submissionDate)
       });
       
       // Save the member to MongoDB
-      await newMember.save();
-      console.log('Member data saved to MongoDB successfully');
+      await newOCTeamMember.save();
+      console.log('OC Team member data saved to MongoDB successfully');
     } catch (mongoError) {
       console.error('Error saving to MongoDB:', mongoError);
       // Continue with the process even if MongoDB fails
@@ -142,7 +99,7 @@ export async function POST(request: NextRequest) {
     if (
       process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL &&
       process.env.GOOGLE_PRIVATE_KEY &&
-      process.env.GOOGLE_SHEET_ID
+      process.env.GOOGLE_SHEET_ID_OC
     ) {
       try {
         // Initialize Google Sheets
@@ -154,31 +111,19 @@ export async function POST(request: NextRequest) {
           'Full Name': formattedData.fullName,
           'Email': formattedData.email,
           'Phone': formattedData.phone,
-          'Date of Birth': formattedData.dob,
-          'Current Role': formattedData.role,
-          'Organization': formattedData.organization,
-          'LinkedIn': formattedData.linkedin,
-          'Experience Level': formattedData.experience,
-          'AWS Certifications': formattedData.certifications,
-          'Other Cloud Platforms': formattedData.otherPlatforms,
-          'Why Join': formattedData.whyJoin,
-          'Areas of Interest': formattedData.interestsString,
-          'Other Interests': formattedData.otherInterest,
-          'Contribution': formattedData.contribution,
-          'Meeting Preference': formattedData.meetingPreference,
-          'Heard From': formattedData.heardFrom,
-          'Other Source': formattedData.otherSourceText,
+          'Department': formattedData.department,
+          'Institute/City': formattedData.institute,
           'Paid': formattedData.paid ? 'Yes' : 'No'
         });
         
-        console.log('Form data successfully added to Google Sheet');
+        console.log('OC Team form data successfully added to Google Sheet');
       } catch (sheetError) {
         console.error('Error adding data to Google Sheet:', sheetError);
         // Return error response to client
         return NextResponse.json(
           { 
             success: false, 
-            message: 'Failed to save your application to our database. Please try again later.', 
+            message: 'Failed to save your registration to our database. Please try again later.', 
             error: sheetError instanceof Error ? sheetError.message : 'Unknown error'
           },
           { status: 500 }
@@ -187,17 +132,13 @@ export async function POST(request: NextRequest) {
     } else {
       // In development or if credentials are missing, log the data
       console.log('Development mode or missing Google Sheets credentials. Would have saved:', formattedData);
-      console.log('To enable Google Sheets integration, set the following environment variables:');
-      console.log('- GOOGLE_SERVICE_ACCOUNT_EMAIL');
-      console.log('- GOOGLE_PRIVATE_KEY');
-      console.log('- GOOGLE_SHEET_ID_OC');
       
       // Return error response to client in production
       if (process.env.NODE_ENV === 'production') {
         return NextResponse.json(
           { 
             success: false, 
-            message: 'Application system is currently unavailable. Please try again later or contact support.'
+            message: 'Registration system is currently unavailable. Please try again later or contact support.'
           },
           { status: 500 }
         );
@@ -205,12 +146,12 @@ export async function POST(request: NextRequest) {
       // In development, we'll continue and return success
     }
     
-    // Send welcome email
+    // Send OC team welcome email
     try {
-      await sendWelcomeEmail(data);
-      console.log('Welcome email sent successfully');
-    } catch (emailError) {
-      console.error('Error sending welcome email:', emailError);
+      await sendOCTeamWelcomeEmail(data);
+      console.log('OC team welcome email sent successfully');
+    } catch (error) {
+      console.error('Error sending OC team welcome email:', error);
       // Continue with success response even if email fails
     }
     
