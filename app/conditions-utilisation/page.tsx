@@ -6,7 +6,36 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Terms of Use | AWS Cloud Club ISIMS",
-  description: "Terms of Use of AWS Cloud Club ISIMS",
+  description: "Read the terms and conditions for using the AWS Cloud Club ISIMS website and participating in our community. Learn about your rights and responsibilities.",
+  keywords: [
+    "AWS Cloud Club terms",
+    "ISIMS terms of use",
+    "terms and conditions",
+    "user agreement",
+    "legal terms",
+    "website usage",
+    "community guidelines",
+    "user rights",
+    "responsibilities"
+  ],
+  openGraph: {
+    title: "Terms of Use | AWS Cloud Club ISIMS",
+    description: "Read the terms and conditions for using the AWS Cloud Club ISIMS website and participating in our community. Learn about your rights and responsibilities.",
+    images: [
+      {
+        url: "/src/assets/awscc-banner.png",
+        width: 1200,
+        height: 630,
+        alt: "AWS Cloud Club ISIMS Terms of Use"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Terms of Use | AWS Cloud Club ISIMS",
+    description: "Read the terms and conditions for using the AWS Cloud Club ISIMS website and participating in our community. Learn about your rights and responsibilities.",
+    images: ["/src/assets/awscc-banner.png"]
+  }
 }
 
 export default function TermsOfServicePage() {

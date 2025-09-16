@@ -1,6 +1,14 @@
-User-Agent: *
+# robots.txt for AWS Cloud Club ISIMS
+User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /admin/
+Disallow: /private/
+Disallow: /temp/
+Disallow: /draft/
+
+# Crawl-delay directive (optional)
+Crawl-delay: 1
 
 # Host
 Host: https://awscc.tn

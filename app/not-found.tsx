@@ -7,8 +7,30 @@ import { Footer } from "@/components/footer";
 import { CloudShape } from "@/components/ui/cloud-shape";
 
 export const metadata: Metadata = {
-  title: "404 - Page Not Found",
-  description: "The page you are looking for doesn't exist.",
+  title: "404 - Page Not Found | AWS Cloud Club ISIMS",
+  description: "The page you are looking for doesn't exist. Return to the AWS Cloud Club ISIMS homepage to explore our cloud computing community.",
+  robots: {
+    index: false,
+    follow: true
+  },
+  openGraph: {
+    title: "404 - Page Not Found | AWS Cloud Club ISIMS",
+    description: "The page you are looking for doesn't exist. Return to the AWS Cloud Club ISIMS homepage to explore our cloud computing community.",
+    images: [
+      {
+        url: "/src/assets/awscc-banner.png",
+        width: 1200,
+        height: 630,
+        alt: "AWS Cloud Club ISIMS - Page Not Found"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "404 - Page Not Found | AWS Cloud Club ISIMS",
+    description: "The page you are looking for doesn't exist. Return to the AWS Cloud Club ISIMS homepage to explore our cloud computing community.",
+    images: ["/src/assets/awscc-banner.png"]
+  }
 };
 
 export default function NotFound() {

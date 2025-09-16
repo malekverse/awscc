@@ -6,7 +6,35 @@ import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Privacy Policy | AWS Cloud Club ISIMS",
-  description: "Privacy Policy of AWS Cloud Club ISIMS",
+  description: "Learn about how AWS Cloud Club ISIMS collects, uses, and protects your personal information. Our privacy policy explains our data practices and your rights.",
+  keywords: [
+    "AWS Cloud Club privacy",
+    "ISIMS data policy",
+    "privacy policy",
+    "data protection",
+    "personal information",
+    "student club privacy",
+    "GDPR compliance",
+    "data rights"
+  ],
+  openGraph: {
+    title: "Privacy Policy | AWS Cloud Club ISIMS",
+    description: "Learn about how AWS Cloud Club ISIMS collects, uses, and protects your personal information. Our privacy policy explains our data practices and your rights.",
+    images: [
+      {
+        url: "/src/assets/awscc-banner.png",
+        width: 1200,
+        height: 630,
+        alt: "AWS Cloud Club ISIMS Privacy Policy"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Privacy Policy | AWS Cloud Club ISIMS",
+    description: "Learn about how AWS Cloud Club ISIMS collects, uses, and protects your personal information. Our privacy policy explains our data practices and your rights.",
+    images: ["/src/assets/awscc-banner.png"]
+  }
 }
 
 export default function PrivacyPolicyPage() {
