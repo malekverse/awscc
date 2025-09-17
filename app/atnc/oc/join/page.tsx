@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Cloud, Loader2 } from "lucide-react"
+import { Cloud, Loader2, Upload, FileText, Camera } from "lucide-react"
 import { StarIcon } from "@/components/ui/star-icon"
 import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
@@ -27,6 +27,33 @@ const formSchema = z.object({
     required_error: "Please select a department",
   }),
   institute: z.string().min(1, { message: "Institute or city of residence is required" }),
+  cv: z.any().optional().refine((file) => {
+    if (!file) return true; // Allow empty/undefined
+    return file instanceof File;
+  }, {
+    message: "Invalid CV file",
+  }).refine((file) => {
+    if (!file) return true; // Allow empty/undefined
+    return file?.size <= 5000000;
+  }, {
+    message: "CV file size should be less than 5MB",
+  }).refine((file) => {
+    if (!file) return true; // Allow empty/undefined
+    const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    return allowedTypes.includes(file?.type);
+  }, {
+    message: "CV must be a PDF or Word document",
+  }),
+  photo: z.any().refine((file) => file instanceof File, {
+    message: "Photo is required",
+  }).refine((file) => file?.size <= 2000000, {
+    message: "Photo size should be less than 2MB",
+  }).refine((file) => {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    return allowedTypes.includes(file?.type);
+  }, {
+    message: "Photo must be a JPEG or PNG image",
+  }),
 });
 
 // Define type based on the schema
@@ -85,6 +112,8 @@ export default function OCTeamJoinPage() {
       phone: "",
       department: undefined,
       institute: "",
+      cv: undefined,
+      photo: undefined,
     },
   });
   
@@ -112,19 +141,28 @@ export default function OCTeamJoinPage() {
     setError("");
     
     try {
-      // Clean phone number for storage (remove spaces)
-      const cleanedData = {
-        ...data,
-        phone: data.phone ? data.phone.replace(/\s/g, "") : "",
-      };
+      // Create FormData for file uploads
+      const formData = new FormData();
+      
+      // Add text fields
+      formData.append('fullName', data.fullName);
+      formData.append('email', data.email);
+      formData.append('phone', data.phone ? data.phone.replace(/\s/g, "") : "");
+      formData.append('department', data.department);
+      formData.append('institute', data.institute);
+      
+      // Add file uploads
+      if (data.cv) {
+        formData.append('cv', data.cv);
+      }
+      if (data.photo) {
+        formData.append('photo', data.photo);
+      }
       
       // Submit to API
       const response = await fetch("/api/submit-oc-form", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cleanedData),
+        body: formData, // Don't set Content-Type header for FormData
       });
       
       // Parse the response
@@ -324,6 +362,101 @@ export default function OCTeamJoinPage() {
                           </FormItem>
                         )}
                       />
+                    </div>
+                    
+                    {/* Document Upload Section */}
+                    <div className="space-y-6">
+                      <h3 className="text-xl font-semibold bg-gradient-to-r from-[var(--primary-gradient-from)] to-[var(--primary-gradient-to)] text-transparent bg-clip-text">
+                        Required Documents
+                      </h3>
+                      <div className="grid gap-6 md:grid-cols-2 items-start">
+                        <FormField
+                          control={form.control}
+                          name="cv"
+                          render={({ field: { onChange, value, ...field } }) => (
+                            <FormItem className="space-y-2">
+                              <FormLabel>CV/Resume (Optional)</FormLabel>
+                              <FormControl>
+                                <div className="flex items-center justify-center w-full">
+                                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                      <FileText className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <span className="font-semibold">Click to upload</span> your CV
+                                      </p>
+                                      <p className="text-xs text-gray-500 dark:text-gray-400">PDF, DOC or DOCX (MAX. 5MB)</p>
+                                      {value && (
+                                        <p className="text-xs text-green-600 dark:text-green-400 mt-2">
+                                          Selected: {value.name}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <Input
+                                      {...field}
+                                      type="file"
+                                      accept=".pdf,.doc,.docx"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        onChange(file);
+                                      }}
+                                    />
+                                  </label>
+                                </div>
+                              </FormControl>
+                              <FormDescription>Upload your current CV or resume in PDF or Word format (optional).</FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={form.control}
+                          name="photo"
+                          render={({ field: { onChange, value, ...field } }) => (
+                            <FormItem className="space-y-2">
+                              <FormLabel>Professional Photo <span className="text-red-500">*</span></FormLabel>
+                              <FormControl>
+                                <div className="flex items-center justify-center w-full">
+                                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                      <Camera className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" />
+                                      <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <span className="font-semibold">Click to upload</span> your photo
+                                      </p>
+                                      <p className="text-xs text-gray-500 dark:text-gray-400">JPEG or PNG (MAX. 2MB)</p>
+                                      {value && (
+                                        <p className="text-xs text-green-600 dark:text-green-400 mt-2">
+                                          Selected: {value.name}
+                                        </p>
+                                      )}
+                                    </div>
+                                    <Input
+                                      {...field}
+                                      type="file"
+                                      accept="image/jpeg,image/jpg,image/png"
+                                      className="hidden"
+                                      onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        onChange(file);
+                                      }}
+                                    />
+                                  </label>
+                                </div>
+                              </FormControl>
+                              <FormDescription>
+                                <div className="space-y-1">
+                                  <p>Upload a professional headshot photo.</p>
+                                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                                    <strong>Note:</strong> This photo will be used for your event badges and may be featured in the ATNC website team section.
+                                  </p>
+                                </div>
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
                     </div>
                     
                     <div className="flex justify-end">

@@ -4,6 +4,8 @@ import { JWT } from 'google-auth-library';
 import { sendOCTeamWelcomeEmail } from '@/lib/email-service';
 import { connectToDatabase } from '@/lib/mongodb';
 import OCTeamMember from '@/models/OCTeamMember';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
 
 // Initialize Google Sheets client
 const initializeGoogleSheets = async () => {
@@ -33,6 +35,8 @@ const initializeGoogleSheets = async () => {
       'Phone',
       'Department',
       'Institute/City',
+      'CV File',
+      'Photo File',
       'Paid'
     ];
     
@@ -55,10 +59,75 @@ const initializeGoogleSheets = async () => {
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.json();
+    const formData = await request.formData();
+    
+    // Extract form fields
+    const data = {
+      fullName: formData.get('fullName') as string,
+      email: formData.get('email') as string,
+      phone: formData.get('phone') as string,
+      department: formData.get('department') as string,
+      institute: formData.get('institute') as string,
+    };
+    
+    // Extract files
+    const cvFile = formData.get('cv') as File | null;
+    const photoFile = formData.get('photo') as File | null;
     
     // Log the form data for debugging
     console.log('OC Team form submission received:', data);
+    console.log('Files received:', { cv: cvFile?.name, photo: photoFile?.name });
+    
+    // Handle file uploads
+    let cvFileName = '';
+    let photoFileName = '';
+    
+    if (!photoFile) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Photo file is required.'
+        },
+        { status: 400 }
+      );
+    }
+
+    try {
+      // Create uploads directory if it doesn't exist
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'atnc-oc-team');
+      await mkdir(uploadsDir, { recursive: true });
+      
+      // Generate unique filenames
+      const timestamp = Date.now();
+      const sanitizedEmail = data.email.replace(/[^a-zA-Z0-9]/g, '_');
+      
+      // Save CV file if provided
+      if (cvFile) {
+        const cvExtension = path.extname(cvFile.name);
+        cvFileName = `cv_${sanitizedEmail}_${timestamp}${cvExtension}`;
+        const cvPath = path.join(uploadsDir, cvFileName);
+        const cvBuffer = Buffer.from(await cvFile.arrayBuffer());
+        await writeFile(cvPath, cvBuffer);
+      }
+      
+      // Save photo file (required)
+      const photoExtension = path.extname(photoFile.name);
+      photoFileName = `photo_${sanitizedEmail}_${timestamp}${photoExtension}`;
+      const photoPath = path.join(uploadsDir, photoFileName);
+      const photoBuffer = Buffer.from(await photoFile.arrayBuffer());
+      await writeFile(photoPath, photoBuffer);
+      
+      console.log('Files saved successfully:', { cv: cvFileName || 'none', photo: photoFileName });
+    } catch (fileError) {
+      console.error('Error saving files:', fileError);
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Failed to save uploaded files. Please try again.'
+        },
+        { status: 500 }
+      );
+    }
     
     // Format data for storage
     const formattedData = {
@@ -67,6 +136,8 @@ export async function POST(request: NextRequest) {
       phone: data.phone,
       department: data.department,
       institute: data.institute,
+      ...(cvFileName && { cvFileName }),
+      photoFileName: photoFileName,
       submissionDate: new Date().toISOString(),
       paid: false,
     };
@@ -82,6 +153,8 @@ export async function POST(request: NextRequest) {
         phone: formattedData.phone,
         department: formattedData.department,
         institute: formattedData.institute,
+        cvFileName: formattedData.cvFileName,
+        photoFileName: formattedData.photoFileName,
         paid: formattedData.paid,
         submissionDate: new Date(formattedData.submissionDate)
       });
@@ -113,6 +186,8 @@ export async function POST(request: NextRequest) {
           'Phone': formattedData.phone,
           'Department': formattedData.department,
           'Institute/City': formattedData.institute,
+          'CV File': formattedData.cvFileName || 'Not provided',
+          'Photo File': formattedData.photoFileName,
           'Paid': formattedData.paid ? 'Yes' : 'No'
         });
         

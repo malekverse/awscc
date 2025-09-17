@@ -20,6 +20,9 @@ The registration form includes the following fields:
 - **Department** (required): The department the participant is interested in joining
   - Options: Sponsoring, Media, Logistics
 - **Institute/City** (required): The participant's institute or city of residence
+- **CV/Resume**: Upload CV or resume in PDF or Word format (max 5MB) - Optional
+- **Professional Photo** (required): Upload a professional headshot photo in JPEG or PNG format (max 2MB)
+  - **Note**: This photo will be used for event badges and may be featured in the ATNC website team section
 
 ## Data Storage
 
@@ -34,6 +37,8 @@ interface IOCTeamMember {
   phone: string;
   department: 'Sponsoring' | 'Media' | 'Logistics';
   institute: string;
+  cvFileName?: string;
+  photoFileName: string;
   submissionDate: Date;
   paid: boolean; // Default: false
 }
@@ -49,7 +54,19 @@ Participant data is also stored in a Google Sheet with the following columns:
 - Phone
 - Department
 - Institute/City
+- CV File
+- Photo File
 - Paid (Yes/No)
+
+### File Storage
+
+Uploaded files (CV and photos) are stored in the `/public/uploads/atnc-oc-team/` directory with unique filenames that include:
+- File type prefix (cv_ or photo_)
+- Sanitized email address
+- Timestamp
+- Original file extension
+
+Example: `cv_user_example_com_1703123456789.pdf`
 
 ## API Endpoint
 
