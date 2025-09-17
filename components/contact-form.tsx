@@ -93,13 +93,13 @@ export function ContactForm({ className }: ContactFormProps) {
       </CardHeader>
       <CardContent>
         {submitStatus !== 'idle' && (
-          <Alert className={`mb-6 ${submitStatus === 'success' ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+          <Alert className={`mb-6 ${submitStatus === 'success' ? 'border-primary bg-secondary' : 'border-destructive bg-destructive/10'}`}>
             {submitStatus === 'success' ? (
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CheckCircle className="h-4 w-4 text-primary" />
             ) : (
-              <AlertCircle className="h-4 w-4 text-red-600" />
+              <AlertCircle className="h-4 w-4 text-destructive" />
             )}
-            <AlertDescription className={submitStatus === 'success' ? 'text-green-800' : 'text-red-800'}>
+            <AlertDescription className={submitStatus === 'success' ? 'text-primary' : 'text-destructive'}>
               {submitMessage}
             </AlertDescription>
           </Alert>

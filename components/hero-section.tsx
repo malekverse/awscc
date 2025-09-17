@@ -136,14 +136,14 @@ export function HeroSection() {
             </div>
 
             <div
-              className="flex flex-col items-center p-6 bg-white dark:bg-secondary/60 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 animate-slide-up border border-primary/10"
+              className="flex flex-col items-center p-6 bg-card rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 animate-slide-up border border-primary/10"
               style={{ animationDelay: "0.2s" }}
             >
               <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-4">
                 <Star className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] text-transparent bg-clip-text mb-2">Workshops</h3>
-              <p className="text-gray-800 dark:text-gray-300 text-center">
+              <h3 className="text-xl font-semibold bg-gradient-to-r from-[var(--primary-gradient-from)] to-[var(--primary-gradient-to)] text-transparent bg-clip-text mb-2">Workshops</h3>
+              <p className="text-foreground/80 text-center">
                 Hands-on experience with industry professionals
               </p>
             </div>
@@ -155,8 +155,8 @@ export function HeroSection() {
               <div className="w-16 h-16 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mb-4">
                 <CloudCog className="h-8 w-8 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold bg-gradient-to-r from-[#9B6DFF] to-[#7C4DFF] text-transparent bg-clip-text mb-2">Certifications</h3>
-              <p className="text-gray-800 dark:text-gray-300 text-center">
+              <h3 className="text-xl font-semibold bg-gradient-to-r from-[var(--primary-gradient-from)] to-[var(--primary-gradient-to)] text-transparent bg-clip-text mb-2">Certifications</h3>
+              <p className="text-foreground/80 text-center">
                 Prepare for AWS certifications with expert guidance
               </p>
             </div>

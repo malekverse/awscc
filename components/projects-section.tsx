@@ -49,13 +49,13 @@ export function ProjectsSection() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Completed":
-        return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
+        return "bg-secondary text-primary"
       case "In Progress":
-        return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
+        return "bg-secondary text-primary"
       case "Planned":
-        return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
+        return "bg-secondary text-primary"
       default:
-        return "bg-[#E9E1FF] text-[#7C4DFF] dark:bg-[#7C4DFF]/20 dark:text-[#9B6DFF]"
+        return "bg-secondary text-primary"
     }
   }
 
@@ -155,29 +155,29 @@ export function ProjectsSection() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
-                <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <Cloud className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <Cloud className="h-8 w-8 text-primary" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">AWS Workshops</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                <h4 className="text-lg font-semibold text-foreground mb-2">AWS Workshops</h4>
+                <p className="text-muted-foreground text-sm">
                   Weekly hands-on sessions on AWS services and cloud architecture
                 </p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <Shield className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <Shield className="h-8 w-8 text-primary" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Certification Bootcamps</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                <h4 className="text-lg font-semibold text-foreground mb-2">Certification Bootcamps</h4>
+                <p className="text-muted-foreground text-sm">
                   Intensive preparation sessions for AWS certification exams
                 </p>
               </div>
               <div className="text-center">
-                <div className="w-16 h-16 bg-[#E9E1FF] dark:bg-[#9B6DFF]/20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
-                  <Server className="h-8 w-8 text-[#7C4DFF] dark:text-[#9B6DFF]" />
+                <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
+                  <Server className="h-8 w-8 text-primary" />
                 </div>
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Cloud Hackathons</h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm">Competitive events building innovative cloud solutions</p>
+                <h4 className="text-lg font-semibold text-foreground mb-2">Cloud Hackathons</h4>
+                <p className="text-muted-foreground text-sm">Competitive events building innovative cloud solutions</p>
               </div>
             </div>
             {/* <div className="text-center mt-8">

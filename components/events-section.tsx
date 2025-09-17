@@ -146,7 +146,7 @@ export function EventsSection() {
                       href="#"
                       // href="/evenements"
                       variant="outline"
-                      className="border-[#9B6DFF] cursor-[not-allowed] text-[#7C4DFF] hover:bg-gradient-to-r hover:from-[#9B6DFF] hover:to-[#7C4DFF] hover:text-white dark:border-[#9B6DFF] dark:text-[#9B6DFF] dark:hover:text-white bg-transparent rounded-lg"
+                      className="border-primary cursor-[not-allowed] text-primary hover:bg-gradient-to-r hover:from-[var(--primary-gradient-from)] hover:to-[var(--primary-gradient-to)] hover:text-white bg-transparent rounded-lg"
                     >
                       Details
                     </LinkButton>

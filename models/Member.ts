@@ -21,6 +21,15 @@ export interface IMember extends Document {
   otherSourceText?: string;
   agreement: boolean;
   paid: boolean;
+  password?: string;
+  temporaryPassword?: string;
+  passwordResetToken?: string;
+  passwordResetExpires?: Date;
+  lastLogin?: Date;
+  isActive: boolean;
+  emailSent: boolean;
+  paidDate?: Date;
+  paidBy?: string; // Admin who marked as paid
   submissionDate: Date;
 }
 
@@ -58,6 +67,15 @@ const MemberSchema: Schema = new Schema(
     otherSourceText: { type: String },
     agreement: { type: Boolean, required: true },
     paid: { type: Boolean, default: false },
+    password: { type: String },
+    temporaryPassword: { type: String },
+    passwordResetToken: { type: String },
+    passwordResetExpires: { type: Date },
+    lastLogin: { type: Date },
+    isActive: { type: Boolean, default: true },
+    emailSent: { type: Boolean, default: false },
+    paidDate: { type: Date },
+    paidBy: { type: String },
     submissionDate: { type: Date, default: Date.now }
   },
   { timestamps: true }

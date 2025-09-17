@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "create-admin": "node scripts/create-admin.js",
+    "create-admin-simple": "node scripts/create-admin-simple.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -39,9 +41,12 @@
     "@radix-ui/react-tooltip": "1.1.6",
     "@remix-run/react": "latest",
     "@sveltejs/kit": "latest",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/nodemailer": "^7.0.1",
     "@vercel/analytics": "latest",
     "autoprefixer": "^10.4.20",
+    "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.0.4",
@@ -52,6 +57,7 @@
     "google-spreadsheet": "^5.0.2",
     "groq-sdk": "^0.32.0",
     "input-otp": "1.4.1",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.454.0",
     "mongodb": "^6.19.0",
     "mongoose": "^8.18.1",

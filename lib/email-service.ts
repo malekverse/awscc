@@ -12,6 +12,15 @@ interface OCTeamFormValues {
   institute: string;
 }
 
+// Define WelcomeEmailData interface for admin panel
+interface WelcomeEmailData {
+  to: string;
+  memberName: string;
+  email: string;
+  temporaryPassword: string;
+  dashboardUrl: string;
+}
+
 // Email configuration
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -95,6 +104,7 @@ const createHtmlEmailContent = (userData: FormValues) => {
         }
         .benefits {
           background-color: #f9f5ff;
+          color: black;
           padding: 15px;
           border-radius: 5px;
           margin: 15px 0;
@@ -273,12 +283,12 @@ const createOCTeamHtmlEmailContent = (userData: OCTeamFormValues) => {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <img src="https://awscc.tn/awscc-logo.png" alt="AWS Cloud Club Logo" class="logo">
           <h1>Welcome to the OC Team for ATNC!</h1>
         </div>
         <div class="content">
           <h2>Hello ${userData.fullName},</h2>
-          <p>We are glad to have you with us in the OC team for the AWS National Tunisia Camp (ATNC) event!</p>
+          <p>We are glad to have you with us in the OC team for the AWS TUNISIAN NATIONAL CAMP (ATNC) event!</p>
           
           <p>Your registration for the ${userData.department} department has been successfully processed.</p>
           
@@ -691,5 +701,222 @@ export const sendOCTeamWelcomeEmail = async (userData: OCTeamFormValues) => {
     console.error('Error sending OC Team welcome email:', error);
     // Don't throw error to prevent blocking form submission
     return false;
+  }
+};
+
+// Generate member welcome email HTML template
+const generateMemberWelcomeEmailHTML = (data: WelcomeEmailData): string => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Welcome to AWSCC</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+        }
+        .header {
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          padding: 30px;
+          text-align: center;
+          border-radius: 10px 10px 0 0;
+        }
+        .content {
+          background: #f9f9f9;
+          padding: 30px;
+          border-radius: 0 0 10px 10px;
+        }
+        .credentials {
+          background: white;
+          padding: 20px;
+          border-radius: 8px;
+          border-left: 4px solid #667eea;
+          margin: 20px 0;
+        }
+        .button {
+          display: inline-block;
+          background: #667eea;
+          color: white;
+          padding: 12px 30px;
+          text-decoration: none;
+          border-radius: 5px;
+          margin: 20px 0;
+        }
+        .footer {
+          text-align: center;
+          margin-top: 30px;
+          padding-top: 20px;
+          border-top: 1px solid #ddd;
+          color: #666;
+          font-size: 14px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>Welcome to AWSCC!</h1>
+        <p>Your membership has been activated</p>
+      </div>
+      
+      <div class="content">
+        <h2>Hello ${data.memberName},</h2>
+        
+        <p>Congratulations! Your payment has been confirmed and your AWSCC membership is now active.</p>
+        
+        <p>You now have access to our exclusive member dashboard where you can:</p>
+        <ul>
+          <li>Access member-only resources</li>
+          <li>Connect with other AWS professionals</li>
+          <li>Stay updated with the latest AWS news and events</li>
+          <li>Participate in exclusive workshops and training sessions</li>
+        </ul>
+        
+        <div class="credentials">
+          <h3>Your Login Credentials:</h3>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Temporary Password:</strong> <code>${data.temporaryPassword}</code></p>
+          <p><em>Please change your password after your first login for security.</em></p>
+        </div>
+        
+        <div style="text-align: center;">
+          <a href="${data.dashboardUrl}" class="button">Access Your Dashboard</a>
+        </div>
+        
+        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+        
+        <p>Welcome to the AWSCC community!</p>
+        
+        <p>Best regards,<br>
+        The AWSCC Team</p>
+      </div>
+      
+      <div class="footer">
+        <p>This email was sent to ${data.email} because your AWSCC membership was activated.</p>
+        <p>© 2024 AWS Cloud Club. All rights reserved.</p>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+// Generate member welcome email text template
+const generateMemberWelcomeEmailText = (data: WelcomeEmailData): string => {
+  return `
+Welcome to AWSCC!
+
+Hello ${data.memberName},
+
+Congratulations! Your payment has been confirmed and your AWSCC membership is now active.
+
+You now have access to our exclusive member dashboard where you can:
+- Access member-only resources
+- Connect with other AWS professionals
+- Stay updated with the latest AWS news and events
+- Participate in exclusive workshops and training sessions
+
+Your Login Credentials:
+Email: ${data.email}
+Temporary Password: ${data.temporaryPassword}
+
+Please change your password after your first login for security.
+
+Access your dashboard at: ${data.dashboardUrl}
+
+If you have any questions or need assistance, please don't hesitate to contact our support team.
+
+Welcome to the AWSCC community!
+
+Best regards,
+The AWSCC Team
+
+---
+This email was sent to ${data.email} because your AWSCC membership was activated.
+© 2024 AWS Cloud Club. All rights reserved.
+  `;
+};
+
+// Send member welcome email with login credentials
+export const sendMemberWelcomeEmail = async (data: WelcomeEmailData): Promise<void> => {
+  try {
+    const mailOptions = {
+      from: `"AWSCC" <${process.env.EMAIL_USER}>`,
+      to: data.to,
+      subject: 'Welcome to AWSCC - Your Membership is Active!',
+      text: generateMemberWelcomeEmailText(data),
+      html: generateMemberWelcomeEmailHTML(data)
+    };
+    
+    const result = await transporter.sendMail(mailOptions);
+    console.log('Member welcome email sent successfully:', result.messageId);
+    
+  } catch (error) {
+    console.error('Failed to send member welcome email:', error);
+    throw new Error('Failed to send member welcome email');
+  }
+};
+
+// Send password reset email
+export const sendPasswordResetEmail = async (email: string, resetToken: string): Promise<void> => {
+  try {
+    const resetUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`;
+    
+    const mailOptions = {
+      from: `"AWSCC" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: 'Password Reset Request - AWSCC',
+      text: `
+Password Reset Request
+
+You have requested to reset your password for your AWSCC account.
+
+Click the following link to reset your password:
+${resetUrl}
+
+This link will expire in 1 hour.
+
+If you did not request this password reset, please ignore this email.
+
+Best regards,
+The AWSCC Team
+      `,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <h2>Password Reset Request</h2>
+            <p>You have requested to reset your password for your AWSCC account.</p>
+            <p>Click the button below to reset your password:</p>
+            <p><a href="${resetUrl}" class="button">Reset Password</a></p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you did not request this password reset, please ignore this email.</p>
+            <p>Best regards,<br>The AWSCC Team</p>
+          </div>
+        </body>
+        </html>
+      `
+    };
+    
+    const result = await transporter.sendMail(mailOptions);
+    console.log('Password reset email sent successfully:', result.messageId);
+    
+  } catch (error) {
+    console.error('Failed to send password reset email:', error);
+    throw new Error('Failed to send password reset email');
   }
 };
