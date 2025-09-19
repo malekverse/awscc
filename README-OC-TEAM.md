@@ -39,18 +39,6 @@ interface IOCTeamMember {
   institute: string;
   cvFileName?: string;
   photoFileName: string;
-  submissionDate: Date;
-  paid: boolean; // Default: false
-}
-```
-
-### Google Sheets
-
-Participant data is also stored in a Google Sheet with the following columns:
-
-- Submission Date
-- Full Name
-- Email
 - Phone
 - Department
 - Institute/City
@@ -66,8 +54,8 @@ Uploaded files (CV and photos) are stored in the `/public/uploads/atnc-oc-team/`
 - Timestamp
 - Original file extension
 
-Example: `cv_user_example_com_1703123456789.pdf`
-
+- CV File
+- Photo File
 ## API Endpoint
 
 Form submissions are processed by the `/api/submit-oc-form` API endpoint, which:

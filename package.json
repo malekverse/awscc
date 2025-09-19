@@ -41,6 +41,7 @@
     "@sveltejs/kit": "latest",
     "@types/nodemailer": "^7.0.1",
     "@vercel/analytics": "latest",
+    "@vercel/blob": "^2.0.0",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

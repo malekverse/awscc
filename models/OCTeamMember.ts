@@ -7,8 +7,6 @@ export interface IOCTeamMember extends Document {
   phone: string;
   department: 'Sponsoring' | 'Media' | 'Logistics';
   institute: string;
-  cvFileName?: string;
-  photoFileName: string;
   submissionDate: Date;
   paid: boolean;
 }
@@ -25,8 +23,6 @@ const OCTeamMemberSchema: Schema = new Schema(
       enum: ['Sponsoring', 'Media', 'Logistics']
     },
     institute: { type: String, required: true },
-    cvFileName: { type: String, required: false },
-    photoFileName: { type: String, required: true },
     paid: { type: Boolean, default: false },
     submissionDate: { type: Date, default: Date.now }
   },
