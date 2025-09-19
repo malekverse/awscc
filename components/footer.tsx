@@ -78,7 +78,7 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-blue-200" />
-                <span className="text-blue-100 text-sm">awscloudclubisims@gmail.com</span>
+                <span className="text-blue-100 text-sm">hello@awscc.tn</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-blue-200" />

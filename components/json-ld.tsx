@@ -37,7 +37,7 @@ export default function JsonLd() {
       "@type": "ContactPoint",
       telephone: "+216-94-181-481",
       contactType: "student support",
-      email: "awscloudclubisims@gmail.com",
+      email: "hello@awscc.tn",
       availableLanguage: ["English", "French"]
     },
     foundingDate: "2023",
