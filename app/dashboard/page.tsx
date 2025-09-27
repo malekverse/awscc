@@ -91,11 +91,45 @@ interface CheatSheet {
   fileSize: string;
 }
 
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  location: string;
+  type: 'workshop' | 'seminar' | 'networking' | 'certification';
+  capacity?: number;
+  registeredCount: number;
+  availableSpots?: number;
+  totalSpots?: number;
+  isRegistered: boolean;
+  registrationStatus?: string;
+  status: 'available' | 'full' | 'registration_closed' | 'completed';
+  instructor?: string;
+  prerequisites?: string[];
+  difficulty?: string;
+  price?: number;
+  currency?: string;
+  imageUrl?: string;
+  isVirtual?: boolean;
+  virtualLink?: string;
+  registrationDeadline?: string;
+  certificateOffered?: boolean;
+  agenda?: string[];
+  materials?: string[];
+  tags?: string[];
+}
+
 export default function MemberDashboard() {
   const [member, setMember] = useState<MemberInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('overview');
+  const [events, setEvents] = useState<Event[]>([]);
+  const [reservationLoading, setReservationLoading] = useState<string | null>(null);
+  const [eventsLoading, setEventsLoading] = useState(true);
+  const [eventsError, setEventsError] = useState<string | null>(null);
    
   // Mock data for demonstration - in real app, this would come from API
   const progressData: ProgressData = {
@@ -225,8 +259,77 @@ export default function MemberDashboard() {
       fileSize: '1.2 MB'
     }
   ];
+
+  // Fetch events from API
+  const fetchEvents = async () => {
+    try {
+      setEventsLoading(true);
+      setEventsError(null);
+      
+      const response = await fetch('/api/events?upcoming=true', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch events');
+      }
+      
+      const result = await response.json();
+      if (result.success) {
+        setEvents(result.data);
+      } else {
+        throw new Error(result.error || 'Failed to fetch events');
+      }
+    } catch (error) {
+      console.error('Error fetching events:', error);
+      setEventsError(error instanceof Error ? error.message : 'Failed to fetch events');
+    } finally {
+      setEventsLoading(false);
+    }
+  };
    
   const router = useRouter();
+
+  // Event reservation handler
+  const handleEventReservation = async (eventId: string) => {
+    setReservationLoading(eventId);
+    
+    try {
+      const event = events.find(e => e.id === eventId);
+      if (!event) throw new Error('Event not found');
+      
+      const method = event.isRegistered ? 'DELETE' : 'POST';
+      const response = await fetch(`/api/events/${eventId}/register`, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || `Failed to ${event.isRegistered ? 'cancel registration' : 'register'} for event`);
+      }
+      
+      // Refresh events data to get updated registration status
+      await fetchEvents();
+      
+      // Show success message (you can implement toast notifications here)
+      console.log(result.message);
+      
+    } catch (error) {
+      console.error('Error updating event registration:', error);
+      // Show error message (you can implement toast notifications here)
+      alert(error instanceof Error ? error.message : 'Failed to update event registration');
+    } finally {
+      setReservationLoading(null);
+    }
+  };
 
   // Check authentication and fetch member data
   useEffect(() => {
@@ -244,6 +347,8 @@ export default function MemberDashboard() {
         if (response.ok) {
           const data = await response.json();
           setMember(data.member);
+          // Fetch real events data
+      fetchEvents();
         } else {
           setError('Failed to load dashboard');
         }
@@ -411,6 +516,7 @@ export default function MemberDashboard() {
               {[
                 { id: 'overview', label: 'Overview', icon: BarChart3 },
                 { id: 'progress', label: 'Progress', icon: TrendingUp },
+                { id: 'events', label: 'Events', icon: Calendar },
                 { id: 'certificates', label: 'Certificates', icon: Trophy },
                 { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
                 { id: 'videos', label: 'Video Courses', icon: Play },
@@ -621,6 +727,207 @@ export default function MemberDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'events' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h3 className="text-2xl font-bold text-foreground">Upcoming Events</h3>
+              <div className="flex items-center space-x-2">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">
+                  {events.filter(e => e.status === 'available' || e.status === 'full').length} upcoming events
+                </span>
+              </div>
+            </div>
+            
+            {/* Event Filters */}
+            <div className="flex flex-wrap gap-2">
+              {['all', 'workshop', 'seminar', 'networking', 'certification'].map((filter) => (
+                <button
+                  key={filter}
+                  className="px-3 py-1 rounded-full text-sm font-medium bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors capitalize"
+                >
+                  {filter === 'all' ? 'All Events' : filter}
+                </button>
+              ))}
+            </div>
+
+            {/* Loading State */}
+            {eventsLoading && (
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-2 text-gray-600">Loading events...</span>
+              </div>
+            )}
+
+            {/* Error State */}
+            {eventsError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-center">
+                  <svg className="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-red-800">{eventsError}</p>
+                </div>
+                <button 
+                  onClick={fetchEvents}
+                  className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
+
+            {/* Events Grid */}
+            {!eventsLoading && !eventsError && (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {events.map((event) => {
+                const isAvailable = event.status === 'available';
+                const isFull = event.status === 'full' || (event.totalSpots && event.registeredCount >= event.totalSpots);
+                const canRegister = isAvailable && !isFull;
+                
+                return (
+                  <div key={event.id} className={`bg-card rounded-lg shadow-sm border border-border p-6 ${
+                    event.status === 'completed' ? 'opacity-75' : ''
+                  }`}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center">
+                        <div className={`p-2 rounded-lg mr-3 ${
+                          event.type === 'workshop' ? 'bg-blue-100 text-blue-600' :
+                          event.type === 'seminar' ? 'bg-green-100 text-green-600' :
+                          event.type === 'networking' ? 'bg-purple-100 text-purple-600' :
+                          'bg-orange-100 text-orange-600'
+                        }`}>
+                          {event.type === 'workshop' && <Users className="h-5 w-5" />}
+                          {event.type === 'seminar' && <BookOpen className="h-5 w-5" />}
+                          {event.type === 'networking' && <Users className="h-5 w-5" />}
+                          {event.type === 'certification' && <Award className="h-5 w-5" />}
+                        </div>
+                        <div>
+                          <h4 className="text-lg font-semibold text-foreground">{event.title}</h4>
+                          <p className="text-sm text-muted-foreground capitalize">{event.type}</p>
+                        </div>
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        event.status === 'available' ? 'bg-green-100 text-green-700' :
+                        event.status === 'full' ? 'bg-red-100 text-red-700' :
+                        event.status === 'registration_closed' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-gray-100 text-gray-700'
+                      }`}>
+                        {event.status === 'available' ? 'Available' :
+                         event.status === 'full' ? 'Full' :
+                         event.status === 'registration_closed' ? 'Registration Closed' :
+                         'Completed'}
+                      </span>
+                    </div>
+                    
+                    <p className="text-sm text-muted-foreground mb-4">{event.description}</p>
+                    
+                    {/* Event Details */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        {new Date(event.date).toLocaleDateString()} at {event.time}
+                      </div>
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Building className="h-4 w-4 mr-2" />
+                        {event.location}
+                      </div>
+                      {event.instructor && (
+                        <div className="flex items-center text-sm text-muted-foreground">
+                          <User className="h-4 w-4 mr-2" />
+                          Instructor: {event.instructor}
+                        </div>
+                      )}
+                      <div className="flex items-center text-sm text-muted-foreground">
+                        <Users className="h-4 w-4 mr-2" />
+                        {event.registeredCount}{event.totalSpots ? `/${event.totalSpots}` : ''} registered
+                        {event.availableSpots !== undefined && event.availableSpots !== null && (
+                          <span className="text-green-600 ml-1">({event.availableSpots} spots left)</span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Prerequisites */}
+                    {event.prerequisites && event.prerequisites.length > 0 && (
+                      <div className="mb-4">
+                        <p className="text-sm font-medium text-foreground mb-2">Prerequisites:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {event.prerequisites.map((prereq, index) => (
+                            <span key={index} className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded">
+                              {prereq}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Registration Progress */}
+                    {event.totalSpots && (
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-muted-foreground">Registration</span>
+                          <span className="text-foreground">{event.registeredCount}/{event.totalSpots}</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div 
+                            className={`h-2 rounded-full transition-all duration-300 ${
+                              isFull ? 'bg-red-500' : 'bg-green-500'
+                            }`}
+                            style={{ width: `${(event.registeredCount / event.totalSpots) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Action Button */}
+                    {isUpcoming && (
+                      <button
+                        onClick={() => handleEventReservation(event.id)}
+                        disabled={!canRegister || reservationLoading === event.id}
+                        className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+                          event.isRegistered
+                            ? 'bg-red-500 text-white hover:bg-red-600'
+                            : canRegister
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'bg-muted text-muted-foreground cursor-not-allowed'
+                        }`}
+                      >
+                        {reservationLoading === event.id ? (
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Processing...
+                          </div>
+                        ) : event.isRegistered ? (
+                          'Cancel Registration'
+                        ) : isFull ? (
+                          'Event Full'
+                        ) : (
+                          'Register Now'
+                        )}
+                      </button>
+                    )}
+                    
+                    {event.status === 'completed' && (
+                      <div className="w-full py-2 px-4 rounded-md bg-muted text-muted-foreground text-center font-medium">
+                        Event Completed
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              
+              {events.length === 0 && (
+                <div className="text-center py-12">
+                  <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">No Events Available</h3>
+                  <p className="text-muted-foreground">Check back later for upcoming events and workshops.</p>
+                </div>
+              )}
+            </div>
+            )}
           </div>
         )}
 
