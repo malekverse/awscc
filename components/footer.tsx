@@ -13,7 +13,7 @@ export function Footer() {
               <Image src="/images/awscc-logo.jpg" alt="AWS Cloud Clubs Logo" width={40} height={40} className="rounded-lg" />
               <div>
                 <h3 className="text-xl font-bold text-foreground">AWS Cloud Club ISIMS</h3>
-        <p className="text-muted-foreground text-sm">Club Scientifique</p>
+        <p className="text-foreground text-sm">Club Scientifique</p>
               </div>
             </div>
             <p className="text-foreground mb-6 leading-relaxed">
@@ -21,16 +21,16 @@ export function Footer() {
                artificial intelligence, and data science, leveraging the full potential of AWS technologies.
             </p>
             <div className="flex space-x-4">
-              <Link href="https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136" target="_blank" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+              <Link href="https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136" target="_blank" className="text-foreground hover:text-primary transition-colors duration-200">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="https://www.instagram.com/awscc_isims" target="_blank" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+              <Link href="https://www.instagram.com/awscc_isims" target="_blank" className="text-foreground hover:text-primary transition-colors duration-200">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="https://www.linkedin.com/company/102401226/" target="_blank" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+              <Link href="https://www.linkedin.com/company/102401226/" target="_blank" className="text-foreground hover:text-primary transition-colors duration-200">
                 <Linkedin className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+              <Link href="#" className="text-foreground hover:text-primary transition-colors duration-200">
                 <Youtube className="h-5 w-5" />
               </Link>
             </div>
@@ -41,27 +41,27 @@ export function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-foreground">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/" className="text-foreground hover:text-primary transition-colors duration-200">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/#about" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#about" className="text-foreground hover:text-primary transition-colors duration-200">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/#projets" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#projets" className="text-foreground hover:text-primary transition-colors duration-200">
                   Projects & Activities
                 </Link>
               </li>
               <li>
-                <Link href="/#evenements" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#evenements" className="text-foreground hover:text-primary transition-colors duration-200">
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/#contact" className="text-muted-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#contact" className="text-foreground hover:text-primary transition-colors duration-200">
                   Contact
                 </Link>
               </li>
@@ -73,15 +73,15 @@ export function Footer() {
             <h4 className="text-lg font-semibold mb-4 text-foreground">Contact</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <MapPin className="h-4 w-4 text-foreground" />
           <span className="text-foreground text-sm">ISIMS, Al Ons, Sfax</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-muted-foreground" />
+                <Mail className="h-4 w-4 text-foreground" />
           <span className="text-foreground text-sm">awscloudclubisims@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-muted-foreground" />
+                <Phone className="h-4 w-4 text-foreground" />
           <span className="text-foreground text-sm">(+216) 94 181 481</span>
               </div>
             </div>
@@ -89,12 +89,12 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p className="text-muted-foreground text-sm">© 2025 AWS Cloud Club ISIMS. All rights reserved.</p>
+        <p className="text-foreground text-sm">© 2025 AWS Cloud Club ISIMS. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/politique-de-confidentialite" className="text-muted-foreground hover:text-primary text-sm transition-colors duration-200">
+            <Link href="/politique-de-confidentialite" className="text-foreground hover:text-primary text-sm transition-colors duration-200">
               Privacy Policy
             </Link>
-            <Link href="/conditions-utilisation" className="text-muted-foreground hover:text-primary text-sm transition-colors duration-200">
+            <Link href="/conditions-utilisation" className="text-foreground hover:text-primary text-sm transition-colors duration-200">
               Terms of Use
             </Link>
           </div>

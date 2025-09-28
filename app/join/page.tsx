@@ -25,17 +25,12 @@ const formSchema = z.object({
     .refine(val => !val || /^\+?[0-9\s()]*$/.test(val), {
       message: "Phone number can only contain numbers, spaces, and + or () characters"
     }),
-  dob: z.string().min(1, { message: "Date of birth is required" }),
   role: z.string().min(1, { message: "Current role is required" }),
   organization: z.string().optional(),
-  linkedin: z.string().optional(),
+  facebook: z.string().optional(),
   experience: z.enum(["beginner", "intermediate", "advanced"]),
-  certifications: z.string().optional(),
-  otherPlatforms: z.string().optional(),
-  whyJoin: z.string().min(10, { message: "Please provide a reason for joining (minimum 10 characters)" }),
   interests: z.array(z.string()).min(1, { message: "Please select at least one area of interest" }),
   otherInterest: z.string().optional(),
-  contribution: z.string().min(10, { message: "Please describe how you'd like to contribute (minimum 10 characters)" }),
   meetingPreference: z.enum(["weekday", "weekend", "flexible"]),
   heardFrom: z.enum(["wordOfMouth", "socialMedia", "emailNewsletter", "website", "other"]),
   otherSourceText: z.string().optional(),
@@ -55,17 +50,12 @@ export default function JoinPage() {
       fullName: "",
       email: "",
       phone: "",
-      dob: "",
       role: "",
       organization: "",
-      linkedin: "",
+      facebook: "",
       experience: "beginner",
-      certifications: "",
-      otherPlatforms: "",
-      whyJoin: "",
       interests: [],
       otherInterest: "",
-      contribution: "",
       meetingPreference: "flexible",
       heardFrom: "wordOfMouth",
       otherSourceText: "",
@@ -290,21 +280,6 @@ export default function JoinPage() {
                             </FormItem>
                           )}
                         />
-                        
-                        <FormField
-                          control={form.control}
-                          name="dob"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel>Date of Birth <span className="text-red-500">*</span></FormLabel>
-                              <FormControl>
-                                <Input type="date" {...field} />
-                              </FormControl>
-                              <FormDescription>To confirm age eligibility (if applicable).</FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
                       </div>
                     </div>
 
@@ -345,14 +320,14 @@ export default function JoinPage() {
                         
                         <FormField
                           control={form.control}
-                          name="linkedin"
+                          name="facebook"
                           render={({ field }) => (
                             <FormItem className="space-y-2">
-                              <FormLabel>LinkedIn Profile (Optional)</FormLabel>
+                              <FormLabel>Facebook Profile (Optional)</FormLabel>
                               <FormControl>
-                                <Input type="url" placeholder="https://linkedin.com/in/your-profile" {...field} />
+                                <Input type="url" placeholder="https://facebook.com/your-profile" {...field} />
                               </FormControl>
-                              <FormDescription>Optional: Share your LinkedIn for networking.</FormDescription>
+                              <FormDescription>Optional: Share your Facebook for networking.</FormDescription>
                               <FormMessage />
                             </FormItem>
                           )}
@@ -390,34 +365,6 @@ export default function JoinPage() {
                             </FormItem>
                           )}
                         />
-                        
-                        <FormField
-                          control={form.control}
-                          name="certifications"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel>AWS Certifications (if applicable)</FormLabel>
-                              <FormControl>
-                                <Input placeholder="List any AWS certifications you currently hold" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        
-                        <FormField
-                          control={form.control}
-                          name="otherPlatforms"
-                          render={({ field }) => (
-                            <FormItem className="space-y-2">
-                              <FormLabel>Experience with other Cloud platforms (Optional)</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Azure, Google Cloud, etc." {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
                       </div>
                     </div>
 
@@ -427,24 +374,6 @@ export default function JoinPage() {
                     AWS Cloud Club Engagement
                   </h3>
                   <div className="grid gap-6 md:grid-cols-1">
-                    <FormField
-                      control={form.control}
-                      name="whyJoin"
-                      render={({ field }) => (
-                        <FormItem className="space-y-2">
-                          <FormLabel>Why do you want to join the AWS Cloud Club? <span className="text-red-500">*</span></FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="What interests you about cloud technologies and AWS in particular?" 
-                              className="min-h-[100px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
                     <FormField
                       control={form.control}
                       name="interests"
@@ -551,24 +480,6 @@ export default function JoinPage() {
                         )}
                       />
                     )}
-                    
-                    <FormField
-                      control={form.control}
-                      name="contribution"
-                      render={({ field }) => (
-                        <FormItem className="space-y-2">
-                          <FormLabel>How would you like to contribute to the club? <span className="text-red-500">*</span></FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="E.g., presenting workshops, organizing events, creating content, etc." 
-                              className="min-h-[100px]"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                     
                     <FormField
                       control={form.control}

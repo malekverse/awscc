@@ -27,25 +27,18 @@ const initializeGoogleSheets = async () => {
     
     // Define the headers we want to use
     const headers = [
-      'Submission Date',
+      'Timestamp',
       'Full Name',
       'Email',
       'Phone',
-      'Date of Birth',
-      'Current Role',
+      'Role',
       'Organization',
-      'LinkedIn',
-      'Experience Level',
-      'AWS Certifications',
-      'Other Cloud Platforms',
-      'Why Join',
-      'Areas of Interest',
-      'Other Interests',
-      'Contribution',
+      'Facebook',
+      'Experience',
+      'Interests',
       'Meeting Preference',
       'Heard From',
-      'Other Source',
-      'Paid'
+      'Agreed to Terms'
     ];
     
     // Check if headers exist by getting the first row
@@ -81,21 +74,14 @@ export async function POST(request: NextRequest) {
       fullName: data.fullName,
       email: data.email,
       phone: data.phone || '',
-      dob: data.dob,
       role: data.role,
       organization: data.organization || '',
-      linkedin: data.linkedin || '',
+      facebook: data.facebook || '',
       experience: data.experience,
-      certifications: data.certifications || '',
-      otherPlatforms: data.otherPlatforms || '',
-      whyJoin: data.whyJoin,
       interests: Array.isArray(data.interests) ? data.interests : [data.interests],
       interestsString: interestsString,
-      otherInterest: data.otherInterest || '',
-      contribution: data.contribution,
       meetingPreference: data.meetingPreference,
       heardFrom: data.heardFrom,
-      otherSourceText: data.otherSourceText || '',
       submissionDate: new Date().toISOString(),
       agreement: data.agreement,
       paid: false,
@@ -110,23 +96,15 @@ export async function POST(request: NextRequest) {
         fullName: formattedData.fullName,
         email: formattedData.email,
         phone: formattedData.phone,
-        dob: formattedData.dob,
         role: formattedData.role,
         organization: formattedData.organization,
-        linkedin: formattedData.linkedin,
+        facebook: formattedData.facebook,
         experience: formattedData.experience,
-        certifications: formattedData.certifications,
-        otherPlatforms: formattedData.otherPlatforms,
-        whyJoin: formattedData.whyJoin,
         interests: formattedData.interests,
-        otherInterest: formattedData.otherInterest,
-        contribution: formattedData.contribution,
         meetingPreference: formattedData.meetingPreference,
         heardFrom: formattedData.heardFrom,
-        otherSourceText: formattedData.otherSourceText,
-        agreement: formattedData.agreement,
-        paid: formattedData.paid,
-        submissionDate: new Date(formattedData.submissionDate)
+        agreedToTerms: formattedData.agreement,
+        joinedAt: new Date(formattedData.submissionDate)
       });
       
       // Save the member to MongoDB
@@ -150,25 +128,18 @@ export async function POST(request: NextRequest) {
         
         // Add the row to the sheet
         await sheet.addRow({
-          'Submission Date': formattedData.submissionDate,
+          'Timestamp': formattedData.submissionDate,
           'Full Name': formattedData.fullName,
           'Email': formattedData.email,
           'Phone': formattedData.phone,
-          'Date of Birth': formattedData.dob,
-          'Current Role': formattedData.role,
+          'Role': formattedData.role,
           'Organization': formattedData.organization,
-          'LinkedIn': formattedData.linkedin,
-          'Experience Level': formattedData.experience,
-          'AWS Certifications': formattedData.certifications,
-          'Other Cloud Platforms': formattedData.otherPlatforms,
-          'Why Join': formattedData.whyJoin,
-          'Areas of Interest': formattedData.interestsString,
-          'Other Interests': formattedData.otherInterest,
-          'Contribution': formattedData.contribution,
+          'Facebook': formattedData.facebook,
+          'Experience': formattedData.experience,
+          'Interests': formattedData.interestsString,
           'Meeting Preference': formattedData.meetingPreference,
           'Heard From': formattedData.heardFrom,
-          'Other Source': formattedData.otherSourceText,
-          'Paid': formattedData.paid ? 'Yes' : 'No'
+          'Agreed to Terms': formattedData.agreement ? 'Yes' : 'No'
         });
         
         console.log('Form data successfully added to Google Sheet');
