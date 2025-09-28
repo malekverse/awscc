@@ -708,99 +708,177 @@ export const sendOCTeamWelcomeEmail = async (userData: OCTeamFormValues) => {
 const generateMemberWelcomeEmailHTML = (data: WelcomeEmailData): string => {
   return `
     <!DOCTYPE html>
-    <html lang="en">
+    <html>
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Welcome to AWSCC</title>
+      <title>Welcome to AWSCC - Membership Activated</title>
       <style>
+        /* Base styles */
         body {
-          font-family: Arial, sans-serif;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
           line-height: 1.6;
           color: #333;
+          margin: 0;
+          padding: 0;
+          background-color: #f9f9f9;
+        }
+        .container {
           max-width: 600px;
           margin: 0 auto;
           padding: 20px;
+          background-color: #ffffff;
         }
         .header {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          padding: 30px;
+          background: linear-gradient(to right, #9B6DFF, #7C4DFF);
+          padding: 20px;
           text-align: center;
-          border-radius: 10px 10px 0 0;
+          color: white;
+          border-radius: 8px 8px 0 0;
         }
         .content {
-          background: #f9f9f9;
-          padding: 30px;
-          border-radius: 0 0 10px 10px;
-        }
-        .credentials {
-          background: white;
           padding: 20px;
-          border-radius: 8px;
-          border-left: 4px solid #667eea;
-          margin: 20px 0;
+          border-left: 1px solid #E9E1FF;
+          border-right: 1px solid #E9E1FF;
+        }
+        .footer {
+          background-color: #f5f5f5;
+          padding: 15px 20px;
+          text-align: center;
+          font-size: 14px;
+          color: #666;
+          border-radius: 0 0 8px 8px;
+          border: 1px solid #E9E1FF;
+          border-top: none;
+        }
+        h1 {
+          color: #ffffff;
+          margin: 0;
+          font-size: 24px;
+        }
+        h2 {
+          color: #7C4DFF;
+          margin-top: 0;
+        }
+        .logo {
+          max-width: 150px;
+          margin-bottom: 10px;
         }
         .button {
           display: inline-block;
-          background: #667eea;
+          background: linear-gradient(to right, #9B6DFF, #7C4DFF);
           color: white;
-          padding: 12px 30px;
           text-decoration: none;
+          padding: 12px 30px;
           border-radius: 5px;
           margin: 20px 0;
+          font-weight: bold;
+          font-size: 16px;
         }
-        .footer {
+        .credentials {
+          background-color: #f9f5ff;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 15px 0;
+          border-left: 4px solid #7C4DFF;
+        }
+        .messenger-section {
+          background: linear-gradient(135deg, #00B2FF 0%, #006AFF 50%, #0084FF 100%);
+          padding: 20px;
+          border-radius: 8px;
+          margin: 20px 0;
+          color: white;
           text-align: center;
-          margin-top: 30px;
-          padding-top: 20px;
-          border-top: 1px solid #ddd;
-          color: #666;
-          font-size: 14px;
+        }
+        .messenger-button {
+          display: inline-block;
+          background: linear-gradient(135deg, #0084FF 0%, #00B2FF 100%);
+          color: white;
+          text-decoration: none;
+          padding: 12px 25px;
+          border-radius: 25px;
+          font-weight: bold;
+          margin: 15px 0;
+          box-shadow: 0 4px 15px rgba(0, 132, 255, 0.3);
+          transition: transform 0.2s ease;
+        }
+        .messenger-button:hover {
+          transform: translateY(-2px);
+        }
+        .contact {
+          margin-top: 20px;
+          padding-top: 15px;
+          border-top: 1px solid #eee;
+        }
+        @media only screen and (max-width: 600px) {
+          .container {
+            width: 100%;
+          }
+          .header {
+            padding: 15px;
+          }
+          h1 {
+            font-size: 20px;
+          }
         }
       </style>
     </head>
     <body>
-      <div class="header">
-        <h1>Welcome to AWSCC!</h1>
-        <p>Your membership has been activated</p>
-      </div>
-      
-      <div class="content">
-        <h2>Hello ${data.memberName},</h2>
-        
-        <p>Congratulations! Your payment has been confirmed and your AWSCC membership is now active.</p>
-        
-        <p>You now have access to our exclusive member dashboard where you can:</p>
-        <ul>
-          <li>Access member-only resources</li>
-          <li>Connect with other AWS professionals</li>
-          <li>Stay updated with the latest AWS news and events</li>
-          <li>Participate in exclusive workshops and training sessions</li>
-        </ul>
-        
-        <div class="credentials">
-          <h3>Your Login Credentials:</h3>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Temporary Password:</strong> <code>${data.temporaryPassword}</code></p>
-          <p><em>Please change your password after your first login for security.</em></p>
+      <div class="container">
+        <div class="header">
+          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <h1>Welcome to AWSCC!</h1>
+          <p style="color: white;">Your membership has been activated</p>
         </div>
-        
-        <div style="text-align: center;">
-          <a href="${data.dashboardUrl}" class="button">Access Your Dashboard</a>
+        <div class="content">
+          <h2>Hello ${data.memberName},</h2>
+          
+          <p>Congratulations! Your payment has been confirmed and your AWSCC membership is now active.</p>
+          
+          <p>You now have access to our exclusive member dashboard where you can:</p>
+          <ul>
+            <li>Access member-only resources and documentation</li>
+            <li>Connect with other AWS professionals and enthusiasts</li>
+            <li>Stay updated with the latest AWS news and events</li>
+            <li>Participate in exclusive workshops and training sessions</li>
+            <li>Access certification preparation materials</li>
+          </ul>
+          
+          <div class="credentials">
+            <h3>Your Login Credentials:</h3>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Temporary Password:</strong> <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: monospace;">${data.temporaryPassword}</code></p>
+            <p><em>Please change your password after your first login for security.</em></p>
+          </div>
+          
+          <div class="messenger-section">
+            <h3 style="margin-top: 0; color: white;">💬 Join Our Exclusive Messenger Group!</h3>
+            <p style="margin: 10px 0;">Connect with fellow AWSCC members, share knowledge, and stay updated with the latest discussions in our private Messenger group.</p>
+            <div style="margin: 15px 0;">
+              <a href="https://m.me/j/AbayMZ1I7Q--fLaO/" style="color: white; text-decoration: none;" class="messenger-button">Join Messenger Group</a>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 0; opacity: 0.9; color: white;"><em>This is an exclusive group for paid members only.</em></p>
+          </div>
+          
+          <p style="text-align: center;">
+            <a href="${data.dashboardUrl}" style="color: white; text-decoration: none;" class="button">Access Your Dashboard</a>
+          </p>
+          
+          <div class="contact">
+            <p><strong>Need assistance?</strong></p>
+            <p>If you have any questions or need support, please don't hesitate to contact us at:</p>
+            <p>Email: <a href="mailto:awscloudclubisims@gmail.com" style="color: #7C4DFF;">awscloudclubisims@gmail.com</a></p>
+          </div>
+          
+          <p>Welcome to the AWSCC community!</p>
+          
+          <p>Best regards,<br>
+          The AWS Cloud Club ISIMS Team</p>
         </div>
-        
-        <p>If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
-        
-        <p>Welcome to the AWSCC community!</p>
-        
-        <p>Best regards,<br>
-        The AWSCC Team</p>
-      </div>
-      
-      <div class="footer">
-        <p>This email was sent to ${data.email} because your AWSCC membership was activated.</p>
-        <p>© 2024 AWS Cloud Club. All rights reserved.</p>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
+          <p>This email was sent to ${data.email} because your AWSCC membership was activated.</p>
+        </div>
       </div>
     </body>
     </html>
@@ -810,17 +888,18 @@ const generateMemberWelcomeEmailHTML = (data: WelcomeEmailData): string => {
 // Generate member welcome email text template
 const generateMemberWelcomeEmailText = (data: WelcomeEmailData): string => {
   return `
-Welcome to AWSCC!
+AWS Cloud Club ISIMS - Welcome to AWSCC!
 
 Hello ${data.memberName},
 
 Congratulations! Your payment has been confirmed and your AWSCC membership is now active.
 
 You now have access to our exclusive member dashboard where you can:
-- Access member-only resources
-- Connect with other AWS professionals
+- Access member-only resources and documentation
+- Connect with other AWS professionals and enthusiasts
 - Stay updated with the latest AWS news and events
 - Participate in exclusive workshops and training sessions
+- Access certification preparation materials
 
 Your Login Credentials:
 Email: ${data.email}
@@ -828,18 +907,25 @@ Temporary Password: ${data.temporaryPassword}
 
 Please change your password after your first login for security.
 
+💬 JOIN OUR EXCLUSIVE MESSENGER GROUP!
+Connect with fellow AWSCC members, share knowledge, and stay updated with the latest discussions in our private Messenger group.
+
+Messenger Group Link: https://m.me/j/AbayMZ1I7Q--fLaO/
+(This is an exclusive group for paid members only)
+
 Access your dashboard at: ${data.dashboardUrl}
 
-If you have any questions or need assistance, please don't hesitate to contact our support team.
+Need assistance?
+If you have any questions or need support, please don't hesitate to contact us at:
+Email: awscloudclubisims@gmail.com
 
 Welcome to the AWSCC community!
 
 Best regards,
-The AWSCC Team
+The AWS Cloud Club ISIMS Team
 
----
+© ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
 This email was sent to ${data.email} because your AWSCC membership was activated.
-© 2024 AWS Cloud Club. All rights reserved.
   `;
 };
 
@@ -873,39 +959,159 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string):
       to: email,
       subject: 'Password Reset Request - AWSCC',
       text: `
-Password Reset Request
+AWS Cloud Club ISIMS - Password Reset Request
 
-You have requested to reset your password for your AWSCC account.
+Hello,
 
-Click the following link to reset your password:
+You have requested to reset your password for your AWSCC account. We're here to help you regain access to your account.
+
+Please visit the following link to create a new password:
 ${resetUrl}
 
-This link will expire in 1 hour.
+SECURITY NOTICE:
+- This link will expire in 1 hour for your security
+- If you didn't request this reset, please ignore this email
+- Your current password remains unchanged until you create a new one
 
-If you did not request this password reset, please ignore this email.
+Need assistance?
+If you have any questions or need support, please contact us at:
+Email: hello@awscc.tn
 
 Best regards,
-The AWSCC Team
+The AWS Cloud Club ISIMS Team
+
+© ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
+This email was sent because a password reset was requested for your AWSCC account.
       `,
       html: `
         <!DOCTYPE html>
         <html>
         <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Password Reset Request - AWSCC</title>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; }
+            /* Base styles */
+            body {
+              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+              line-height: 1.6;
+              color: #333;
+              margin: 0;
+              padding: 0;
+              background-color: #f9f9f9;
+            }
+            .container {
+              max-width: 600px;
+              margin: 0 auto;
+              padding: 20px;
+              background-color: #ffffff;
+            }
+            .header {
+              background: linear-gradient(to right, #9B6DFF, #7C4DFF);
+              padding: 20px;
+              text-align: center;
+              color: white;
+              border-radius: 8px 8px 0 0;
+            }
+            .content {
+              padding: 20px;
+              border-left: 1px solid #E9E1FF;
+              border-right: 1px solid #E9E1FF;
+            }
+            .footer {
+              background-color: #f5f5f5;
+              padding: 15px 20px;
+              text-align: center;
+              font-size: 14px;
+              color: #666;
+              border-radius: 0 0 8px 8px;
+              border: 1px solid #E9E1FF;
+              border-top: none;
+            }
+            h1 {
+              color: #ffffff;
+              margin: 0;
+              font-size: 24px;
+            }
+            h2 {
+              color: #7C4DFF;
+              margin-top: 0;
+            }
+            .logo {
+              max-width: 150px;
+              margin-bottom: 10px;
+            }
+            .button {
+              display: inline-block;
+              background: linear-gradient(to right, #9B6DFF, #7C4DFF);
+              color: white;
+              text-decoration: none;
+              padding: 12px 30px;
+              border-radius: 5px;
+              margin: 20px 0;
+              font-weight: bold;
+              font-size: 16px;
+            }
+            .security-notice {
+              background-color: #fff3cd;
+              color: #856404;
+              padding: 15px;
+              border-radius: 5px;
+              margin: 15px 0;
+              border-left: 4px solid #ffc107;
+            }
+            .contact {
+              margin-top: 20px;
+              padding-top: 15px;
+              border-top: 1px solid #eee;
+            }
+            @media only screen and (max-width: 600px) {
+              .container {
+                width: 100%;
+              }
+              .header {
+                padding: 15px;
+              }
+              h1 {
+                font-size: 20px;
+              }
+            }
           </style>
         </head>
         <body>
           <div class="container">
-            <h2>Password Reset Request</h2>
-            <p>You have requested to reset your password for your AWSCC account.</p>
-            <p>Click the button below to reset your password:</p>
-            <p><a href="${resetUrl}" class="button">Reset Password</a></p>
-            <p>This link will expire in 1 hour.</p>
-            <p>If you did not request this password reset, please ignore this email.</p>
-            <p>Best regards,<br>The AWSCC Team</p>
+            <div class="header">
+              <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+              <h1>Password Reset Request</h1>
+            </div>
+            <div class="content">
+              <h2>Reset Your Password</h2>
+              <p>You have requested to reset your password for your AWSCC account. We're here to help you regain access to your account.</p>
+              
+              <p>Click the button below to create a new password:</p>
+              <p style="text-align: center;">
+                <a href="${resetUrl}" style="color: white; text-decoration: none;" class="button">Reset Password</a>
+              </p>
+              
+              <div class="security-notice">
+                <strong>⚠️ Security Notice:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>This link will expire in <strong>1 hour</strong> for your security</li>
+                  <li>If you didn't request this reset, please ignore this email</li>
+                  <li>Your current password remains unchanged until you create a new one</li>
+                </ul>
+              </div>
+              
+              <div class="contact">
+                <p><strong>Need assistance?</strong></p>
+                <p>If you have any questions or need support, please don't hesitate to contact us at:</p>
+                <p>Email: <a href="mailto:hello@awscc.tn" style="color: #7C4DFF;">hello@awscc.tn</a></p>
+              </div>
+            </div>
+            <div class="footer">
+              <p>&copy; ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
+              <p>This email was sent because a password reset was requested for your AWSCC account.</p>
+            </div>
           </div>
         </body>
         </html>
