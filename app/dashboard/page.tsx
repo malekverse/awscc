@@ -31,8 +31,13 @@ import {
   BarChart3,
   Trophy,
   Medal,
-  GraduationCap
+  GraduationCap,
+  AlertCircle,
+  RefreshCw,
+  Eye,
+  Loader
 } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 
 interface MemberInfo {
   id: string;
@@ -82,14 +87,7 @@ interface VideoResource {
   videoUrl: string;
 }
 
-interface CheatSheet {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  downloadUrl: string;
-  fileSize: string;
-}
+
 
 interface Event {
   id: string;
@@ -131,134 +129,21 @@ export default function MemberDashboard() {
   const [eventsLoading, setEventsLoading] = useState(true);
   const [eventsError, setEventsError] = useState<string | null>(null);
    
-  // Mock data for demonstration - in real app, this would come from API
-  const progressData: ProgressData = {
-    completedCourses: 8,
-    totalCourses: 15,
-    completedWorkshops: 3,
-    totalWorkshops: 6,
-    eventsAttended: 5,
-    totalEvents: 8,
-    certificatesEarned: 4
-  };
+  // Dynamic data states
+  const [progressData, setProgressData] = useState<ProgressData | null>(null);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
+  const [videoResources, setVideoResources] = useState<VideoResource[]>([]);
+  const [resources, setResources] = useState<any[]>([]);
+  const [resourcesFilters, setResourcesFilters] = useState<any>(null);
+  const [resourcesPagination, setResourcesPagination] = useState<any>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+  const [dataError, setDataError] = useState<string | null>(null);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
+  const [downloadingResource, setDownloadingResource] = useState<string | null>(null);
   
-  const certificates: Certificate[] = [
-    {
-      id: '1',
-      name: 'AWS Cloud Practitioner',
-      description: 'Foundational understanding of AWS Cloud',
-      earnedDate: '2024-01-15',
-      type: 'certification'
-    },
-    {
-      id: '2',
-      name: 'Docker Workshop Completion',
-      description: 'Completed advanced Docker containerization workshop',
-      earnedDate: '2024-02-20',
-      type: 'workshop'
-    },
-    {
-      id: '3',
-      name: 'Kubernetes Challenge Winner',
-      description: 'First place in Kubernetes deployment challenge',
-      earnedDate: '2024-03-10',
-      type: 'challenge'
-    },
-    {
-      id: '4',
-      name: 'DevOps Fundamentals',
-      description: 'Completed comprehensive DevOps course',
-      earnedDate: '2024-03-25',
-      type: 'course'
-    }
-  ];
-  
-  const tutorials: Tutorial[] = [
-    {
-      id: '1',
-      title: 'Getting Started with AWS EC2',
-      description: 'Learn how to launch and manage EC2 instances',
-      category: 'AWS',
-      difficulty: 'beginner',
-      duration: '30 min',
-      url: '#'
-    },
-    {
-      id: '2',
-      title: 'Advanced Docker Networking',
-      description: 'Deep dive into Docker networking concepts',
-      category: 'Docker',
-      difficulty: 'advanced',
-      duration: '45 min',
-      url: '#'
-    },
-    {
-      id: '3',
-      title: 'Kubernetes Pod Management',
-      description: 'Managing pods in Kubernetes clusters',
-      category: 'Kubernetes',
-      difficulty: 'intermediate',
-      duration: '35 min',
-      url: '#'
-    }
-  ];
-  
-  const videoResources: VideoResource[] = [
-    {
-      id: '1',
-      title: 'AWS Lambda Masterclass',
-      description: 'Complete guide to serverless computing with AWS Lambda',
-      difficulty: 'intermediate',
-      duration: '2h 30min',
-      thumbnailUrl: '/placeholder.jpg',
-      videoUrl: '#'
-    },
-    {
-      id: '2',
-      title: 'DevOps Pipeline Setup',
-      description: 'Building CI/CD pipelines from scratch',
-      difficulty: 'advanced',
-      duration: '1h 45min',
-      thumbnailUrl: '/placeholder.jpg',
-      videoUrl: '#'
-    },
-    {
-      id: '3',
-      title: 'Cloud Security Basics',
-      description: 'Essential security practices for cloud environments',
-      difficulty: 'beginner',
-      duration: '1h 15min',
-      thumbnailUrl: '/placeholder.jpg',
-      videoUrl: '#'
-    }
-  ];
-  
-  const cheatSheets: CheatSheet[] = [
-    {
-      id: '1',
-      title: 'AWS CLI Commands Reference',
-      description: 'Essential AWS CLI commands for daily use',
-      category: 'AWS',
-      downloadUrl: '#',
-      fileSize: '2.1 MB'
-    },
-    {
-      id: '2',
-      title: 'Docker Commands Cheat Sheet',
-      description: 'Quick reference for Docker commands',
-      category: 'Docker',
-      downloadUrl: '#',
-      fileSize: '1.8 MB'
-    },
-    {
-      id: '3',
-      title: 'S3 Storage Classes Comparison',
-      description: 'Quick reference for S3 storage classes and pricing',
-      category: 'S3',
-      downloadUrl: '#',
-      fileSize: '1.2 MB'
-    }
-  ];
+
 
   // Fetch events from API
   const fetchEvents = async () => {
@@ -288,6 +173,161 @@ export default function MemberDashboard() {
       setEventsError(error instanceof Error ? error.message : 'Failed to fetch events');
     } finally {
       setEventsLoading(false);
+    }
+  };
+
+  // Fetch member progress data
+  const fetchProgressData = async () => {
+    try {
+      const response = await fetch('/api/auth/me/progress', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch progress data');
+      }
+      
+      const data = await response.json();
+      setProgressData(data.data);
+    } catch (error) {
+      console.error('Error fetching progress data:', error);
+      setDataError('Failed to load progress data');
+    }
+  };
+
+  // Fetch member certifications
+  const fetchCertifications = async () => {
+    try {
+      const response = await fetch('/api/auth/me/certifications', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch certifications');
+      }
+      
+      const data = await response.json();
+      setCertificates(data.data || []);
+    } catch (error) {
+      console.error('Error fetching certifications:', error);
+      setDataError('Failed to load certifications');
+    }
+  };
+
+  // Fetch tutorials and video resources
+  const fetchTutorials = async () => {
+    try {
+      const response = await fetch('/api/auth/me/tutorials', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch tutorials');
+      }
+      
+      const data = await response.json();
+      if (data.data.tutorials) {
+        setTutorials(data.data.tutorials);
+      }
+      if (data.data.videos) {
+        setVideoResources(data.data.videos);
+      }
+    } catch (error) {
+      console.error('Error fetching tutorials:', error);
+      setDataError('Failed to load learning resources');
+    }
+  };
+
+  // Fetch resources
+  const fetchResources = async () => {
+    try {
+      const response = await fetch('/api/resources', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch resources');
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        setResources(data.data || []);
+        setResourcesFilters(data.filters || null);
+        setResourcesPagination(data.pagination || null);
+      }
+    } catch (error) {
+      console.error('Error fetching resources:', error);
+      setDataError('Failed to load resources');
+    }
+  };
+
+  // Fetch all dashboard data
+  const fetchDashboardData = async () => {
+    setDataLoading(true);
+    setDataError(null);
+    
+    try {
+      await Promise.all([
+        fetchProgressData(),
+        fetchCertifications(),
+        fetchTutorials(),
+        fetchResources(),
+        fetchEvents()
+      ]);
+      setLastRefresh(new Date());
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      setDataError('Failed to load dashboard data');
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  // Handle resource download
+  const handleResourceDownload = async (resourceId: string, fileName: string) => {
+    try {
+      setDownloadingResource(resourceId);
+      
+      // First get the download URL
+      const response = await fetch(`/api/resources/${resourceId}/download`, {
+        method: 'GET',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to get download URL');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && data.downloadUrl) {
+        // Create a temporary link and trigger download
+        const link = document.createElement('a');
+        link.href = data.downloadUrl;
+        link.download = fileName || data.fileName || 'download';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // Add to DOM, click, and remove
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        throw new Error('Invalid download response');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      alert('Failed to download file. Please try again.');
+    } finally {
+      setDownloadingResource(null);
     }
   };
    
@@ -347,8 +387,8 @@ export default function MemberDashboard() {
         if (response.ok) {
           const data = await response.json();
           setMember(data.member);
-          // Fetch real events data
-      fetchEvents();
+          // Fetch all dashboard data
+          fetchDashboardData();
         } else {
           setError('Failed to load dashboard');
         }
@@ -362,6 +402,17 @@ export default function MemberDashboard() {
 
     checkAuth();
   }, [router]);
+
+  // Auto-refresh functionality
+  useEffect(() => {
+    if (!autoRefresh || !member) return;
+
+    const interval = setInterval(() => {
+      fetchDashboardData();
+    }, 5 * 60 * 1000); // Refresh every 5 minutes
+
+    return () => clearInterval(interval);
+  }, [autoRefresh, member]);
 
   // Handle logout
   const handleLogout = async () => {
@@ -445,18 +496,63 @@ export default function MemberDashboard() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-foreground">Member Dashboard</h1>
             </div>
-            <button
-              onClick={handleLogout}
-              className="flex items-center px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </button>
+            <div className="flex items-center space-x-4">
+              {/* Auto-refresh controls */}
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="text-muted-foreground">Auto-refresh:</span>
+                <Switch
+                  checked={autoRefresh}
+                  onCheckedChange={setAutoRefresh}
+                  className="data-[state=checked]:bg-primary"
+                />
+                {lastRefresh && (
+                  <span className="text-xs text-muted-foreground">
+                    Last: {lastRefresh.toLocaleTimeString()}
+                  </span>
+                )}
+              </div>
+              
+              <button
+                onClick={fetchDashboardData}
+                disabled={dataLoading}
+                className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                title="Refresh dashboard data"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Error Display */}
+        {dataError && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <AlertCircle className="h-5 w-5 text-red-500 mr-3" />
+              <div>
+                <h3 className="text-sm font-medium text-red-800">Error Loading Dashboard Data</h3>
+                <p className="text-sm text-red-700 mt-1">{dataError}</p>
+              </div>
+              <button
+                onClick={fetchDashboardData}
+                className="ml-auto bg-red-100 hover:bg-red-200 text-red-800 px-3 py-1 rounded text-sm font-medium transition-colors"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Welcome Section with Progress Metrics */}
         <div className="mb-8">
           <div className="bg-card rounded-lg shadow-sm border border-border p-6">
@@ -472,44 +568,99 @@ export default function MemberDashboard() {
             </div>
             
             {/* Progress Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-              <div className="bg-background rounded-lg p-4 border border-border">
-                <div className="flex items-center">
-                  <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{progressData.certificatesEarned}</p>
-                    <p className="text-sm text-muted-foreground">Certificates Earned</p>
+            {dataLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bg-background rounded-lg p-4 border border-border animate-pulse">
+                    <div className="flex items-center">
+                      <div className="h-8 w-8 bg-muted rounded mr-3"></div>
+                      <div>
+                        <div className="h-6 w-12 bg-muted rounded mb-1"></div>
+                        <div className="h-4 w-20 bg-muted rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : progressData ? (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{progressData.certificatesEarned}</p>
+                      <p className="text-sm text-muted-foreground">Certificates Earned</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{calculateProgress(progressData.completedCourses, progressData.totalCourses)}%</p>
+                      <p className="text-sm text-muted-foreground">Course Progress</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <Calendar className="h-8 w-8 text-green-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{progressData.eventsAttended}</p>
+                      <p className="text-sm text-muted-foreground">Events Attended</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <Users className="h-8 w-8 text-purple-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">{progressData.completedWorkshops}</p>
+                      <p className="text-sm text-muted-foreground">Workshops Completed</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-background rounded-lg p-4 border border-border">
-                <div className="flex items-center">
-                  <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{calculateProgress(progressData.completedCourses, progressData.totalCourses)}%</p>
-                    <p className="text-sm text-muted-foreground">Course Progress</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">0</p>
+                      <p className="text-sm text-muted-foreground">Certificates Earned</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">0%</p>
+                      <p className="text-sm text-muted-foreground">Course Progress</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <Calendar className="h-8 w-8 text-green-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">0</p>
+                      <p className="text-sm text-muted-foreground">Events Attended</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-background rounded-lg p-4 border border-border">
+                  <div className="flex items-center">
+                    <Users className="h-8 w-8 text-purple-500 mr-3" />
+                    <div>
+                      <p className="text-2xl font-bold text-foreground">0</p>
+                      <p className="text-sm text-muted-foreground">Workshops Completed</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="bg-background rounded-lg p-4 border border-border">
-                <div className="flex items-center">
-                  <Calendar className="h-8 w-8 text-green-500 mr-3" />
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{progressData.eventsAttended}</p>
-                    <p className="text-sm text-muted-foreground">Events Attended</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-background rounded-lg p-4 border border-border">
-                <div className="flex items-center">
-                  <Users className="h-8 w-8 text-purple-500 mr-3" />
-                  <div>
-                    <p className="text-2xl font-bold text-foreground">{progressData.completedWorkshops}</p>
-                    <p className="text-sm text-muted-foreground">Workshops Completed</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
             
             {/* Navigation Tabs */}
             <div className="flex space-x-1 bg-background rounded-lg p-1 border border-border">
@@ -660,73 +811,100 @@ export default function MemberDashboard() {
         {activeTab === 'progress' && (
           <div className="space-y-6">
             <h3 className="text-2xl font-bold text-foreground">Learning Progress</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-foreground">Courses</h4>
-                  <BookOpen className="h-6 w-6 text-blue-500" />
+            {dataLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="h-6 w-20 bg-muted rounded"></div>
+                      <div className="h-6 w-6 bg-muted rounded"></div>
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <div className="h-4 w-16 bg-muted rounded"></div>
+                        <div className="h-4 w-12 bg-muted rounded"></div>
+                      </div>
+                      <div className="w-full bg-muted rounded-full h-2"></div>
+                      <div className="h-4 w-24 bg-muted rounded"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : progressData ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold text-foreground">Courses</h4>
+                    <BookOpen className="h-6 w-6 text-blue-500" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="text-foreground">{progressData.completedCourses}/{progressData.totalCourses}</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
+                        style={{ width: `${calculateProgress(progressData.completedCourses, progressData.totalCourses)}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {calculateProgress(progressData.completedCourses, progressData.totalCourses)}% completed
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="text-foreground">{progressData.completedCourses}/{progressData.totalCourses}</span>
+                
+                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold text-foreground">Workshops</h4>
+                    <Users className="h-6 w-6 text-purple-500" />
                   </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${calculateProgress(progressData.completedCourses, progressData.totalCourses)}%` }}
-                    ></div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Progress</span>
+                      <span className="text-foreground">{progressData.completedWorkshops}/{progressData.totalWorkshops}</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
+                        style={{ width: `${calculateProgress(progressData.completedWorkshops, progressData.totalWorkshops)}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {calculateProgress(progressData.completedWorkshops, progressData.totalWorkshops)}% completed
+                    </p>
                   </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {calculateProgress(progressData.completedCourses, progressData.totalCourses)}% completed
-                  </p>
+                </div>
+                
+                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-lg font-semibold text-foreground">Events</h4>
+                    <Calendar className="h-6 w-6 text-green-500" />
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Attended</span>
+                      <span className="text-foreground">{progressData.eventsAttended}/{progressData.totalEvents}</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-300" 
+                        style={{ width: `${calculateProgress(progressData.eventsAttended, progressData.totalEvents)}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {calculateProgress(progressData.eventsAttended, progressData.totalEvents)}% attendance rate
+                    </p>
+                  </div>
                 </div>
               </div>
-              
-              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-foreground">Workshops</h4>
-                  <Users className="h-6 w-6 text-purple-500" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Progress</span>
-                    <span className="text-foreground">{progressData.completedWorkshops}/{progressData.totalWorkshops}</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${calculateProgress(progressData.completedWorkshops, progressData.totalWorkshops)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {calculateProgress(progressData.completedWorkshops, progressData.totalWorkshops)}% completed
-                  </p>
-                </div>
+            ) : (
+              <div className="text-center py-12">
+                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Progress Data Available</h3>
+                <p className="text-muted-foreground">Start learning to see your progress here.</p>
               </div>
-              
-              <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="text-lg font-semibold text-foreground">Events</h4>
-                  <Calendar className="h-6 w-6 text-green-500" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Attended</span>
-                    <span className="text-foreground">{progressData.eventsAttended}/{progressData.totalEvents}</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2">
-                    <div 
-                      className="bg-green-500 h-2 rounded-full transition-all duration-300" 
-                      style={{ width: `${calculateProgress(progressData.eventsAttended, progressData.totalEvents)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-2">
-                    {calculateProgress(progressData.eventsAttended, progressData.totalEvents)}% attendance rate
-                  </p>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         )}
 
@@ -883,32 +1061,30 @@ export default function MemberDashboard() {
                     )}
                     
                     {/* Action Button */}
-                    {isUpcoming && (
-                      <button
-                        onClick={() => handleEventReservation(event.id)}
-                        disabled={!canRegister || reservationLoading === event.id}
-                        className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
-                          event.isRegistered
-                            ? 'bg-red-500 text-white hover:bg-red-600'
-                            : canRegister
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                            : 'bg-muted text-muted-foreground cursor-not-allowed'
-                        }`}
-                      >
-                        {reservationLoading === event.id ? (
-                          <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Processing...
-                          </div>
-                        ) : event.isRegistered ? (
-                          'Cancel Registration'
-                        ) : isFull ? (
-                          'Event Full'
-                        ) : (
-                          'Register Now'
-                        )}
-                      </button>
-                    )}
+                    <button
+                      onClick={() => handleEventReservation(event.id)}
+                      disabled={!canRegister || reservationLoading === event.id}
+                      className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+                        event.isRegistered
+                          ? 'bg-red-500 text-white hover:bg-red-600'
+                          : canRegister
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                          : 'bg-muted text-muted-foreground cursor-not-allowed'
+                      }`}
+                    >
+                      {reservationLoading === event.id ? (
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Processing...
+                        </div>
+                      ) : event.isRegistered ? (
+                        'Cancel Registration'
+                      ) : isFull ? (
+                        'Event Full'
+                      ) : (
+                        'Register Now'
+                      )}
+                    </button>
                     
                     {event.status === 'completed' && (
                       <div className="w-full py-2 px-4 rounded-md bg-muted text-muted-foreground text-center font-medium">
@@ -934,125 +1110,317 @@ export default function MemberDashboard() {
         {activeTab === 'certificates' && (
           <div className="space-y-6">
             <h3 className="text-2xl font-bold text-foreground">Your Certificates</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {certificates.map((cert) => {
-                const IconComponent = getCertificateIcon(cert.type);
-                return (
-                  <div key={cert.id} className="bg-card rounded-lg shadow-sm border border-border p-6">
+            {dataLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center">
-                        <IconComponent className="h-8 w-8 text-yellow-500 mr-3" />
+                        <div className="h-8 w-8 bg-muted rounded mr-3"></div>
                         <div>
-                          <h4 className="text-lg font-semibold text-foreground">{cert.name}</h4>
-                          <p className="text-sm text-muted-foreground capitalize">{cert.type}</p>
+                          <div className="h-5 w-32 bg-muted rounded mb-1"></div>
+                          <div className="h-4 w-20 bg-muted rounded"></div>
                         </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {formatDate(cert.earnedDate)}
-                      </span>
+                      <div className="h-4 w-16 bg-muted rounded"></div>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-4">{cert.description}</p>
-                    <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors">
-                      View Certificate
-                    </button>
+                    <div className="h-4 w-full bg-muted rounded mb-4"></div>
+                    <div className="h-8 w-full bg-muted rounded"></div>
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            ) : certificates.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {certificates.map((cert) => {
+                  const IconComponent = getCertificateIcon(cert.type);
+                  return (
+                    <div key={cert.id} className="bg-card rounded-lg shadow-sm border border-border p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center">
+                          <IconComponent className="h-8 w-8 text-yellow-500 mr-3" />
+                          <div>
+                            <h4 className="text-lg font-semibold text-foreground">{cert.name}</h4>
+                            <p className="text-sm text-muted-foreground capitalize">{cert.type}</p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(cert.earnedDate)}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">{cert.description}</p>
+                      <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors">
+                        View Certificate
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Certificates Yet</h3>
+                <p className="text-muted-foreground">Complete courses and workshops to earn certificates.</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'tutorials' && (
           <div className="space-y-6">
             <h3 className="text-2xl font-bold text-foreground">AWS Tutorials</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tutorials.map((tutorial) => (
-                <div key={tutorial.id} className="bg-card rounded-lg shadow-sm border border-border p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center">
-                      <Code className="h-6 w-6 text-blue-500 mr-3" />
-                      <div>
-                        <h4 className="text-lg font-semibold text-foreground">{tutorial.title}</h4>
-                        <p className="text-sm text-muted-foreground">{tutorial.category}</p>
+            {dataLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center">
+                        <div className="h-6 w-6 bg-muted rounded mr-3"></div>
+                        <div>
+                          <div className="h-5 w-32 bg-muted rounded mb-1"></div>
+                          <div className="h-4 w-20 bg-muted rounded"></div>
+                        </div>
                       </div>
+                      <div className="h-6 w-16 bg-muted rounded-full"></div>
                     </div>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(tutorial.difficulty)}`}>
-                      {tutorial.difficulty}
-                    </span>
+                    <div className="h-4 w-full bg-muted rounded mb-4"></div>
+                    <div className="flex items-center justify-between">
+                      <div className="h-4 w-16 bg-muted rounded"></div>
+                      <div className="h-8 w-24 bg-muted rounded"></div>
+                    </div>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-4">{tutorial.description}</p>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground flex items-center">
-                      <Clock className="h-4 w-4 mr-1" />
-                      {tutorial.duration}
-                    </span>
-                    <button className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors">
-                      Start Tutorial
-                    </button>
+                ))}
+              </div>
+            ) : tutorials.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {tutorials.map((tutorial) => (
+                  <div key={tutorial.id} className="bg-card rounded-lg shadow-sm border border-border p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center">
+                        <Code className="h-6 w-6 text-blue-500 mr-3" />
+                        <div>
+                          <h4 className="text-lg font-semibold text-foreground">{tutorial.title}</h4>
+                          <p className="text-sm text-muted-foreground">{tutorial.category}</p>
+                        </div>
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(tutorial.difficulty)}`}>
+                        {tutorial.difficulty}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-4">{tutorial.description}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-muted-foreground flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {tutorial.duration}
+                      </span>
+                      <button 
+                        onClick={() => window.open(tutorial.url, '_blank')}
+                        className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+                      >
+                        Start Tutorial
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <BookOpen className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Tutorials Available</h3>
+                <p className="text-muted-foreground">Check back later for new AWS tutorials and guides.</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'videos' && (
           <div className="space-y-6">
             <h3 className="text-2xl font-bold text-foreground">Video Courses</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {videoResources.map((video) => (
-                <div key={video.id} className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
-                  <div className="aspect-video bg-muted flex items-center justify-center">
-                    <Play className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="text-lg font-semibold text-foreground">{video.title}</h4>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(video.difficulty)}`}>
-                        {video.difficulty}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-4">{video.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground flex items-center">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {video.duration}
-                      </span>
-                      <button className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors">
-                        Watch Now
-                      </button>
+            {dataLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-card rounded-lg shadow-sm border border-border overflow-hidden animate-pulse">
+                    <div className="aspect-video bg-muted"></div>
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="h-5 w-32 bg-muted rounded"></div>
+                        <div className="h-6 w-16 bg-muted rounded-full"></div>
+                      </div>
+                      <div className="h-4 w-full bg-muted rounded mb-4"></div>
+                      <div className="flex items-center justify-between">
+                        <div className="h-4 w-16 bg-muted rounded"></div>
+                        <div className="h-8 w-24 bg-muted rounded"></div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : videoResources.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {videoResources.map((video) => (
+                  <div key={video.id} className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
+                    <div className="aspect-video bg-muted flex items-center justify-center relative">
+                      {video.thumbnailUrl ? (
+                        <img 
+                          src={video.thumbnailUrl} 
+                          alt={video.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Play className="h-12 w-12 text-muted-foreground" />
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                        <Play className="h-16 w-16 text-white" />
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="text-lg font-semibold text-foreground">{video.title}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(video.difficulty)}`}>
+                          {video.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">{video.description}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-muted-foreground flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {video.duration}
+                        </span>
+                        <button 
+                          onClick={() => window.open(video.videoUrl, '_blank')}
+                          className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+                        >
+                          Watch Now
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Play className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Video Courses Available</h3>
+                <p className="text-muted-foreground">Check back later for new video content and courses.</p>
+              </div>
+            )}
           </div>
         )}
 
         {activeTab === 'resources' && (
           <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-foreground">Downloadable Resources</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {cheatSheets.map((sheet) => (
-                <div key={sheet.id} className="bg-card rounded-lg shadow-sm border border-border p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center">
-                      <FileText className="h-6 w-6 text-green-500 mr-3" />
-                      <div>
-                        <h4 className="text-lg font-semibold text-foreground">{sheet.title}</h4>
-                        <p className="text-sm text-muted-foreground">{sheet.category}</p>
+            <h3 className="text-2xl font-bold text-foreground">Learning Resources</h3>
+            {dataLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center">
+                        <div className="h-6 w-6 bg-muted rounded mr-3"></div>
+                        <div>
+                          <div className="h-5 w-32 bg-muted rounded mb-1"></div>
+                          <div className="h-4 w-20 bg-muted rounded"></div>
+                        </div>
+                      </div>
+                      <div className="h-6 w-16 bg-muted rounded-full"></div>
+                    </div>
+                    <div className="h-4 w-full bg-muted rounded mb-4"></div>
+                    <div className="h-4 w-3/4 bg-muted rounded mb-4"></div>
+                    <div className="flex items-center justify-between">
+                      <div className="h-4 w-16 bg-muted rounded"></div>
+                      <div className="h-8 w-24 bg-muted rounded"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : resources.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {resources.map((resource) => {
+                  const getResourceIcon = (type: string) => {
+                    switch (type) {
+                      case 'document': return FileText;
+                      case 'video_course': return Play;
+                      case 'link': return Globe;
+                      default: return FileText;
+                    }
+                  };
+                  
+                  const IconComponent = getResourceIcon(resource.type);
+                  
+                  return (
+                    <div key={resource._id} className="bg-card rounded-lg shadow-sm border border-border p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center">
+                          <IconComponent className="h-6 w-6 text-blue-500 mr-3" />
+                          <div>
+                            <h4 className="text-lg font-semibold text-foreground line-clamp-2">{resource.title}</h4>
+                            <p className="text-sm text-muted-foreground">{resource.category}</p>
+                          </div>
+                        </div>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(resource.difficulty)}`}>
+                          {resource.difficulty}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{resource.description}</p>
+                      
+                      {/* Tags */}
+                      {resource.tags && resource.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-4">
+                          {resource.tags.slice(0, 3).map((tag: string, index: number) => (
+                            <span key={index} className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded">
+                              {tag}
+                            </span>
+                          ))}
+                          {resource.tags.length > 3 && (
+                            <span className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded">
+                              +{resource.tags.length - 3}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                          <div className="flex items-center space-x-1">
+                            <Eye className="h-3 w-3" />
+                            <span>{resource.viewCount || 0}</span>
+                          </div>
+                          {resource.type === 'document' && (
+                            <div className="flex items-center space-x-1">
+                              <Download className="h-3 w-3" />
+                              <span>{resource.downloadCount || 0}</span>
+                            </div>
+                          )}
+                        </div>
+                        <button 
+                          onClick={() => {
+                            if (resource.type === 'document' && resource.fileUrl) {
+                              handleResourceDownload(resource._id, resource.title);
+                            } else if (resource.url) {
+                              window.open(resource.url, '_blank');
+                            }
+                          }}
+                          disabled={downloadingResource === resource._id}
+                          className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                          {downloadingResource === resource._id && (
+                            <Loader className="h-4 w-4 animate-spin" />
+                          )}
+                          {downloadingResource === resource._id ? 'Downloading...' : 
+                           resource.type === 'document' ? 'Download' : 
+                           resource.type === 'video_course' ? 'Watch' : 'Open Link'}
+                        </button>
                       </div>
                     </div>
-                    <span className="text-xs text-muted-foreground">{sheet.fileSize}</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">{sheet.description}</p>
-                  <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors flex items-center justify-center">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </button>
-                </div>
-              ))}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Download className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Resources Available</h3>
+                <p className="text-muted-foreground">Check back later for new learning resources and materials.</p>
+              </div>
+            )}
           </div>
         )}
 

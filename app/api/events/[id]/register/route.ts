@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { connectToDatabase } from '../../../../../lib/mongodb';
-import Event, { EventRegistration } from '../../../../../models/Event';
+import { connectToDatabase } from '@/lib/mongodb';
+import Event, { EventRegistration } from '@/models/Event';
 import { verifyMemberAuth } from '../../../../../lib/auth';
+
+export const dynamic = 'force-dynamic';
 
 // POST - Register for an event
 export async function POST(
