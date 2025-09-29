@@ -4,7 +4,8 @@ import { JWT } from 'google-auth-library';
 import { sendOCTeamWelcomeEmail } from '@/lib/email-service';
 import { connectToDatabase } from '@/lib/mongodb';
 import OCTeamMember from '@/models/OCTeamMember';
-import { vercelBlobService } from '@/lib/vercel-blob-service';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
 
 // Initialize Google Sheets client
 const initializeGoogleSheets = async () => {
@@ -78,8 +79,8 @@ export async function POST(request: NextRequest) {
     console.log('Files received:', { cv: cvFile?.name, photo: photoFile?.name });
     
     // Handle file uploads
-    let cvFileUrl = '';
-    let photoFileUrl = '';
+    let cvFileName = '';
+    let photoFileName = '';
     
     if (!photoFile) {
       return NextResponse.json(
@@ -92,24 +93,37 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      // Upload CV file if provided
+      // Create uploads directory if it doesn't exist
+      const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'atnc-oc-team');
+      await mkdir(uploadsDir, { recursive: true });
+      
+      // Generate unique filenames
+      const timestamp = Date.now();
+      const sanitizedEmail = data.email.replace(/[^a-zA-Z0-9]/g, '_');
+      
+      // Save CV file if provided
       if (cvFile) {
+        const cvExtension = path.extname(cvFile.name);
+        cvFileName = `cv_${sanitizedEmail}_${timestamp}${cvExtension}`;
+        const cvPath = path.join(uploadsDir, cvFileName);
         const cvBuffer = Buffer.from(await cvFile.arrayBuffer());
-        cvFileUrl = await vercelBlobService.uploadCV(cvBuffer, cvFile.name, data.email);
-        console.log('CV uploaded successfully:', cvFileUrl);
+        await writeFile(cvPath, cvBuffer);
       }
       
-      // Upload photo file (required)
+      // Save photo file (required)
+      const photoExtension = path.extname(photoFile.name);
+      photoFileName = `photo_${sanitizedEmail}_${timestamp}${photoExtension}`;
+      const photoPath = path.join(uploadsDir, photoFileName);
       const photoBuffer = Buffer.from(await photoFile.arrayBuffer());
-      photoFileUrl = await vercelBlobService.uploadPhoto(photoBuffer, photoFile.name, data.email);
-      console.log('Photo uploaded successfully:', photoFileUrl);
+      await writeFile(photoPath, photoBuffer);
       
+      console.log('Files saved successfully:', { cv: cvFileName || 'none', photo: photoFileName });
     } catch (fileError) {
-      console.error('Error uploading files to Vercel Blob:', fileError);
+      console.error('Error saving files:', fileError);
       return NextResponse.json(
         { 
           success: false, 
-          message: 'Failed to upload files. Please try again.'
+          message: 'Failed to save uploaded files. Please try again.'
         },
         { status: 500 }
       );
@@ -122,6 +136,8 @@ export async function POST(request: NextRequest) {
       phone: data.phone,
       department: data.department,
       institute: data.institute,
+      ...(cvFileName && { cvFileName }),
+      photoFileName: photoFileName,
       submissionDate: new Date().toISOString(),
       paid: false,
     };
@@ -137,6 +153,8 @@ export async function POST(request: NextRequest) {
         phone: formattedData.phone,
         department: formattedData.department,
         institute: formattedData.institute,
+        cvFileName: formattedData.cvFileName,
+        photoFileName: formattedData.photoFileName,
         paid: formattedData.paid,
         submissionDate: new Date(formattedData.submissionDate)
       });
@@ -168,8 +186,8 @@ export async function POST(request: NextRequest) {
           'Phone': formattedData.phone,
           'Department': formattedData.department,
           'Institute/City': formattedData.institute,
-          'CV File': formattedData.cvFileUrl || 'Not provided',
-          'Photo File': formattedData.photoFileUrl,
+          'CV File': formattedData.cvFileName || 'Not provided',
+          'Photo File': formattedData.photoFileName,
           'Paid': formattedData.paid ? 'Yes' : 'No'
         });
         

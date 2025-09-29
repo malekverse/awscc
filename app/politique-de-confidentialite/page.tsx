@@ -143,7 +143,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <p className="mb-6">
               <strong>AWS Cloud Club ISIMS</strong><br />
-              Email: hello@awscc.tn<br />
+              Email: awscloudclubisims@gmail.com<br />
               Address: ISIMS, Al Ons, Sfax
             </p>
           </div>

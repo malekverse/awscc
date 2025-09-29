@@ -303,7 +303,7 @@ export function ContactSection() {
                     </div>
                     <div className="flex items-center">
                       <Mail className="h-5 w-5 text-[#9B6DFF] dark:text-[#9B6DFF] mr-2" />
-                      <span className="text-sm text-gray-600 dark:text-gray-300">hello@awscc.tn</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-300">awscloudclubisims@gmail.com</span>
                     </div>
                     <div className="flex items-center">
                       <Phone className="h-5 w-5 text-[#9B6DFF] dark:text-[#9B6DFF] mr-2" />
