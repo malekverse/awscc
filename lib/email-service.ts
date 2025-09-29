@@ -168,7 +168,7 @@ const createHtmlEmailContent = (userData: FormValues) => {
           <div class="contact">
             <p><strong>Need assistance?</strong></p>
             <p>If you have any questions or need support, please don't hesitate to contact us at:</p>
-            <p>Email: <a href="mailto:awscloudclubisims@gmail.com">awscloudclubisims@gmail.com</a></p>
+            <p>Email: <a href="mailto:hello@awscc.tn">hello@awscc.tn</a></p>
           </div>
         </div>
         <div class="footer">
@@ -319,7 +319,7 @@ const createOCTeamHtmlEmailContent = (userData: OCTeamFormValues) => {
           <div class="contact">
             <p><strong>Need assistance?</strong></p>
             <p>If you have any questions or need support, please don't hesitate to contact us at:</p>
-            <p>Email: <a href="mailto:awscloudclubisims@gmail.com">awscloudclubisims@gmail.com</a></p>
+            <p>Email: <a href="mailto:hello@awscc.tn">hello@awscc.tn</a></p>
           </div>
         </div>
         <div class="footer">
@@ -358,7 +358,7 @@ const createTextEmailContent = (userData: FormValues) => {
     
     Need assistance?
     If you have any questions or need support, please don't hesitate to contact us at:
-    Email: awscloudclubisims@gmail.com
+    Email: hello@awscc.tn
     
     © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
     This email was sent to ${userData.email} because you registered for AWS Cloud Club membership.
@@ -391,7 +391,7 @@ const createOCTeamTextEmailContent = (userData: OCTeamFormValues) => {
     
     Need assistance?
     If you have any questions or need support, please don't hesitate to contact us at:
-    Email: awscloudclubisims@gmail.com
+    Email: hello@awscc.tn
     
     © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
     This email was sent to ${userData.email} because you registered for the OC team for the ATNC event.
@@ -428,7 +428,7 @@ Sign the email as "AWS Cloud Club ISIMS AI Assistant".`;
       messages: [
         {
           role: "system",
-          content: "You are an AI assistant for AWS Cloud Club ISIMS. Respond to contact inquiries professionally and concisely.\n\nContact Information:\n- Email: awscloudclubisims@gmail.com\n- Website: awscc.tn\n- Join link: awscc.tn/join\n\nGuidelines:\n1. Keep responses short and to the point (2-3 sentences max)\n2. Be friendly but professional\n3. For membership: Direct to awscc.tn/join\n4. For updates: Mention awscc.tn website\n5. Include contact email only if specifically relevant\n6. Never include a subject line in your response\n7. Focus on actionable next steps\n\nExample response style:\n\"Thank you for your interest in AWS Cloud Club ISIMS! To join our community, please visit awscc.tn/join and complete the membership form. We'll review your application and get back to you soon.\""
+          content: "You are an AI assistant for AWS Cloud Club ISIMS. Respond to contact inquiries professionally and concisely.\n\nContact Information:\n- Email: hello@awscc.tn\n- Website: awscc.tn\n- Join link: awscc.tn/join\n\nGuidelines:\n1. Keep responses short and to the point (2-3 sentences max)\n2. Be friendly but professional\n3. For membership: Direct to awscc.tn/join\n4. For updates: Mention awscc.tn website\n5. Include contact email only if specifically relevant\n6. Never include a subject line in your response\n7. Focus on actionable next steps\n\nExample response style:\n\"Thank you for your interest in AWS Cloud Club ISIMS! To join our community, please visit awscc.tn/join and complete the membership form. We'll review your application and get back to you soon.\""
         },
         {
           role: "user",
@@ -557,7 +557,7 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
           </p>
           
           <div class="contact-info">
-            <p><strong>Email:</strong> awscloudclubisims@gmail.com</p>
+            <p><strong>Email:</strong> hello@awscc.tn</p>
             <p><strong>Website:</strong> <a href="https://awscc.tn" style="color: #7C4DFF;">awscc.tn</a></p>
           </div>
         </div>
@@ -589,7 +589,7 @@ const createContactTextEmailContent = (contactData: ContactFormValues, aiRespons
     ${contactData.company ? `Company: ${contactData.company}` : ''}
     
     If you need immediate assistance or have additional questions, please contact us:
-    Email: awscloudclubisims@gmail.com
+    Email: hello@awscc.tn
     Website: https://awscc.tn
     
     © ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.
