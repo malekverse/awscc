@@ -3,6 +3,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 import Member from '@/models/Member';
 import { verifyAdminAuth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // Verify admin authentication

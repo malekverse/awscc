@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../lib/mongodb';
 import Event, { EventRegistration } from '../../../models/Event';
-import { verifyAuth } from '../../../lib/auth';
+import { verifyMemberAuth } from '../../../lib/auth';
+
+export const dynamic = 'force-dynamic';
 
 // GET - Fetch published events for members
 export async function GET(request: NextRequest) {
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest) {
     // Check if user is authenticated to get registration status
     let memberId = null;
     try {
-      const member = await verifyAuth(request);
+      const member = await verifyMemberAuth(request);
       memberId = member?._id;
     } catch {
       // User not authenticated, continue without registration status

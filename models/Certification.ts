@@ -143,8 +143,7 @@ CertificationSchema.index({ isActive: 1 });
 MemberCertificationSchema.index({ memberId: 1 });
 MemberCertificationSchema.index({ certificationId: 1 });
 MemberCertificationSchema.index({ status: 1 });
-MemberCertificationSchema.index({ certificateNumber: 1 });
-MemberCertificationSchema.index({ verificationCode: 1 });
+// certificateNumber and verificationCode already have unique indexes from schema definition
 
 export const Certification = mongoose.models.Certification || mongoose.model<ICertification>('Certification', CertificationSchema);
 export const MemberCertification = mongoose.models.MemberCertification || mongoose.model<IMemberCertification>('MemberCertification', MemberCertificationSchema);

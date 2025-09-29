@@ -4,6 +4,8 @@ import Event, { EventRegistration } from '../../../../models/Event';
 import { verifyAdminAuth } from '../../../../lib/auth';
 import { uploadFileToS3, generateOrganizedFileKey, validateFile, fileToBuffer, FILE_CONFIGS } from '../../../../lib/aws-s3';
 
+export const dynamic = 'force-dynamic';
+
 // GET - Fetch all events with pagination and filtering
 export async function GET(request: NextRequest) {
   try {

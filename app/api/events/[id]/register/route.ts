@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '../../../../../lib/mongodb';
 import Event, { EventRegistration } from '../../../../../models/Event';
-import { verifyAuth } from '../../../../../lib/auth';
+import { verifyMemberAuth } from '../../../../../lib/auth';
 
 // POST - Register for an event
 export async function POST(
@@ -10,7 +10,7 @@ export async function POST(
 ) {
   try {
     // Verify member authentication
-    const member = await verifyAuth(request);
+    const member = await verifyMemberAuth(request);
     if (!member) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -125,7 +125,7 @@ export async function DELETE(
 ) {
   try {
     // Verify member authentication
-    const member = await verifyAuth(request);
+    const member = await verifyMemberAuth(request);
     if (!member) {
       return NextResponse.json(
         { error: 'Unauthorized' },
