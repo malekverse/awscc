@@ -139,7 +139,7 @@ export default function MemberDashboard() {
   const [resourcesPagination, setResourcesPagination] = useState<any>(null);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState<string | null>(null);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [downloadingResource, setDownloadingResource] = useState<string | null>(null);
   
