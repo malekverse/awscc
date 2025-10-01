@@ -41,6 +41,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Helper function to get current time in local timezone
+const getCurrentLocalTime = () => {
+  const now = new Date();
+  // Convert to Tunisia timezone (UTC+1)
+  const tunisiaTime = new Date(now.getTime() + (1 * 60 * 60 * 1000));
+  return tunisiaTime;
+};
+
 // HTML email template with branding
 const createHtmlEmailContent = (userData: FormValues) => {
   return `
@@ -557,7 +565,7 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
           <div class="contact-info">
             <h3 style="color: #7C4DFF; margin-top: 0;">Your Message Details:</h3>
             <p><strong>Subject:</strong> ${contactData.subject}</p>
-            <p><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
+            <p><strong>Submitted:</strong> ${getCurrentLocalTime().toLocaleDateString()}</p>
             ${contactData.company ? `<p><strong>Company:</strong> ${contactData.company}</p>` : ''}
           </div>
           
@@ -594,7 +602,7 @@ const createContactTextEmailContent = (contactData: ContactFormValues, aiRespons
     
     Your Message Details:
     Subject: ${contactData.subject}
-    Submitted: ${new Date().toLocaleDateString()}
+    Submitted: ${getCurrentLocalTime().toLocaleDateString()}
     ${contactData.company ? `Company: ${contactData.company}` : ''}
     
     If you need immediate assistance or have additional questions, please contact us:
@@ -665,6 +673,7 @@ export const sendWelcomeEmail = async (userData: FormValues) => {
       subject: 'Welcome to Our Club!',
       text: createTextEmailContent(userData),
       html: createHtmlEmailContent(userData),
+      date: getCurrentLocalTime(), // Set proper local timezone for email timestamp
     };
     
     // Send the email
@@ -1118,7 +1127,7 @@ This email was sent because a password reset was requested for your AWSCC accoun
               </div>
             </div>
             <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
+              <p>&copy; ${getCurrentLocalTime().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
               <p>This email was sent because a password reset was requested for your AWSCC account.</p>
             </div>
           </div>
@@ -1153,6 +1162,7 @@ export const sendGameInvitationEmail = async (data: GameInvitationData): Promise
       from: `"AWS Cloud Club" <${process.env.EMAIL_USER}>`,
       to: data.to,
       subject: '🎮 Welcome to Cloud Conquest - Your Adventure Awaits!',
+      date: getCurrentLocalTime(), // Set proper local timezone for email timestamp
       html: `
         <!DOCTYPE html>
         <html>
