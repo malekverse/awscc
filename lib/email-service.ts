@@ -41,12 +41,32 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Helper function to get current time in local timezone
+// Helper function to get current time in Tunisia timezone (UTC+1)
 const getCurrentLocalTime = () => {
   const now = new Date();
-  // Convert to Tunisia timezone (UTC+1)
-  const tunisiaTime = new Date(now.getTime() + (1 * 60 * 60 * 1000));
-  return tunisiaTime;
+  
+  // Use Intl.DateTimeFormat to properly handle timezone conversion
+  // This works correctly regardless of server timezone (UTC on Vercel, UTC+1 locally)
+  const tunisiaTime = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Africa/Tunis',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(now);
+  
+  // Reconstruct the date in Tunisia timezone
+  const year = parseInt(tunisiaTime.find(part => part.type === 'year')?.value || '');
+  const month = parseInt(tunisiaTime.find(part => part.type === 'month')?.value || '') - 1; // Month is 0-indexed
+  const day = parseInt(tunisiaTime.find(part => part.type === 'day')?.value || '');
+  const hour = parseInt(tunisiaTime.find(part => part.type === 'hour')?.value || '');
+  const minute = parseInt(tunisiaTime.find(part => part.type === 'minute')?.value || '');
+  const second = parseInt(tunisiaTime.find(part => part.type === 'second')?.value || '');
+  
+  return new Date(year, month, day, hour, minute, second);
 };
 
 // HTML email template with branding
