@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
-import { sendWelcomeEmail } from '@/lib/email-service';
+import { sendWelcomeEmail, sendGameInvitationEmail } from '@/lib/email-service';
 import { connectToDatabase } from '@/lib/mongodb';
 import Member from '@/models/Member';
+import GameSession from '@/models/GameSession';
 
 // Initialize Google Sheets client
 const initializeGoogleSheets = async () => {
@@ -88,6 +89,7 @@ export async function POST(request: NextRequest) {
     };
     
     // Connect to MongoDB and save the member data
+    let savedMember = null;
     try {
       await connectToDatabase();
       
@@ -108,8 +110,9 @@ export async function POST(request: NextRequest) {
       });
       
       // Save the member to MongoDB
-      await newMember.save();
+      savedMember = await newMember.save();
       console.log('Member data saved to MongoDB successfully');
+      console.log('Saved member ID:', savedMember._id);
     } catch (mongoError) {
       console.error('Error saving to MongoDB:', mongoError);
       // Continue with the process even if MongoDB fails
@@ -183,6 +186,68 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       console.error('Error sending welcome email:', emailError);
       // Continue with success response even if email fails
+    }
+
+    // Create game session and send game invitation email
+    if (savedMember && savedMember._id) {
+      try {
+        console.log('Creating game session for member:', savedMember._id);
+        
+        // Generate unique game token
+        const gameToken = GameSession.generateToken();
+        
+        // Get IP address and user agent for anti-cheat tracking
+        const forwarded = request.headers.get('x-forwarded-for');
+        const ipAddress = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+        const userAgent = request.headers.get('user-agent') || 'unknown';
+
+        // Create game session
+        const gameSession = new GameSession({
+          memberId: savedMember._id,
+          playerName: formattedData.fullName,
+          email: formattedData.email,
+          gameToken: gameToken,
+          currentStation: 1,
+          isCompleted: false,
+          badges: [],
+          stationsCompleted: [],
+          isActive: true,
+          qrCodesScanned: [],
+          hints: [],
+          // Anti-cheat tracking
+          ipAddress: ipAddress,
+          userAgent: userAgent,
+          timeLimit: 360, // 6 hours
+          isExpired: false,
+          suspiciousActivity: {
+            rapidSubmissions: 0,
+            invalidQRAttempts: 0
+          }
+        });
+        
+        await gameSession.save();
+        console.log('Game session created successfully with token:', gameToken);
+        
+        // Generate game URL
+        const gameUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/game/${gameToken}`;
+        
+        // Send game invitation email
+        await sendGameInvitationEmail({
+          to: formattedData.email,
+          playerName: formattedData.fullName,
+          gameToken: gameToken,
+          gameUrl: gameUrl
+        });
+        
+        console.log('Game invitation email sent successfully');
+      } catch (gameError) {
+        console.error('Error creating game session or sending game invitation:', gameError);
+        console.error('Game error details:', gameError);
+        // Continue with success response even if game setup fails
+      }
+    } else {
+      console.log('Skipping game session creation - member not saved to database or missing ID');
+      console.log('savedMember:', savedMember);
     }
     
     // Return success response
