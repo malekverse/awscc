@@ -5,10 +5,13 @@ require('dotenv').config({ path: '.env.local' });
 const getCurrentLocalTime = () => {
   const now = new Date();
   
+  // Get timezone from environment variable or default to Africa/Tunis
+  const timezone = process.env.APP_TIMEZONE || 'Africa/Tunis';
+  
   // Use Intl.DateTimeFormat to properly handle timezone conversion
   // This works correctly regardless of server timezone (UTC on Vercel, UTC+1 locally)
   const tunisiaTime = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Africa/Tunis',
+    timeZone: timezone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
