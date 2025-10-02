@@ -2,7 +2,6 @@ import nodemailer from 'nodemailer';
 import { FormValues } from '@/app/join/page';
 import { ContactFormValues } from '@/components/contact-form';
 import Groq from 'groq-sdk';
-import QRCode from 'qrcode';
 
 // Define OCTeamFormValues interface
 interface OCTeamFormValues {
@@ -22,14 +21,6 @@ interface WelcomeEmailData {
   dashboardUrl: string;
 }
 
-// Define GameInvitationData interface for game invitation emails
-interface GameInvitationData {
-  to: string;
-  playerName: string;
-  gameToken: string;
-  gameUrl: string;
-}
-
 // Email configuration
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || 'smtp.gmail.com',
@@ -40,37 +31,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASSWORD,
   },
 });
-
-// Helper function to get current time in Tunisia timezone (UTC+1)
-const getCurrentLocalTime = () => {
-  const now = new Date();
-  
-  // Get timezone from environment variable or default to Africa/Tunis
-  const timezone = process.env.APP_TIMEZONE || 'Africa/Tunis';
-  
-  // Use Intl.DateTimeFormat to properly handle timezone conversion
-  // This works correctly regardless of server timezone (UTC on Vercel, UTC+1 locally)
-  const tunisiaTime = new Intl.DateTimeFormat('en-CA', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false
-  }).formatToParts(now);
-  
-  // Reconstruct the date in Tunisia timezone
-  const year = parseInt(tunisiaTime.find(part => part.type === 'year')?.value || '');
-  const month = parseInt(tunisiaTime.find(part => part.type === 'month')?.value || '') - 1; // Month is 0-indexed
-  const day = parseInt(tunisiaTime.find(part => part.type === 'day')?.value || '');
-  const hour = parseInt(tunisiaTime.find(part => part.type === 'hour')?.value || '');
-  const minute = parseInt(tunisiaTime.find(part => part.type === 'minute')?.value || '');
-  const second = parseInt(tunisiaTime.find(part => part.type === 'second')?.value || '');
-  
-  return new Date(year, month, day, hour, minute, second);
-};
 
 // HTML email template with branding
 const createHtmlEmailContent = (userData: FormValues) => {
@@ -588,7 +548,7 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
           <div class="contact-info">
             <h3 style="color: #7C4DFF; margin-top: 0;">Your Message Details:</h3>
             <p><strong>Subject:</strong> ${contactData.subject}</p>
-            <p><strong>Submitted:</strong> ${getCurrentLocalTime().toLocaleDateString()}</p>
+            <p><strong>Submitted:</strong> ${new Date().toLocaleDateString()}</p>
             ${contactData.company ? `<p><strong>Company:</strong> ${contactData.company}</p>` : ''}
           </div>
           
@@ -625,7 +585,7 @@ const createContactTextEmailContent = (contactData: ContactFormValues, aiRespons
     
     Your Message Details:
     Subject: ${contactData.subject}
-    Submitted: ${getCurrentLocalTime().toLocaleDateString()}
+    Submitted: ${new Date().toLocaleDateString()}
     ${contactData.company ? `Company: ${contactData.company}` : ''}
     
     If you need immediate assistance or have additional questions, please contact us:
@@ -696,7 +656,6 @@ export const sendWelcomeEmail = async (userData: FormValues) => {
       subject: 'Welcome to Our Club!',
       text: createTextEmailContent(userData),
       html: createHtmlEmailContent(userData),
-      date: getCurrentLocalTime(), // Set proper local timezone for email timestamp
     };
     
     // Send the email
@@ -1150,7 +1109,7 @@ This email was sent because a password reset was requested for your AWSCC accoun
               </div>
             </div>
             <div class="footer">
-              <p>&copy; ${getCurrentLocalTime().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
+              <p>&copy; ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
               <p>This email was sent because a password reset was requested for your AWSCC account.</p>
             </div>
           </div>
@@ -1165,276 +1124,5 @@ This email was sent because a password reset was requested for your AWSCC accoun
   } catch (error) {
     console.error('Failed to send password reset email:', error);
     throw new Error('Failed to send password reset email');
-  }
-};
-
-// Game invitation email function
-export const sendGameInvitationEmail = async (data: GameInvitationData): Promise<void> => {
-  try {
-    // Generate QR code for the game URL
-    const qrCodeDataUrl = await QRCode.toDataURL(data.gameUrl, {
-      width: 200,
-      margin: 2,
-      color: {
-        dark: '#7C4DFF',
-        light: '#FFFFFF'
-      }
-    });
-
-    const mailOptions = {
-      from: `"AWS Cloud Club" <${process.env.EMAIL_USER}>`,
-      to: data.to,
-      subject: '🎮 Welcome to Cloud Conquest - Your Adventure Awaits!',
-      date: getCurrentLocalTime(), // Set proper local timezone for email timestamp
-      html: `
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Cloud Conquest - Game Invitation</title>
-          <style>
-            /* Base styles */
-            body {
-              font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-              line-height: 1.6;
-              color: #333;
-              margin: 0;
-              padding: 0;
-              background-color: #f9f9f9;
-            }
-            .container {
-              max-width: 600px;
-              margin: 0 auto;
-              padding: 20px;
-              background-color: #ffffff;
-            }
-            .header {
-              background: linear-gradient(135deg, #9B6DFF, #7C4DFF, #FF6B6B);
-              padding: 30px 20px;
-              text-align: center;
-              color: white;
-              border-radius: 8px 8px 0 0;
-              position: relative;
-              overflow: hidden;
-            }
-            .header::before {
-              content: '';
-              position: absolute;
-              top: 0;
-              left: 0;
-              right: 0;
-              bottom: 0;
-              background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/><circle cx="40" cy="70" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="80" r="2.5" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
-            }
-            .content {
-              padding: 30px 20px;
-              border-left: 1px solid #E9E1FF;
-              border-right: 1px solid #E9E1FF;
-            }
-            .footer {
-              background-color: #f5f5f5;
-              padding: 15px 20px;
-              text-align: center;
-              font-size: 14px;
-              color: #666;
-              border-radius: 0 0 8px 8px;
-              border: 1px solid #E9E1FF;
-              border-top: none;
-            }
-            h1 {
-              color: #ffffff;
-              margin: 0;
-              font-size: 28px;
-              position: relative;
-              z-index: 1;
-            }
-            h2 {
-              color: #7C4DFF;
-              margin-top: 0;
-              font-size: 24px;
-            }
-            .logo {
-              max-width: 150px;
-              margin-bottom: 15px;
-              position: relative;
-              z-index: 1;
-            }
-            .game-info {
-              background: linear-gradient(135deg, #f8f5ff, #fff5f5);
-              padding: 25px;
-              border-radius: 12px;
-              margin: 25px 0;
-              border-left: 5px solid #7C4DFF;
-              box-shadow: 0 4px 15px rgba(124, 77, 255, 0.1);
-            }
-            .qr-section {
-              text-align: center;
-              background: #ffffff;
-              padding: 25px;
-              border-radius: 12px;
-              margin: 25px 0;
-              border: 2px dashed #7C4DFF;
-              box-shadow: 0 4px 15px rgba(124, 77, 255, 0.1);
-            }
-            .qr-code {
-              max-width: 200px;
-              height: auto;
-              margin: 15px 0;
-              border-radius: 8px;
-              box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            }
-            .button {
-              display: inline-block;
-              background: linear-gradient(135deg, #9B6DFF, #7C4DFF);
-              color: white;
-              text-decoration: none;
-              padding: 15px 35px;
-              border-radius: 25px;
-              margin: 20px 0;
-              font-weight: bold;
-              font-size: 18px;
-              box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
-              transition: all 0.3s ease;
-            }
-            .game-features {
-              display: grid;
-              grid-template-columns: 1fr 1fr;
-              gap: 15px;
-              margin: 20px 0;
-            }
-            .feature {
-              background: #f8f5ff;
-              padding: 15px;
-              border-radius: 8px;
-              text-align: center;
-              border: 1px solid #E9E1FF;
-            }
-            .feature-icon {
-              font-size: 24px;
-              margin-bottom: 8px;
-            }
-            .contact {
-              margin-top: 20px;
-              padding-top: 15px;
-              border-top: 1px solid #eee;
-            }
-            .game-token {
-              background: #2d3748;
-              color: #ffffff;
-              padding: 10px 15px;
-              border-radius: 6px;
-              font-family: 'Courier New', monospace;
-              font-size: 16px;
-              letter-spacing: 1px;
-              margin: 10px 0;
-              text-align: center;
-              border: 2px solid #7C4DFF;
-            }
-            @media only screen and (max-width: 600px) {
-              .container {
-                width: 100%;
-                padding: 10px;
-              }
-              .header {
-                padding: 20px 15px;
-              }
-              h1 {
-                font-size: 24px;
-              }
-              .game-features {
-                grid-template-columns: 1fr;
-              }
-              .content {
-                padding: 20px 15px;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="container">
-            <div class="header">
-              <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
-              <h1>🎮 Cloud Conquest</h1>
-              <p style="margin: 10px 0 0 0; font-size: 18px; position: relative; z-index: 1;">Your AWS Adventure Begins Now!</p>
-            </div>
-            <div class="content">
-              <h2>Welcome, ${data.playerName}! 🚀</h2>
-              <p>Congratulations on joining the AWS Cloud Club! As a special welcome gift, you've been invited to participate in our exclusive <strong>Cloud Conquest</strong> scavenger hunt game.</p>
-              
-              <div class="game-info">
-                <h3 style="color: #7C4DFF; margin-top: 0;">🎯 Your Mission</h3>
-                <p>Embark on an exciting journey through 5 challenging stations, each designed to test your cloud knowledge and problem-solving skills. Collect badges, solve puzzles, and become a true AWS Cloud Conqueror!</p>
-                
-                <div class="game-features">
-                  <div class="feature">
-                    <div class="feature-icon">🏆</div>
-                    <strong>5 Stations</strong><br>
-                    <small>Unique challenges await</small>
-                  </div>
-                  <div class="feature">
-                    <div class="feature-icon">🎖️</div>
-                    <strong>Collect Badges</strong><br>
-                    <small>Prove your skills</small>
-                  </div>
-                  <div class="feature">
-                    <div class="feature-icon">🧩</div>
-                    <strong>Solve Puzzles</strong><br>
-                    <small>Test your knowledge</small>
-                  </div>
-                  <div class="feature">
-                    <div class="feature-icon">📜</div>
-                    <strong>Win Certificate</strong><br>
-                    <small>Digital achievement</small>
-                  </div>
-                </div>
-              </div>
-
-              <div class="qr-section">
-                <h3 style="color: #7C4DFF; margin-top: 0;">📱 Start Your Adventure</h3>
-                <div class="game-token">
-                  Game Token: ${data.gameToken}
-                </div>
-                <p style="text-align: center;">
-                  <a href="${data.gameUrl}" style="color: white; text-decoration: none;" class="button">🎮 Start Game</a>
-                </p>
-                <p style="font-size: 14px; color: #666; margin-top: 15px;">
-                  <em>💡 Tip: Save this email! You'll need your game token to continue if you close the browser.</em>
-                </p>
-              </div>
-
-              <div style="background: #fff3cd; color: #856404; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
-                <strong>🎯 Game Rules:</strong>
-                <ul style="margin: 10px 0; padding-left: 20px;">
-                  <li>Complete all 5 stations to win your digital certificate</li>
-                  <li>Each station must be unlocked by scanning the correct QR code</li>
-                  <li>Work at your own pace - the game saves your progress</li>
-                  <li>Have fun and learn something new about AWS!</li>
-                </ul>
-              </div>
-              
-              <div class="contact">
-                <p><strong>Need assistance?</strong></p>
-                <p>If you have any questions about the game or need technical support, please contact us at:</p>
-                <p>Email: <a href="mailto:awscloudclubisims@gmail.com" style="color: #7C4DFF;">awscloudclubisims@gmail.com</a></p>
-              </div>
-            </div>
-            <div class="footer">
-              <p>&copy; ${new Date().getFullYear()} AWS Cloud Club ISIMS. All rights reserved.</p>
-              <p>This email was sent because you registered for AWS Cloud Club membership.</p>
-              <p style="margin-top: 10px;">🎮 Good luck, Cloud Conqueror!</p>
-            </div>
-          </div>
-        </body>
-        </html>
-      `
-    };
-    
-    const result = await transporter.sendMail(mailOptions);
-    console.log('Game invitation email sent successfully:', result.messageId);
-    
-  } catch (error) {
-    console.error('Failed to send game invitation email:', error);
-    throw new Error('Failed to send game invitation email');
   }
 };
