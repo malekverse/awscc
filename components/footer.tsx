@@ -12,25 +12,25 @@ export function Footer() {
             <div className="flex items-center space-x-3 mb-4">
               <Image src="/images/awscc-logo.jpg" alt="AWS Cloud Clubs Logo" width={40} height={40} className="rounded-lg" />
               <div>
-                <h3 className="text-xl font-bold text-foreground">AWS Cloud Club ISIMS</h3>
-        <p className="text-foreground text-sm">Club Scientifique</p>
+                <h3 className="text-xl font-bold text-white">AWS Cloud Club ISIMS</h3>
+        <p className="text-white/90 text-sm">Club Scientifique</p>
               </div>
             </div>
-            <p className="text-foreground mb-6 leading-relaxed">
+            <p className="text-white/90 mb-6 leading-relaxed">
               AWS Cloud Club ISIMS – We empower the next generation of innovators and tech enthusiasts through hands-on experience with cloud computing,
                artificial intelligence, and data science, leveraging the full potential of AWS technologies.
             </p>
             <div className="flex space-x-4">
-              <Link href="https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136" target="_blank" className="text-foreground hover:text-primary transition-colors duration-200">
+              <Link href="https://www.facebook.com/people/AWS-Cloud-Club-ISIMS/61558406757136" target="_blank" className="text-white/90 hover:text-white transition-colors duration-200">
                 <Facebook className="h-5 w-5" />
               </Link>
-              <Link href="https://www.instagram.com/awscc_isims" target="_blank" className="text-foreground hover:text-primary transition-colors duration-200">
+              <Link href="https://www.instagram.com/awscc_isims" target="_blank" className="text-white/90 hover:text-white transition-colors duration-200">
                 <Instagram className="h-5 w-5" />
               </Link>
-              <Link href="https://www.linkedin.com/company/102401226/" target="_blank" className="text-foreground hover:text-primary transition-colors duration-200">
+              <Link href="https://www.linkedin.com/company/102401226/" target="_blank" className="text-white/90 hover:text-white transition-colors duration-200">
                 <Linkedin className="h-5 w-5" />
               </Link>
-              <Link href="#" className="text-foreground hover:text-primary transition-colors duration-200">
+              <Link href="#" className="text-white/90 hover:text-white transition-colors duration-200">
                 <Youtube className="h-5 w-5" />
               </Link>
             </div>
@@ -38,30 +38,30 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-foreground">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4 text-white">Quick Links</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/" className="text-white/90 hover:text-white transition-colors duration-200">
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/#about" className="text-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#about" className="text-white/90 hover:text-white transition-colors duration-200">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/#projets" className="text-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#projets" className="text-white/90 hover:text-white transition-colors duration-200">
                   Projects & Activities
                 </Link>
               </li>
               <li>
-                <Link href="/#evenements" className="text-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#evenements" className="text-white/90 hover:text-white transition-colors duration-200">
                   Events
                 </Link>
               </li>
               <li>
-                <Link href="/#contact" className="text-foreground hover:text-primary transition-colors duration-200">
+                <Link href="/#contact" className="text-white/90 hover:text-white transition-colors duration-200">
                   Contact
                 </Link>
               </li>
@@ -70,31 +70,31 @@ export function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="text-lg font-semibold mb-4 text-foreground">Contact</h4>
+            <h4 className="text-lg font-semibold mb-4 text-white">Contact</h4>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-foreground" />
-          <span className="text-foreground text-sm">ISIMS, Al Ons, Sfax</span>
+                <MapPin className="h-4 w-4 text-white/90" />
+          <span className="text-white/90 text-sm">ISIMS, Al Ons, Sfax</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-foreground" />
-          <span className="text-foreground text-sm">awscloudclubisims@gmail.com</span>
+                <Mail className="h-4 w-4 text-white/90" />
+          <span className="text-white/90 text-sm">awscloudclubisims@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-foreground" />
-          <span className="text-foreground text-sm">(+216) 94 181 481</span>
+                <Phone className="h-4 w-4 text-white/90" />
+          <span className="text-white/90 text-sm">(+216) 94 181 481</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-        <p className="text-foreground text-sm">© 2025 AWS Cloud Club ISIMS. All rights reserved.</p>
+        <div className="border-t border-white/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p className="text-white/90 text-sm">© 2025 AWS Cloud Club ISIMS. All rights reserved.</p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/politique-de-confidentialite" className="text-foreground hover:text-primary text-sm transition-colors duration-200">
+            <Link href="/politique-de-confidentialite" className="text-white/90 hover:text-white text-sm transition-colors duration-200">
               Privacy Policy
             </Link>
-            <Link href="/conditions-utilisation" className="text-foreground hover:text-primary text-sm transition-colors duration-200">
+            <Link href="/conditions-utilisation" className="text-white/90 hover:text-white text-sm transition-colors duration-200">
               Terms of Use
             </Link>
           </div>
