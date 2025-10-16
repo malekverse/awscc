@@ -3,7 +3,7 @@
 import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Moon, Sun, Globe, Check } from "lucide-react"
+import { Menu, X, Moon, Sun, Globe, Check, LogIn } from "lucide-react"
 import { useTheme } from "@/contexts/theme-context"
 // Temporarily hardcoding translations until we fix the context issue
 import { useScrollSpy } from "@/hooks/use-scroll-spy"
@@ -125,6 +125,13 @@ const t = {
               </DropdownMenuContent>
             </DropdownMenu> */}
 
+            <Button variant="outline" asChild>
+              <a href="/login" className="flex items-center gap-2">
+                <LogIn className="h-4 w-4" />
+                Login
+              </a>
+            </Button>
+            
             <Button asChild>
               <a href="/join">{t.joinUs}</a>
             </Button>
@@ -201,12 +208,27 @@ const t = {
                 transition={{ delay: navigation.length * 0.1, duration: 0.3 }}
               />
               
-              {/* CTA Button */}
+              {/* Login Button */}
               <motion.div 
                 className="px-2 pt-2"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: (navigation.length + 1) * 0.1, duration: 0.3 }}
+              >
+                <Button variant="outline" asChild className="w-full h-12 text-base font-medium mb-3">
+                  <a href="/login" className="flex items-center justify-center gap-2">
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </a>
+                </Button>
+              </motion.div>
+
+              {/* CTA Button */}
+              <motion.div 
+                className="px-2"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: (navigation.length + 2) * 0.1, duration: 0.3 }}
               >
                 <Button asChild className="w-full h-12 text-base font-semibold bg-gradient-to-r from-[var(--primary-gradient-from)] to-[var(--primary-gradient-to)] hover:opacity-90 text-white shadow-lg hover:shadow-xl transition-all duration-200">
                   <a href="/join">{t.joinUs}</a>

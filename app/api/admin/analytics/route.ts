@@ -43,7 +43,9 @@ export async function GET(request: NextRequest) {
       const dateStr = date.toISOString().split('T')[0];
       
       const count = members.filter(m => {
+        if (!m.submissionDate) return false;
         const memberDate = new Date(m.submissionDate);
+        if (isNaN(memberDate.getTime())) return false;
         return memberDate.toISOString().split('T')[0] === dateStr;
       }).length;
       
@@ -73,7 +75,9 @@ export async function GET(request: NextRequest) {
       const monthStr = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
       
       const monthMembers = members.filter(m => {
+        if (!m.submissionDate) return false;
         const memberDate = new Date(m.submissionDate);
+        if (isNaN(memberDate.getTime())) return false;
         return memberDate.getMonth() === date.getMonth() && 
                memberDate.getFullYear() === date.getFullYear();
       });

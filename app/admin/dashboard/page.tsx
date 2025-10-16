@@ -18,7 +18,8 @@ import {
   FileText,
   Award,
   Calendar,
-  UserCheck
+  UserCheck,
+  Video
 } from 'lucide-react';
 import StatsSection from '../../../components/StatsSection';
 import MembersTable from '../../../components/MembersTable';
@@ -27,11 +28,48 @@ import CertificationsTable from '../../../components/CertificationsTable';
 import EventsTable from '../../../components/EventsTable';
 import MemberCertificationsTable from '../../../components/MemberCertificationsTable';
 import AnalyticsCharts from '../../../components/AnalyticsCharts';
+import VideoCoursesTable from '../../../components/VideoCoursesTable';
+import VideoCoursesModal from '../../../components/VideoCoursesModal';
 import EmailModal from '../../../components/EmailModal';
 import ResourceModal from '../../../components/ResourceModal';
 import CertificationModal from '../../../components/CertificationModal';
 import EventModal from '../../../components/EventModal';
 import { Member, PaginationInfo, AdminInfo, AnalyticsData, DashboardStats } from '../../../types/dashboard';
+
+// Types
+interface IVideoCourse {
+  _id: string;
+  title: string;
+  description: string;
+  videoType: 'youtube' | 'vimeo' | 'direct_upload' | 'embed';
+  videoUrl?: string;
+  embedCode?: string;
+  thumbnailUrl?: string;
+  duration?: number;
+  quality?: string;
+  fileSize?: number;
+  instructor: string;
+  category: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  prerequisites: string[];
+  learningObjectives: string[];
+  isPublic: boolean;
+  isActive: boolean;
+  isFeatured: boolean;
+  createdBy: string;
+  lastModifiedBy?: string;
+  viewCount: number;
+  completionCount: number;
+  averageRating: number;
+  ratingCount: number;
+  createdAt: string;
+  updatedAt: string;
+  slug: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+}
 
 // Component definitions
 const StatCard = ({ title, value, icon: Icon, trend, trendValue, color = 'primary' }: {
@@ -118,6 +156,7 @@ export default function AdminDashboard() {
   const [certifications, setCertifications] = useState([]);
   const [events, setEvents] = useState([]);
   const [memberCertifications, setMemberCertifications] = useState([]);
+  const [videoCourses, setVideoCourses] = useState<IVideoCourse[]>([]);
   
   // Filter states for new features
   const [resourceSearchTerm, setResourceSearchTerm] = useState('');
@@ -147,6 +186,15 @@ export default function AdminDashboard() {
   const [memberCertMemberFilter, setMemberCertMemberFilter] = useState('all');
   const [memberCertSortBy, setMemberCertSortBy] = useState('issueDate');
   const [memberCertSortOrder, setMemberCertSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Video courses filter states
+  const [videoCoursesSearchTerm, setVideoCoursesSearchTerm] = useState('');
+  const [videoCoursesCategoryFilter, setVideoCoursesCategoryFilter] = useState('all');
+  const [videoCoursesDifficultyFilter, setVideoCoursesDifficultyFilter] = useState('all');
+  const [videoCoursesVideoTypeFilter, setVideoCoursesVideoTypeFilter] = useState('all');
+  const [videoCoursesStatusFilter, setVideoCoursesStatusFilter] = useState('all');
+  const [videoCoursesSortBy, setVideoCoursesSortBy] = useState('createdAt');
+  const [videoCoursesSortOrder, setVideoCoursesSortOrder] = useState<'asc' | 'desc'>('desc');
   
   // Existing states
   const [searchTerm, setSearchTerm] = useState('');
@@ -190,6 +238,11 @@ export default function AdminDashboard() {
   // Event modal states
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isCreatingEvent, setIsCreatingEvent] = useState(false);
+  
+  // Video courses modal states
+  const [isVideoCoursesModalOpen, setIsVideoCoursesModalOpen] = useState(false);
+  const [isCreatingVideoCourse, setIsCreatingVideoCourse] = useState(false);
+  const [editingVideoCourse, setEditingVideoCourse] = useState<any>(null);
 
   // Utility functions
   const formatDate = (dateString: string) => {
@@ -417,6 +470,41 @@ export default function AdminDashboard() {
     }
   };
 
+  const fetchVideoCourses = async () => {
+    try {
+      const params = new URLSearchParams({
+        search: videoCoursesSearchTerm,
+        category: videoCoursesCategoryFilter !== 'all' ? videoCoursesCategoryFilter : '',
+        difficulty: videoCoursesDifficultyFilter !== 'all' ? videoCoursesDifficultyFilter : '',
+        status: videoCoursesStatusFilter !== 'all' ? videoCoursesStatusFilter : '',
+        sortBy: videoCoursesSortBy,
+        sortOrder: videoCoursesSortOrder
+      });
+
+      const response = await fetch(`/api/admin/video-courses?${params}`, {
+        credentials: 'include'
+      });
+      
+      if (response.status === 401) {
+        router.push('/admin/login');
+        return;
+      }
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setVideoCourses(data.data || []);
+        }
+      } else {
+        // Fallback to empty array for development
+        setVideoCourses([]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch video courses:', error);
+      setVideoCourses([]);
+    }
+  };
+
   const calculateStats = () => {
     const totalMembers = members.length;
     const paidMembers = members.filter(m => m.paid).length;
@@ -448,7 +536,8 @@ export default function AdminDashboard() {
       fetchResources(),
       fetchCertifications(),
       fetchEvents(),
-      fetchMemberCertifications()
+      fetchMemberCertifications(),
+      fetchVideoCourses()
     ]);
     setRefreshing(false);
   };
@@ -586,7 +675,8 @@ export default function AdminDashboard() {
           fetchResources(),
           fetchCertifications(),
           fetchEvents(),
-          fetchMemberCertifications()
+          fetchMemberCertifications(),
+          fetchVideoCourses()
         ]);
       }
       setLoading(false);
@@ -683,6 +773,7 @@ export default function AdminDashboard() {
                 { id: 'overview', name: 'Overview', icon: BarChart3 },
                 { id: 'members', name: 'Members', icon: Users },
                 { id: 'resources', name: 'Resources', icon: FileText },
+                { id: 'video-courses', name: 'Video Courses', icon: Video },
                 { id: 'certifications', name: 'Certifications', icon: Award },
                 { id: 'events', name: 'Events', icon: Calendar },
                 { id: 'member-certifications', name: 'Member Certs', icon: UserCheck },
@@ -768,6 +859,61 @@ export default function AdminDashboard() {
             onDeleteResource={(resourceId) => console.log('Delete resource', resourceId)}
             onDownloadResource={(resourceId) => console.log('Download resource', resourceId)}
             formatDate={formatDate}
+          />
+        )}
+
+        {/* Video Courses Tab */}
+        {activeTab === 'video-courses' && (
+          <VideoCoursesTable
+            videoCourses={videoCourses}
+            searchTerm={videoCoursesSearchTerm}
+            setSearchTerm={setVideoCoursesSearchTerm}
+            categoryFilter={videoCoursesCategoryFilter}
+            setCategoryFilter={setVideoCoursesCategoryFilter}
+            difficultyFilter={videoCoursesDifficultyFilter}
+            setDifficultyFilter={setVideoCoursesDifficultyFilter}
+            videoTypeFilter={videoCoursesVideoTypeFilter}
+            setVideoTypeFilter={setVideoCoursesVideoTypeFilter}
+            statusFilter={videoCoursesStatusFilter}
+            setStatusFilter={setVideoCoursesStatusFilter}
+            sortBy={videoCoursesSortBy}
+            setSortBy={setVideoCoursesSortBy}
+            sortOrder={videoCoursesSortOrder}
+            setSortOrder={setVideoCoursesSortOrder}
+            onCreateCourse={() => {
+              setEditingVideoCourse(null);
+              setIsVideoCoursesModalOpen(true);
+            }}
+            onEditCourse={(videoCourse) => {
+              setEditingVideoCourse(videoCourse);
+              setIsVideoCoursesModalOpen(true);
+            }}
+            onDeleteCourse={async (videoCourseId) => {
+              if (window.confirm('Are you sure you want to delete this video course? This action cannot be undone.')) {
+                try {
+                  const response = await fetch(`/api/admin/video-courses/${videoCourseId}`, {
+                    method: 'DELETE',
+                    credentials: 'include',
+                  });
+
+                  if (response.ok) {
+                    // Refresh the video courses list
+                    fetchVideoCourses();
+                    alert('Video course deleted successfully!');
+                  } else {
+                    const errorData = await response.json();
+                    alert(`Failed to delete video course: ${errorData.error || 'Unknown error'}`);
+                  }
+                } catch (error) {
+                  console.error('Error deleting video course:', error);
+                  alert('Failed to delete video course. Please try again.');
+                }
+              }
+            }}
+            onViewCourse={(videoCourseId) => console.log('View video course', videoCourseId)}
+            formatDate={formatDate}
+            formatDuration={(seconds) => seconds ? `${Math.floor(seconds / 60)}:${(seconds % 60).toString().padStart(2, '0')}` : 'N/A'}
+            formatFileSize={(bytes) => bytes ? `${(bytes / (1024 * 1024)).toFixed(2)} MB` : 'N/A'}
           />
         )}
 
@@ -883,6 +1029,56 @@ export default function AdminDashboard() {
             }
           }}
           loading={isCreatingEvent}
+        />
+
+        {/* Video Courses Modal */}
+        <VideoCoursesModal
+          isOpen={isVideoCoursesModalOpen}
+          onClose={() => {
+            setIsVideoCoursesModalOpen(false);
+            setEditingVideoCourse(null);
+          }}
+          course={editingVideoCourse}
+          onSave={async (videoCourseData: any) => {
+            setIsCreatingVideoCourse(true);
+            try {
+              const isEditing = editingVideoCourse && editingVideoCourse._id;
+              const url = isEditing 
+                ? `/api/admin/video-courses/${editingVideoCourse._id}`
+                : '/api/admin/video-courses';
+              const method = isEditing ? 'PUT' : 'POST';
+
+              const response = await fetch(url, {
+                method,
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(videoCourseData),
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || `Failed to ${isEditing ? 'update' : 'create'} video course`);
+              }
+
+              // Refresh video courses data
+              await fetchVideoCourses();
+              
+              // Close modal and reset editing state
+              setIsVideoCoursesModalOpen(false);
+              setEditingVideoCourse(null);
+              
+              // Show success message
+              alert(`Video course ${isEditing ? 'updated' : 'created'} successfully!`);
+            } catch (error) {
+              console.error(`Error ${editingVideoCourse ? 'updating' : 'creating'} video course:`, error);
+              alert(error instanceof Error ? error.message : `Failed to ${editingVideoCourse ? 'update' : 'create'} video course`);
+            } finally {
+              setIsCreatingVideoCourse(false);
+            }
+          }}
+          isLoading={isCreatingVideoCourse}
         />
 
         {/* Certifications Tab */}

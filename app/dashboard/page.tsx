@@ -15,7 +15,6 @@ import {
   Users,
   Award,
   Bell,
-  TrendingUp,
   Target,
   Star,
   Download,
@@ -35,9 +34,13 @@ import {
   AlertCircle,
   RefreshCw,
   Eye,
-  Loader
+  Loader,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+import { useTheme } from '@/contexts/theme-context';
+import ChangePasswordModal from '@/components/ChangePasswordModal';
 
 interface MemberInfo {
   id: string;
@@ -48,15 +51,7 @@ interface MemberInfo {
   paidDate?: string;
 }
 
-interface ProgressData {
-  completedCourses: number;
-  totalCourses: number;
-  completedWorkshops: number;
-  totalWorkshops: number;
-  eventsAttended: number;
-  totalEvents: number;
-  certificatesEarned: number;
-}
+
 
 interface Certificate {
   id: string;
@@ -85,6 +80,35 @@ interface VideoResource {
   duration: string;
   thumbnailUrl: string;
   videoUrl: string;
+}
+
+interface IVideoCourse {
+  _id: string;
+  title: string;
+  description: string;
+  videoType: 'youtube' | 'vimeo' | 'direct_upload' | 'embed';
+  videoUrl?: string;
+  embedCode?: string;
+  thumbnailUrl?: string;
+  duration?: number;
+  quality?: string;
+  fileSize?: number;
+  instructor: string;
+  category: string;
+  tags: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  prerequisites: string[];
+  learningObjectives: string[];
+  isPublic: boolean;
+  isActive: boolean;
+  isFeatured: boolean;
+  viewCount: number;
+  completionCount: number;
+  averageRating: number;
+  ratingCount: number;
+  createdAt: string;
+  updatedAt: string;
+  slug: string;
 }
 
 
@@ -120,6 +144,7 @@ interface Event {
 }
 
 export default function MemberDashboard() {
+  const { theme, toggleTheme } = useTheme();
   const [member, setMember] = useState<MemberInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,10 +155,10 @@ export default function MemberDashboard() {
   const [eventsError, setEventsError] = useState<string | null>(null);
    
   // Dynamic data states
-  const [progressData, setProgressData] = useState<ProgressData | null>(null);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
   const [tutorials, setTutorials] = useState<Tutorial[]>([]);
   const [videoResources, setVideoResources] = useState<VideoResource[]>([]);
+  const [videoCourses, setVideoCourses] = useState<IVideoCourse[]>([]);
   const [resources, setResources] = useState<any[]>([]);
   const [resourcesFilters, setResourcesFilters] = useState<any>(null);
   const [resourcesPagination, setResourcesPagination] = useState<any>(null);
@@ -142,8 +167,8 @@ export default function MemberDashboard() {
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
   const [downloadingResource, setDownloadingResource] = useState<string | null>(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   
-
 
   // Fetch events from API
   const fetchEvents = async () => {
@@ -176,26 +201,7 @@ export default function MemberDashboard() {
     }
   };
 
-  // Fetch member progress data
-  const fetchProgressData = async () => {
-    try {
-      const response = await fetch('/api/auth/me/progress', {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch progress data');
-      }
-      
-      const data = await response.json();
-      setProgressData(data.data);
-    } catch (error) {
-      console.error('Error fetching progress data:', error);
-      setDataError('Failed to load progress data');
-    }
-  };
+
 
   // Fetch member certifications
   const fetchCertifications = async () => {
@@ -244,6 +250,29 @@ export default function MemberDashboard() {
     }
   };
 
+  // Fetch video courses from new API
+  const fetchVideoCourses = async () => {
+    try {
+      const response = await fetch('/api/video-courses', {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch video courses');
+      }
+      
+      const data = await response.json();
+      if (data.success) {
+        setVideoCourses(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching video courses:', error);
+      setDataError('Failed to load video courses');
+    }
+  };
+
   // Fetch resources
   const fetchResources = async () => {
     try {
@@ -276,9 +305,9 @@ export default function MemberDashboard() {
     
     try {
       await Promise.all([
-        fetchProgressData(),
         fetchCertifications(),
         fetchTutorials(),
+        fetchVideoCourses(),
         fetchResources(),
         fetchEvents()
       ]);
@@ -440,9 +469,7 @@ export default function MemberDashboard() {
     });
   };
   
-  const calculateProgress = (completed: number, total: number) => {
-    return total > 0 ? Math.round((completed / total) * 100) : 0;
-  };
+
   
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -451,6 +478,36 @@ export default function MemberDashboard() {
       case 'advanced': return 'text-red-600 bg-red-100';
       default: return 'text-gray-600 bg-gray-100';
     }
+  };
+
+  const formatDuration = (duration?: number) => {
+    if (!duration) return 'N/A';
+    const hours = Math.floor(duration / 3600);
+    const minutes = Math.floor((duration % 3600) / 60);
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  };
+
+  const getVideoThumbnail = (videoCourse: IVideoCourse) => {
+    if (videoCourse.thumbnailUrl) {
+      return videoCourse.thumbnailUrl;
+    }
+    
+    // Generate YouTube thumbnail if it's a YouTube video
+    if (videoCourse.videoType === 'youtube' && videoCourse.videoUrl) {
+      const videoId = videoCourse.videoUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/)?.[1];
+      if (videoId) {
+        return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+      }
+    }
+    
+    return null;
+  };
+
+  const handleVideoCourseClick = (videoCourse: IVideoCourse) => {
+    router.push(`/video-courses/${videoCourse._id}`);
   };
   
   const getCertificateIcon = (type: string) => {
@@ -492,42 +549,79 @@ export default function MemberDashboard() {
       {/* Header */}
       <header className="bg-card shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center py-4 space-y-4 lg:space-y-0">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-foreground">Member Dashboard</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">Member Dashboard</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              {/* Auto-refresh controls */}
-              <div className="flex items-center space-x-2 text-sm">
-                <span className="text-muted-foreground">Auto-refresh:</span>
-                <Switch
-                  checked={autoRefresh}
-                  onCheckedChange={setAutoRefresh}
-                  className="data-[state=checked]:bg-primary"
-                />
-                {lastRefresh && (
-                  <span className="text-xs text-muted-foreground">
-                    Last: {lastRefresh.toLocaleTimeString()}
-                  </span>
-                )}
+            
+            {/* Mobile-friendly controls layout */}
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+              {/* First row: Theme toggle and auto-refresh */}
+              <div className="flex items-center justify-between sm:justify-start space-x-4">
+                {/* Theme Toggle */}
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                >
+                  {theme === 'light' ? (
+                    <Moon className="h-4 w-4 mr-2" />
+                  ) : (
+                    <Sun className="h-4 w-4 mr-2" />
+                  )}
+                  <span className="hidden sm:inline">{theme === 'light' ? 'Dark' : 'Light'} Mode</span>
+                </button>
+
+                {/* Auto-refresh controls */}
+                <div className="flex items-center space-x-2 text-sm">
+                  <span className="text-muted-foreground hidden sm:inline">Auto-refresh:</span>
+                  <Switch
+                    checked={autoRefresh}
+                    onCheckedChange={setAutoRefresh}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
               </div>
-              
-              <button
-                onClick={fetchDashboardData}
-                disabled={dataLoading}
-                className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
-                title="Refresh dashboard data"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} />
-                Refresh
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </button>
+
+              {/* Last refresh time - separate line on mobile */}
+              {lastRefresh && (
+                <div className="text-xs text-muted-foreground sm:hidden">
+                  Last: {lastRefresh.toLocaleTimeString()}
+                </div>
+              )}
+              {lastRefresh && (
+                <span className="hidden sm:inline text-xs text-muted-foreground">
+                  Last: {lastRefresh.toLocaleTimeString()}
+                </span>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex items-center space-x-2 sm:space-x-4">
+                <button
+                  onClick={fetchDashboardData}
+                  disabled={dataLoading}
+                  className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+                  title="Refresh dashboard data"
+                >
+                  <RefreshCw className={`h-4 w-4 ${dataLoading ? 'animate-spin' : ''} sm:mr-2`} />
+                  <span className="hidden sm:inline">Refresh</span>
+                </button>
+                <button
+                  onClick={() => setIsPasswordModalOpen(true)}
+                  className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  title="Change password"
+                >
+                  <Lock className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Change Password</span>
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <LogOut className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Logout</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -567,128 +661,65 @@ export default function MemberDashboard() {
               </div>
             </div>
             
-            {/* Progress Metrics */}
-            {dataLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-background rounded-lg p-4 border border-border animate-pulse">
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 bg-muted rounded mr-3"></div>
-                      <div>
-                        <div className="h-6 w-12 bg-muted rounded mb-1"></div>
-                        <div className="h-4 w-20 bg-muted rounded"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : progressData ? (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{progressData.certificatesEarned}</p>
-                      <p className="text-sm text-muted-foreground">Certificates Earned</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{calculateProgress(progressData.completedCourses, progressData.totalCourses)}%</p>
-                      <p className="text-sm text-muted-foreground">Course Progress</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <Calendar className="h-8 w-8 text-green-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{progressData.eventsAttended}</p>
-                      <p className="text-sm text-muted-foreground">Events Attended</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <Users className="h-8 w-8 text-purple-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">{progressData.completedWorkshops}</p>
-                      <p className="text-sm text-muted-foreground">Workshops Completed</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <Trophy className="h-8 w-8 text-yellow-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">0</p>
-                      <p className="text-sm text-muted-foreground">Certificates Earned</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <BookOpen className="h-8 w-8 text-blue-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">0%</p>
-                      <p className="text-sm text-muted-foreground">Course Progress</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <Calendar className="h-8 w-8 text-green-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">0</p>
-                      <p className="text-sm text-muted-foreground">Events Attended</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="bg-background rounded-lg p-4 border border-border">
-                  <div className="flex items-center">
-                    <Users className="h-8 w-8 text-purple-500 mr-3" />
-                    <div>
-                      <p className="text-2xl font-bold text-foreground">0</p>
-                      <p className="text-sm text-muted-foreground">Workshops Completed</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+
             
             {/* Navigation Tabs */}
-            <div className="flex space-x-1 bg-background rounded-lg p-1 border border-border">
-              {[
-                { id: 'overview', label: 'Overview', icon: BarChart3 },
-                { id: 'progress', label: 'Progress', icon: TrendingUp },
-                { id: 'events', label: 'Events', icon: Calendar },
-                { id: 'certificates', label: 'Certificates', icon: Trophy },
-                { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
-                { id: 'videos', label: 'Video Courses', icon: Play },
-                { id: 'resources', label: 'Resources', icon: Download }
-              ].map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeTab === tab.id
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4 mr-2" />
-                    {tab.label}
-                  </button>
-                );
-              })}
+            <div className="bg-background rounded-lg p-1 border border-border">
+              {/* Mobile: Horizontal scroll */}
+              <div className="flex space-x-1 overflow-x-auto scrollbar-hide sm:hidden">
+                {[
+                  { id: 'overview', label: 'Overview', icon: BarChart3 },
+                  { id: 'events', label: 'Events', icon: Calendar },
+                  { id: 'certificates', label: 'Certificates', icon: Trophy },
+                  { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
+                  { id: 'videos', label: 'Video Courses', icon: Play },
+                  { id: 'resources', label: 'Resources', icon: Download }
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                        activeTab === tab.id
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 mr-2" />
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Tablet and Desktop: Grid layout */}
+              <div className="hidden sm:grid sm:grid-cols-3 lg:flex lg:space-x-1 gap-1 lg:gap-0">
+                {[
+                  { id: 'overview', label: 'Overview', icon: BarChart3 },
+                  { id: 'events', label: 'Events', icon: Calendar },
+                  { id: 'certificates', label: 'Certificates', icon: Trophy },
+                  { id: 'tutorials', label: 'Tutorials', icon: BookOpen },
+                  { id: 'videos', label: 'Video Courses', icon: Play },
+                  { id: 'resources', label: 'Resources', icon: Download }
+                ].map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center justify-center sm:justify-start px-3 sm:px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                        activeTab === tab.id
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -751,9 +782,11 @@ export default function MemberDashboard() {
                 <p className="text-muted-foreground mb-4">
                   Access our comprehensive library of AWS tutorials, guides, and documentation.
                 </p>
-                <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors">
-                  Browse Resources
-                </button>
+                <a href='https://aws.amazon.com/training' target='_blank'>
+                  <button className="w-full bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors">
+                    AWS Training and Certification
+                  </button>
+                </a>
               </div>
 
               <div className="bg-card rounded-lg shadow-sm border border-border p-6">
@@ -764,9 +797,11 @@ export default function MemberDashboard() {
                 <p className="text-muted-foreground mb-4">
                   Stay updated with the latest news, events, and opportunities from AWSCC.
                 </p>
-                <button className="w-full bg-secondary text-secondary-foreground py-2 px-4 rounded-md hover:bg-secondary/80 transition-colors">
-                  View Announcements
-                </button>
+                <a href='https://aws.amazon.com/new' target='_blank'>
+                  <button className="w-full bg-secondary text-secondary-foreground py-2 px-4 rounded-md hover:bg-secondary/80 transition-colors">
+                    View Announcements
+                  </button>
+                </a>
               </div>
 
               <div className="bg-card rounded-lg shadow-sm border border-border p-6">
@@ -777,14 +812,16 @@ export default function MemberDashboard() {
                 <p className="text-muted-foreground mb-4">
                   Connect with fellow members, share knowledge, and collaborate on projects.
                 </p>
-                <button className="w-full bg-accent text-accent-foreground py-2 px-4 rounded-md hover:bg-accent/80 transition-colors">
-                  Join Community
-                </button>
+                <a href='https://builder.aws.com/community' target='_blank'>
+                  <button className="w-full bg-accent text-accent-foreground py-2 px-4 rounded-md hover:bg-accent/80 transition-colors">
+                    Join Community
+                  </button>
+                </a>
               </div>
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-card rounded-lg shadow-sm border border-border p-6">
+            {/* <div className="bg-card rounded-lg shadow-sm border border-border p-6">
               <h3 className="text-lg font-semibold text-foreground mb-4">Quick Actions</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <button className="flex items-center justify-center p-4 bg-background border border-border rounded-lg hover:bg-muted transition-colors">
@@ -804,109 +841,11 @@ export default function MemberDashboard() {
                   <span className="text-sm font-medium text-foreground">Join Workshop</span>
                 </button>
               </div>
-            </div>
+            </div> */}
           </>
         )}
 
-        {activeTab === 'progress' && (
-          <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-foreground">Learning Progress</h3>
-            {dataLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-card rounded-lg shadow-sm border border-border p-6 animate-pulse">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="h-6 w-20 bg-muted rounded"></div>
-                      <div className="h-6 w-6 bg-muted rounded"></div>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <div className="h-4 w-16 bg-muted rounded"></div>
-                        <div className="h-4 w-12 bg-muted rounded"></div>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-2"></div>
-                      <div className="h-4 w-24 bg-muted rounded"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : progressData ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-semibold text-foreground">Courses</h4>
-                    <BookOpen className="h-6 w-6 text-blue-500" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="text-foreground">{progressData.completedCourses}/{progressData.totalCourses}</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300" 
-                        style={{ width: `${calculateProgress(progressData.completedCourses, progressData.totalCourses)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {calculateProgress(progressData.completedCourses, progressData.totalCourses)}% completed
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-semibold text-foreground">Workshops</h4>
-                    <Users className="h-6 w-6 text-purple-500" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="text-foreground">{progressData.completedWorkshops}/{progressData.totalWorkshops}</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-purple-500 h-2 rounded-full transition-all duration-300" 
-                        style={{ width: `${calculateProgress(progressData.completedWorkshops, progressData.totalWorkshops)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {calculateProgress(progressData.completedWorkshops, progressData.totalWorkshops)}% completed
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="bg-card rounded-lg shadow-sm border border-border p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-lg font-semibold text-foreground">Events</h4>
-                    <Calendar className="h-6 w-6 text-green-500" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Attended</span>
-                      <span className="text-foreground">{progressData.eventsAttended}/{progressData.totalEvents}</span>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-2">
-                      <div 
-                        className="bg-green-500 h-2 rounded-full transition-all duration-300" 
-                        style={{ width: `${calculateProgress(progressData.eventsAttended, progressData.totalEvents)}%` }}
-                      ></div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">
-                      {calculateProgress(progressData.eventsAttended, progressData.totalEvents)}% attendance rate
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-foreground mb-2">No Progress Data Available</h3>
-                <p className="text-muted-foreground">Start learning to see your progress here.</p>
-              </div>
-            )}
-          </div>
-        )}
+
 
         {activeTab === 'events' && (
           <div className="space-y-6">
@@ -1254,15 +1193,15 @@ export default function MemberDashboard() {
                   </div>
                 ))}
               </div>
-            ) : videoResources.length > 0 ? (
+            ) : videoCourses.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {videoResources.map((video) => (
-                  <div key={video.id} className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
-                    <div className="aspect-video bg-muted flex items-center justify-center relative">
-                      {video.thumbnailUrl ? (
+                {videoCourses.map((videoCourse) => (
+                  <div key={videoCourse._id} className="bg-card rounded-lg shadow-sm border border-border overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="aspect-video bg-muted flex items-center justify-center relative cursor-pointer" onClick={() => handleVideoCourseClick(videoCourse)}>
+                      {getVideoThumbnail(videoCourse) ? (
                         <img 
-                          src={video.thumbnailUrl} 
-                          alt={video.title}
+                          src={getVideoThumbnail(videoCourse)!} 
+                          alt={videoCourse.title}
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -1274,22 +1213,34 @@ export default function MemberDashboard() {
                     </div>
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-2">
-                        <h4 className="text-lg font-semibold text-foreground">{video.title}</h4>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(video.difficulty)}`}>
-                          {video.difficulty}
+                        <h4 className="text-lg font-semibold text-foreground line-clamp-2">{videoCourse.title}</h4>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(videoCourse.difficulty)}`}>
+                          {videoCourse.difficulty}
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-4">{video.description}</p>
+                      <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{videoCourse.description}</p>
+                      {videoCourse.instructor && (
+                        <p className="text-xs text-muted-foreground mb-3">
+                          Instructor: {videoCourse.instructor}
+                        </p>
+                      )}
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {video.duration}
-                        </span>
+                        <div className="flex items-center space-x-4">
+                          <span className="text-sm text-muted-foreground flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {formatDuration(videoCourse.duration)}
+                          </span>
+                          {videoCourse.category && (
+                            <span className="text-xs bg-secondary text-secondary-foreground px-2 py-1 rounded">
+                              {videoCourse.category}
+                            </span>
+                          )}
+                        </div>
                         <button 
-                          onClick={() => window.open(video.videoUrl, '_blank')}
-                          className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors"
+                          onClick={() => handleVideoCourseClick(videoCourse)}
+                          className="bg-primary text-primary-foreground py-2 px-4 rounded-md hover:bg-primary/90 transition-colors text-sm"
                         >
-                          Watch Now
+                          View Details
                         </button>
                       </div>
                     </div>
@@ -1459,6 +1410,12 @@ export default function MemberDashboard() {
           </div>
         )}
       </main>
+      
+      {/* Password Change Modal */}
+      <ChangePasswordModal 
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+      />
     </div>
   );
 }
