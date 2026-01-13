@@ -185,33 +185,42 @@ AWS Cloud Club ISIMS Team`
     }
   };
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-card border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-border bg-gradient-to-r from-primary to-[#7C4DFF] rounded-t-xl">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Send Emails</h2>
+            <h2 className="text-xl font-semibold text-white">Send Emails</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-white/80 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
             >
               <X className="h-6 w-6" />
             </button>
           </div>
         </div>
         
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6 bg-card">
           {/* Template Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Email Template
             </label>
             <select
               value={selectedTemplate}
               onChange={(e) => handleTemplateChange(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="welcome">Welcome Email</option>
               <option value="reminder">Payment Reminder</option>
@@ -222,38 +231,38 @@ AWS Cloud Club ISIMS Team`
 
           {/* Subject Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Subject
             </label>
             <input
               type="text"
               value={emailSubject}
               onChange={(e) => setEmailSubject(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Enter email subject"
             />
           </div>
 
           {/* Content Field */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Content
             </label>
             <textarea
               value={emailContent}
               onChange={(e) => setEmailContent(e.target.value)}
               rows={12}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Enter email content. Use {{name}} to personalize with member names."
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Tip: Use {{name}} in your content to automatically insert each member's name.
             </p>
           </div>
 
           {/* Recipient Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Recipients
             </label>
             <div className="space-y-3">
@@ -265,9 +274,9 @@ AWS Cloud Club ISIMS Team`
                     value="all"
                     checked={recipientType === 'all'}
                     onChange={(e) => setRecipientType(e.target.value as 'all')}
-                    className="mr-2"
+                    className="mr-2 text-primary focus:ring-primary"
                   />
-                  <span className="text-sm text-gray-700">All Members ({members.length})</span>
+                  <span className="text-sm text-foreground">All Members ({members.length})</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -276,9 +285,9 @@ AWS Cloud Club ISIMS Team`
                     value="multiple"
                     checked={recipientType === 'multiple'}
                     onChange={(e) => setRecipientType(e.target.value as 'multiple')}
-                    className="mr-2"
+                    className="mr-2 text-primary focus:ring-primary"
                   />
-                  <span className="text-sm text-gray-700">Select Multiple</span>
+                  <span className="text-sm text-foreground">Select Multiple</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -287,23 +296,23 @@ AWS Cloud Club ISIMS Team`
                     value="single"
                     checked={recipientType === 'single'}
                     onChange={(e) => setRecipientType(e.target.value as 'single')}
-                    className="mr-2"
+                    className="mr-2 text-primary focus:ring-primary"
                   />
-                  <span className="text-sm text-gray-700">Single Member</span>
+                  <span className="text-sm text-foreground">Single Member</span>
                 </label>
               </div>
 
               {/* Member Selection List */}
               {recipientType !== 'all' && (
-                <div className="border border-gray-200 rounded-md max-h-60 overflow-y-auto">
-                  <div className="p-3 bg-gray-50 border-b border-gray-200">
-                    <span className="text-sm font-medium text-gray-700">
+                <div className="border border-border rounded-md max-h-60 overflow-y-auto bg-background">
+                  <div className="p-3 bg-muted border-b border-border">
+                    <span className="text-sm font-medium text-foreground">
                       Select Recipients ({selectedRecipients.length} selected)
                     </span>
                   </div>
-                  <div className="divide-y divide-gray-200">
+                  <div className="divide-y divide-border">
                     {members.map((member) => (
-                      <label key={member._id} className="flex items-center p-3 hover:bg-gray-50 cursor-pointer">
+                      <label key={member._id} className="flex items-center p-3 hover:bg-muted cursor-pointer">
                         <input
                           type={recipientType === 'single' ? 'radio' : 'checkbox'}
                           name={recipientType === 'single' ? 'singleRecipient' : undefined}
@@ -315,18 +324,18 @@ AWS Cloud Club ISIMS Team`
                               toggleRecipientSelection(member._id);
                             }
                           }}
-                          className="mr-3"
+                          className="mr-3 text-primary focus:ring-primary"
                         />
                         <div className="flex-1">
                           <div className="flex items-center">
-                            <div className="h-8 w-8 bg-purple-500 rounded-full flex items-center justify-center mr-3">
-                              <span className="text-white font-medium text-xs">
+                            <div className="h-8 w-8 bg-primary rounded-full flex items-center justify-center mr-3">
+                              <span className="text-primary-foreground font-medium text-xs">
                                 {member.fullName.split(' ').map(n => n[0]).join('')}
                               </span>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-900">{member.fullName}</p>
-                              <p className="text-sm text-gray-500">{member.email}</p>
+                              <p className="text-sm font-medium text-foreground">{member.fullName}</p>
+                              <p className="text-sm text-muted-foreground">{member.email}</p>
                             </div>
                           </div>
                         </div>
@@ -346,21 +355,21 @@ AWS Cloud Club ISIMS Team`
           </div>
 
           {/* Send Button */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+          <div className="flex justify-end space-x-3 pt-4 border-t border-border">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="px-4 py-2 text-sm font-medium text-foreground bg-secondary border border-border rounded-md hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Cancel
             </button>
             <button
               onClick={handleSendEmails}
               disabled={isEmailSending}
-              className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-md hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               {isEmailSending ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
                   Sending...
                 </>
               ) : (

@@ -111,10 +111,10 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      case 'beginner': return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300';
+      case 'intermediate': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300';
+      case 'advanced': return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -152,15 +152,15 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-background">
+      <div className="min-h-screen bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-6"></div>
-            <div className="bg-white dark:bg-secondary/60 rounded-lg shadow-sm p-6 mb-6">
-              <div className="aspect-video bg-gray-200 dark:bg-gray-700 rounded-lg mb-6"></div>
-              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
-              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
+            <div className="h-8 bg-muted rounded w-32 mb-6"></div>
+            <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
+              <div className="aspect-video bg-muted rounded-lg mb-6"></div>
+              <div className="h-8 bg-muted rounded w-3/4 mb-4"></div>
+              <div className="h-4 bg-muted rounded w-full mb-2"></div>
+              <div className="h-4 bg-muted rounded w-2/3"></div>
             </div>
           </div>
         </div>
@@ -170,14 +170,14 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
   if (error || !course) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">😕</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Course Not Found</h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">{error || 'The course you are looking for does not exist.'}</p>
+          <h1 className="text-2xl font-bold text-foreground mb-2">Course Not Found</h1>
+          <p className="text-muted-foreground mb-6">{error || 'The course you are looking for does not exist.'}</p>
           <button
             onClick={handleBack}
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Go Back
@@ -188,12 +188,12 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Back Button */}
         <button
           onClick={handleBack}
-          className="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Courses
@@ -203,7 +203,7 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Video Player */}
-            <div className="bg-white dark:bg-secondary/60 rounded-lg shadow-sm overflow-hidden mb-6">
+            <div className="bg-card rounded-lg shadow-sm overflow-hidden mb-6">
               <VideoPlayer
                 videoType={course.videoType}
                 videoUrl={course.videoUrl}
@@ -215,11 +215,11 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
             </div>
 
             {/* Course Info */}
-            <div className="bg-white dark:bg-secondary/60 rounded-lg shadow-sm p-6 mb-6">
+            <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">{course.title}</h1>
-                  <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-4">
+                  <h1 className="text-3xl font-bold text-foreground mb-2">{course.title}</h1>
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground mb-4">
                     {course.instructor && (
                       <div className="flex items-center">
                         <User className="h-4 w-4 mr-1" />
@@ -249,21 +249,21 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
                     className={`p-2 rounded-lg transition-colors ${
                       isFavorited 
                         ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50' 
-                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     }`}
                   >
                     <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
                   </button>
                   <button
                     onClick={handleShare}
-                    className="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                    className="p-2 bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
                   >
                     <Share2 className="h-5 w-5" />
                   </button>
                 </div>
               </div>
 
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{course.description}</p>
+              <p className="text-foreground leading-relaxed mb-6">{course.description}</p>
 
               {/* Action Buttons */}
               <div className="flex items-center space-x-4">
@@ -272,7 +272,7 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
                   className={`inline-flex items-center px-4 py-2 rounded-lg transition-colors ${
                     isCompleted
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-900/50'
-                      : 'bg-purple-600 text-white hover:bg-purple-700'
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
                   }`}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
@@ -283,16 +283,16 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
             {/* Learning Objectives */}
             {course.learningObjectives && course.learningObjectives.length > 0 && (
-              <div className="bg-white dark:bg-secondary/60 rounded-lg shadow-sm p-6 mb-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <Target className="h-5 w-5 mr-2 text-purple-600" />
+              <div className="bg-card rounded-lg shadow-sm p-6 mb-6">
+                <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
+                  <Target className="h-5 w-5 mr-2 text-primary" />
                   What You'll Learn
                 </h2>
                 <ul className="space-y-2">
                   {course.learningObjectives.map((objective, index) => (
                     <li key={index} className="flex items-start">
                       <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700 dark:text-gray-300">{objective}</span>
+                      <span className="text-foreground">{objective}</span>
                     </li>
                   ))}
                 </ul>
@@ -301,16 +301,16 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
             {/* Prerequisites */}
             {course.prerequisites && course.prerequisites.length > 0 && (
-              <div className="bg-white dark:bg-secondary/60 rounded-lg shadow-sm p-6">
-                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center">
-                  <BookOpen className="h-5 w-5 mr-2 text-purple-600" />
+              <div className="bg-card rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
+                  <BookOpen className="h-5 w-5 mr-2 text-primary" />
                   Prerequisites
                 </h2>
                 <ul className="space-y-2">
                   {course.prerequisites.map((prerequisite, index) => (
                     <li key={index} className="flex items-start">
-                      <div className="h-2 w-2 bg-gray-400 rounded-full mr-3 mt-2 flex-shrink-0"></div>
-                      <span className="text-gray-700 dark:text-gray-300">{prerequisite}</span>
+                      <div className="h-2 w-2 bg-muted-foreground rounded-full mr-3 mt-2 flex-shrink-0"></div>
+                      <span className="text-foreground">{prerequisite}</span>
                     </li>
                   ))}
                 </ul>
@@ -320,17 +320,17 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-secondary/60 rounded-lg shadow-sm p-6 sticky top-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Course Details</h3>
+            <div className="bg-card rounded-lg shadow-sm p-6 sticky top-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Course Details</h3>
               
               <div className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Category</label>
-                  <p className="text-gray-900 dark:text-white">{course.category}</p>
+                  <label className="text-sm font-medium text-muted-foreground">Category</label>
+                  <p className="text-foreground">{course.category}</p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Difficulty</label>
+                  <label className="text-sm font-medium text-muted-foreground">Difficulty</label>
                   <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(course.difficulty)}`}>
                     {course.difficulty.charAt(0).toUpperCase() + course.difficulty.slice(1)}
                   </span>
@@ -338,12 +338,12 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
                 {course.tags && course.tags.length > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2 block">Tags</label>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">Tags</label>
                     <div className="flex flex-wrap gap-2">
                       {course.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs"
+                          className="inline-flex items-center px-2 py-1 bg-muted text-muted-foreground rounded-md text-xs"
                         >
                           <Tag className="h-3 w-3 mr-1" />
                           {tag}
@@ -354,16 +354,16 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
                 )}
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Published</label>
-                  <p className="text-gray-900 dark:text-white flex items-center">
+                  <label className="text-sm font-medium text-muted-foreground">Published</label>
+                  <p className="text-foreground flex items-center">
                     <Calendar className="h-4 w-4 mr-2" />
                     {new Date(course.publishDate || course.createdAt).toLocaleDateString()}
                   </p>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Views</label>
-                  <p className="text-gray-900 dark:text-white flex items-center">
+                  <label className="text-sm font-medium text-muted-foreground">Views</label>
+                  <p className="text-foreground flex items-center">
                     <Eye className="h-4 w-4 mr-2" />
                     {course.viewCount.toLocaleString()}
                   </p>
@@ -371,8 +371,8 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
                 {course.completionCount > 0 && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Completions</label>
-                    <p className="text-gray-900 dark:text-white flex items-center">
+                    <label className="text-sm font-medium text-muted-foreground">Completions</label>
+                    <p className="text-foreground flex items-center">
                       <CheckCircle className="h-4 w-4 mr-2" />
                       {course.completionCount.toLocaleString()}
                     </p>
@@ -381,15 +381,15 @@ export default function VideoCourseDetail({ courseId }: VideoCourseDetailProps) 
 
                 {course.videoQuality && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">Video Quality</label>
-                    <p className="text-gray-900 dark:text-white">{course.videoQuality}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Video Quality</label>
+                    <p className="text-foreground">{course.videoQuality}</p>
                   </div>
                 )}
 
                 {course.fileSize && (
                   <div>
-                    <label className="text-sm font-medium text-gray-500 dark:text-gray-400">File Size</label>
-                    <p className="text-gray-900 dark:text-white">{(course.fileSize / (1024 * 1024)).toFixed(1)} MB</p>
+                    <label className="text-sm font-medium text-muted-foreground">File Size</label>
+                    <p className="text-foreground">{(course.fileSize / (1024 * 1024)).toFixed(1)} MB</p>
                   </div>
                 )}
               </div>

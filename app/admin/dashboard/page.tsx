@@ -19,7 +19,9 @@ import {
   Award,
   Calendar,
   UserCheck,
-  Video
+  Video,
+  Moon,
+  Sun
 } from 'lucide-react';
 import StatsSection from '../../../components/StatsSection';
 import MembersTable from '../../../components/MembersTable';
@@ -31,9 +33,12 @@ import AnalyticsCharts from '../../../components/AnalyticsCharts';
 import VideoCoursesTable from '../../../components/VideoCoursesTable';
 import VideoCoursesModal from '../../../components/VideoCoursesModal';
 import EmailModal from '../../../components/EmailModal';
+import EmailReminderModal from '../../../components/EmailReminderModal';
 import ResourceModal from '../../../components/ResourceModal';
 import CertificationModal from '../../../components/CertificationModal';
 import EventModal from '../../../components/EventModal';
+import { ToastContainer } from '../../../components/Toast';
+import { useTheme } from '../../../contexts/theme-context';
 import { Member, PaginationInfo, AdminInfo, AnalyticsData, DashboardStats } from '../../../types/dashboard';
 
 // Types
@@ -81,20 +86,20 @@ const StatCard = ({ title, value, icon: Icon, trend, trendValue, color = 'primar
   color?: 'primary' | 'success' | 'warning' | 'danger';
 }) => {
   const colorClasses = {
-    primary: 'bg-blue-50 text-blue-600 border-blue-200',
-    success: 'bg-green-50 text-green-600 border-green-200',
-    warning: 'bg-yellow-50 text-yellow-600 border-yellow-200',
-    danger: 'bg-red-50 text-red-600 border-red-200'
+    primary: 'bg-primary/10 text-primary border-primary/20 dark:bg-primary/20 dark:border-primary/30',
+    success: 'bg-green-50 text-green-600 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800',
+    warning: 'bg-yellow-50 text-yellow-600 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400 dark:border-yellow-800',
+    danger: 'bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'
   };
 
   const trendColors = {
-    up: 'text-green-600',
-    down: 'text-red-600',
-    neutral: 'text-gray-600'
+    up: 'text-green-600 dark:text-green-400',
+    down: 'text-red-600 dark:text-red-400',
+    neutral: 'text-muted-foreground'
   };
 
   return (
-    <div className={`p-6 rounded-xl border-2 ${colorClasses[color]} transition-all hover:shadow-lg`}>
+    <div className={`p-6 rounded-xl border-2 ${colorClasses[color]} transition-all hover:shadow-lg dark:hover:shadow-xl`}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium opacity-75">{title}</p>
@@ -105,7 +110,7 @@ const StatCard = ({ title, value, icon: Icon, trend, trendValue, color = 'primar
             </p>
           )}
         </div>
-        <div className="p-3 rounded-lg bg-white bg-opacity-50">
+        <div className="p-3 rounded-lg bg-background/50 border border-border/50">
           <Icon className="h-8 w-8" />
         </div>
       </div>
@@ -115,7 +120,7 @@ const StatCard = ({ title, value, icon: Icon, trend, trendValue, color = 'primar
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center p-8">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
   </div>
 );
 
@@ -125,14 +130,15 @@ const EmptyState = ({ title, description, icon: Icon }: {
   icon: any;
 }) => (
   <div className="text-center py-12">
-    <Icon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-    <h3 className="text-lg font-medium text-gray-900 mb-2">{title}</h3>
-    <p className="text-gray-500">{description}</p>
+    <Icon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+    <h3 className="text-lg font-medium text-foreground mb-2">{title}</h3>
+    <p className="text-muted-foreground">{description}</p>
   </div>
 );
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
   
   // State management
   const [loading, setLoading] = useState(true);
@@ -149,7 +155,7 @@ export default function AdminDashboard() {
     conversionRate: 0
   });
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'resources' | 'certifications' | 'events' | 'member-certifications' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'members' | 'resources' | 'certifications' | 'events' | 'member-certifications' | 'analytics' | 'email-reminders'>('overview');
   
   // New feature states
   const [resources, setResources] = useState([]);
@@ -243,6 +249,11 @@ export default function AdminDashboard() {
   const [isVideoCoursesModalOpen, setIsVideoCoursesModalOpen] = useState(false);
   const [isCreatingVideoCourse, setIsCreatingVideoCourse] = useState(false);
   const [editingVideoCourse, setEditingVideoCourse] = useState<any>(null);
+
+  // Email reminder modal states
+  const [isEmailReminderModalOpen, setIsEmailReminderModalOpen] = useState(false);
+  const [isEmailReminderSending, setIsEmailReminderSending] = useState(false);
+  const [memberCount, setMemberCount] = useState<number>(0);
 
   // Utility functions
   const formatDate = (dateString: string) => {
@@ -712,53 +723,65 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-black">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Modern Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-card shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             {/* Logo and Title */}
             <div className="flex items-center">
-              <div className="h-10 w-10 bg-purple-600 rounded-lg flex items-center justify-center mr-3">
-                <Shield className="h-6 w-6 text-white" />
+              <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center mr-3">
+                <Shield className="h-6 w-6 text-primary-foreground" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-                <p className="text-sm text-gray-500">Welcome back, {admin?.fullName || 'Administrator'}</p>
+                <h1 className="text-2xl font-bold text-foreground">Admin Dashboard</h1>
+                <p className="text-sm text-muted-foreground">Welcome back, {admin?.fullName || 'Administrator'}</p>
               </div>
             </div>
 
             {/* Header Actions */}
             <div className="flex items-center space-x-4">
               <button
+                onClick={toggleTheme}
+                className="inline-flex items-center p-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+              >
+                {theme === 'light' ? (
+                  <Moon className="h-4 w-4" />
+                ) : (
+                  <Sun className="h-4 w-4" />
+                )}
+              </button>
+              
+              <button
                 onClick={refreshData}
                 disabled={refreshing}
-                className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                className="inline-flex items-center px-3 py-2 border border-border shadow-sm text-sm leading-4 font-medium rounded-md text-foreground bg-card hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-colors"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
                 Refresh
               </button>
               
               <div className="relative">
-                <button className="p-2 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full">
+                <button className="p-2 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary rounded-full transition-colors">
                   <Bell className="h-5 w-5" />
                 </button>
-                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-white"></span>
+                <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-400 ring-2 ring-card"></span>
               </div>
 
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -767,7 +790,7 @@ export default function AdminDashboard() {
           </div>
 
           {/* Navigation Tabs */}
-          <div className="border-b border-gray-200">
+          <div className="border-b border-border">
             <nav className="-mb-px flex space-x-8">
               {[
                 { id: 'overview', name: 'Overview', icon: BarChart3 },
@@ -777,6 +800,7 @@ export default function AdminDashboard() {
                 { id: 'certifications', name: 'Certifications', icon: Award },
                 { id: 'events', name: 'Events', icon: Calendar },
                 { id: 'member-certifications', name: 'Member Certs', icon: UserCheck },
+                { id: 'email-reminders', name: 'Email Reminders', icon: Mail },
                 { id: 'analytics', name: 'Analytics', icon: TrendingUp }
               ].map((tab) => {
                 const Icon = tab.icon;
@@ -786,8 +810,8 @@ export default function AdminDashboard() {
                     onClick={() => setActiveTab(tab.id as any)}
                     className={`${
                       activeTab === tab.id
-                        ? 'border-purple-500 text-purple-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center transition-colors`}
                   >
                     <Icon className="h-4 w-4 mr-2" />
@@ -1081,6 +1105,44 @@ export default function AdminDashboard() {
           isLoading={isCreatingVideoCourse}
         />
 
+        {/* Email Reminder Modal */}
+        <EmailReminderModal
+          isOpen={isEmailReminderModalOpen}
+          onClose={() => setIsEmailReminderModalOpen(false)}
+          onSubmit={async (emailData: any) => {
+            setIsEmailReminderSending(true);
+            try {
+              const response = await fetch('/api/admin/bulk-email-reminder', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify(emailData),
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send email reminder');
+              }
+
+              const result = await response.json();
+              
+              // Close modal
+              setIsEmailReminderModalOpen(false);
+              
+              // Show success message
+              alert(`Email reminder sent successfully to ${result.sentCount} members!`);
+            } catch (error) {
+              console.error('Error sending email reminder:', error);
+              alert(error instanceof Error ? error.message : 'Failed to send email reminder');
+            } finally {
+              setIsEmailReminderSending(false);
+            }
+          }}
+          loading={isEmailReminderSending}
+        />
+
         {/* Certifications Tab */}
         {activeTab === 'certifications' && (
           <CertificationsTable
@@ -1159,24 +1221,113 @@ export default function AdminDashboard() {
         {activeTab === 'analytics' && (
           <AnalyticsCharts analytics={analytics} />
         )}
+
+        {/* Email Reminders Tab */}
+        {activeTab === 'email-reminders' && (
+          <div className="space-y-6">
+            <div className="bg-card shadow rounded-lg border border-border">
+              <div className="px-4 py-5 sm:p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-lg leading-6 font-medium text-foreground">
+                      Email Reminders & Announcements
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Send reminders and announcements to all members with professional templates
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsEmailReminderModalOpen(true)}
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Send Email
+                  </button>
+                </div>
+                
+                <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="bg-muted overflow-hidden shadow rounded-lg border border-border">
+                    <div className="p-5">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <Calendar className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div className="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-medium text-muted-foreground truncate">
+                              Event Reminders
+                            </dt>
+                            <dd className="text-lg font-medium text-foreground">
+                              Upcoming Events
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-muted overflow-hidden shadow rounded-lg border border-border">
+                    <div className="p-5">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <Bell className="h-6 w-6 text-green-600" />
+                        </div>
+                        <div className="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-medium text-muted-foreground truncate">
+                              General Announcements
+                            </dt>
+                            <dd className="text-lg font-medium text-foreground">
+                              Club Updates
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-muted overflow-hidden shadow rounded-lg border border-border">
+                    <div className="p-5">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0">
+                          <Award className="h-6 w-6 text-purple-600" />
+                        </div>
+                        <div className="ml-5 w-0 flex-1">
+                          <dl>
+                            <dt className="text-sm font-medium text-muted-foreground truncate">
+                              Certification Reminders
+                            </dt>
+                            <dd className="text-lg font-medium text-foreground">
+                              Deadlines & Updates
+                            </dd>
+                          </dl>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Confirmation Dialog */}
       {showConfirmDialog && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border border-border w-96 shadow-lg rounded-md bg-card">
             <div className="mt-3 text-center">
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 dark:bg-red-900/20">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mt-4">
+              <h3 className="text-lg font-medium text-foreground mt-4">
                 {showConfirmDialog.action === 'delete'
                   ? 'Delete Member'
                   : `Mark as ${showConfirmDialog.action === 'paid' ? 'Paid' : 'Unpaid'}`
                 }
               </h3>
               <div className="mt-2 px-7 py-3">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   {showConfirmDialog.action === 'delete'
                     ? `Are you sure you want to delete ${showConfirmDialog.memberName}? This action cannot be undone.`
                     : `Are you sure you want to mark ${showConfirmDialog.memberName} as ${showConfirmDialog.action}?`
@@ -1186,7 +1337,7 @@ export default function AdminDashboard() {
               <div className="items-center px-4 py-3">
                 <button
                   onClick={() => setShowConfirmDialog(null)}
-                  className="px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-24 mr-2 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  className="px-4 py-2 bg-muted text-foreground text-base font-medium rounded-md w-24 mr-2 hover:bg-muted/80 focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   Cancel
                 </button>
@@ -1219,6 +1370,9 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

@@ -163,17 +163,17 @@ export default function ResourcesSection() {
 
   // Get resource icon
   const getResourceIcon = (type: string) => {
-    switch (type) {
-      case 'document':
-        return <FileText className="h-6 w-6 text-blue-500" />;
-      case 'video_course':
-        return <Video className="h-6 w-6 text-red-500" />;
-      case 'link':
-        return <LinkIcon className="h-6 w-6 text-green-500" />;
-      default:
-        return <BookOpen className="h-6 w-6 text-gray-500" />;
-    }
-  };
+  switch (type) {
+    case 'document':
+      return <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />;
+    case 'video_course':
+      return <Video className="h-6 w-6 text-red-600 dark:text-red-400" />;
+    case 'link':
+      return <LinkIcon className="h-6 w-6 text-green-600 dark:text-green-400" />;
+    default:
+      return <BookOpen className="h-6 w-6 text-muted-foreground" />;
+  }
+};
 
   // Get difficulty color
   const getDifficultyColor = (difficulty: string) => {

@@ -40,7 +40,7 @@ export default function EventModal({
     speakerInfo: event?.speakerInfo || '',
     materials: event?.materials?.join('\n') || '',
     isPublic: event?.isPublic ?? true,
-    status: event?.status || 'draft',
+    status: event?.status || 'published',
     registrationRequired: event?.registrationRequired ?? true,
     certificateOffered: event?.certificateOffered || false
   });
@@ -204,7 +204,7 @@ export default function EventModal({
         speakerInfo: '',
         materials: '',
         isPublic: true,
-        status: 'draft',
+        status: 'published',
         registrationRequired: true,
         certificateOffered: false
       });
@@ -246,20 +246,31 @@ export default function EventModal({
 
   if (!isOpen) return null;
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-border bg-primary">
           <div className="flex items-center space-x-3">
-            <Calendar className="h-6 w-6 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900">
+            <div className="p-2 bg-primary-foreground/20 rounded-lg backdrop-blur-sm">
+              <Calendar className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <h2 className="text-xl font-semibold text-primary-foreground">
               {event ? 'Edit Event' : 'Create New Event'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-primary-foreground/80 hover:text-primary-foreground transition-colors p-1 hover:bg-primary-foreground/20 rounded-lg"
             disabled={loading}
           >
             <X className="h-6 w-6" />
@@ -267,12 +278,12 @@ export default function EventModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 bg-card">
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Event Title */}
             <div className="md:col-span-2">
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
                 Event Title *
               </label>
               <input
@@ -280,14 +291,14 @@ export default function EventModal({
                 id="title"
                 value={formData.title}
                 onChange={(e) => handleInputChange('title', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.title ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.title ? 'border-destructive' : 'border-border'
                 }`}
                 placeholder="e.g., AWS Workshop: Building Serverless Applications"
                 disabled={loading}
               />
               {errors.title && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.title}
                 </p>
@@ -296,15 +307,15 @@ export default function EventModal({
 
             {/* Event Type */}
             <div>
-              <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="type" className="block text-sm font-medium text-foreground mb-2">
                 Event Type *
               </label>
               <select
                 id="type"
                 value={formData.type}
                 onChange={(e) => handleInputChange('type', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.type ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.type ? 'border-destructive' : 'border-border'
                 }`}
                 disabled={loading}
               >
@@ -316,7 +327,7 @@ export default function EventModal({
                 <option value="other">Other</option>
               </select>
               {errors.type && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.type}
                 </p>
@@ -325,7 +336,7 @@ export default function EventModal({
 
             {/* Category */}
             <div>
-              <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
                 Category *
               </label>
               <input
@@ -333,14 +344,14 @@ export default function EventModal({
                 id="category"
                 value={formData.category}
                 onChange={(e) => handleInputChange('category', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.category ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.category ? 'border-destructive' : 'border-border'
                 }`}
                 placeholder="e.g., AWS, Cloud Computing, DevOps"
                 disabled={loading}
               />
               {errors.category && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.category}
                 </p>
@@ -349,7 +360,7 @@ export default function EventModal({
 
             {/* Date */}
             <div>
-              <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="date" className="block text-sm font-medium text-foreground mb-2">
                 Event Date *
               </label>
               <input
@@ -357,13 +368,13 @@ export default function EventModal({
                 id="date"
                 value={formData.date}
                 onChange={(e) => handleInputChange('date', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.date ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.date ? 'border-destructive' : 'border-border'
                 }`}
                 disabled={loading}
               />
               {errors.date && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.date}
                 </p>
@@ -372,7 +383,7 @@ export default function EventModal({
 
             {/* Time */}
             <div>
-              <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="time" className="block text-sm font-medium text-foreground mb-2">
                 Event Time *
               </label>
               <input
@@ -380,13 +391,13 @@ export default function EventModal({
                 id="time"
                 value={formData.time}
                 onChange={(e) => handleInputChange('time', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.time ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.time ? 'border-destructive' : 'border-border'
                 }`}
                 disabled={loading}
               />
               {errors.time && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.time}
                 </p>
@@ -395,7 +406,7 @@ export default function EventModal({
 
             {/* Registration Deadline */}
             <div>
-              <label htmlFor="registrationDeadline" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="registrationDeadline" className="block text-sm font-medium text-foreground mb-2">
                 Registration Deadline *
               </label>
               <input
@@ -403,13 +414,13 @@ export default function EventModal({
                 id="registrationDeadline"
                 value={formData.registrationDeadline}
                 onChange={(e) => handleInputChange('registrationDeadline', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.registrationDeadline ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.registrationDeadline ? 'border-destructive' : 'border-border'
                 }`}
                 disabled={loading}
               />
               {errors.registrationDeadline && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.registrationDeadline}
                 </p>
@@ -418,7 +429,7 @@ export default function EventModal({
 
             {/* Capacity */}
             <div>
-              <label htmlFor="capacity" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="capacity" className="block text-sm font-medium text-foreground mb-2">
                 Capacity *
               </label>
               <input
@@ -427,13 +438,13 @@ export default function EventModal({
                 min="1"
                 value={formData.capacity}
                 onChange={(e) => handleInputChange('capacity', parseInt(e.target.value) || 1)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.capacity ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.capacity ? 'border-destructive' : 'border-border'
                 }`}
                 disabled={loading}
               />
               {errors.capacity && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.capacity}
                 </p>
@@ -442,7 +453,7 @@ export default function EventModal({
 
             {/* Fee */}
             <div>
-              <label htmlFor="fee" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="fee" className="block text-sm font-medium text-foreground mb-2">
                 Registration Fee
               </label>
               <div className="flex space-x-2">
@@ -453,15 +464,15 @@ export default function EventModal({
                   step="0.01"
                   value={formData.fee}
                   onChange={(e) => handleInputChange('fee', parseFloat(e.target.value) || 0)}
-                  className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.fee ? 'border-red-500' : 'border-gray-300'
+                  className={`flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                    errors.fee ? 'border-destructive' : 'border-border'
                   }`}
                   disabled={loading}
                 />
                 <select
                   value={formData.currency}
                   onChange={(e) => handleInputChange('currency', e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   disabled={loading}
                 >
                   <option value="TND">TND</option>
@@ -470,7 +481,7 @@ export default function EventModal({
                 </select>
               </div>
               {errors.fee && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.fee}
                 </p>
@@ -479,15 +490,15 @@ export default function EventModal({
 
             {/* Difficulty Level */}
             <div>
-              <label htmlFor="difficulty" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="difficulty" className="block text-sm font-medium text-foreground mb-2">
                 Difficulty Level *
               </label>
               <select
                 id="difficulty"
                 value={formData.difficulty}
                 onChange={(e) => handleInputChange('difficulty', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.difficulty ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                  errors.difficulty ? 'border-destructive' : 'border-border'
                 }`}
                 disabled={loading}
               >
@@ -496,7 +507,7 @@ export default function EventModal({
                 <option value="advanced">Advanced</option>
               </select>
               {errors.difficulty && (
-                <p className="mt-1 text-sm text-red-600 flex items-center">
+                <p className="mt-1 text-sm text-destructive flex items-center">
                   <AlertCircle className="h-4 w-4 mr-1" />
                   {errors.difficulty}
                 </p>
@@ -506,7 +517,7 @@ export default function EventModal({
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
               Event Description *
             </label>
             <textarea
@@ -514,14 +525,14 @@ export default function EventModal({
               rows={4}
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                errors.description ? 'border-destructive' : 'border-border'
               }`}
               placeholder="Describe the event, its objectives, and what participants will learn..."
               disabled={loading}
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <p className="mt-1 text-sm text-destructive flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.description}
               </p>
@@ -536,10 +547,10 @@ export default function EventModal({
                 id="isOnline"
                 checked={formData.isOnline}
                 onChange={(e) => handleInputChange('isOnline', e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-border text-primary focus:ring-primary"
                 disabled={loading}
               />
-              <label htmlFor="isOnline" className="text-sm font-medium text-gray-700">
+              <label htmlFor="isOnline" className="text-sm font-medium text-foreground">
                 This is an online event
               </label>
             </div>
@@ -547,7 +558,7 @@ export default function EventModal({
             {!formData.isOnline && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                  <label htmlFor="venue" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="venue" className="block text-sm font-medium text-foreground mb-2">
                     Venue *
                   </label>
                   <input
@@ -555,14 +566,14 @@ export default function EventModal({
                     id="venue"
                     value={formData.venue}
                     onChange={(e) => handleInputChange('venue', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.venue ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                      errors.venue ? 'border-destructive' : 'border-border'
                     }`}
                     placeholder="e.g., ISIMS Conference Hall"
                     disabled={loading}
                   />
                   {errors.venue && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-sm text-destructive flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.venue}
                     </p>
@@ -570,7 +581,7 @@ export default function EventModal({
                 </div>
 
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="address" className="block text-sm font-medium text-foreground mb-2">
                     Address
                   </label>
                   <input
@@ -578,14 +589,14 @@ export default function EventModal({
                     id="address"
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="Street address"
                     disabled={loading}
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="city" className="block text-sm font-medium text-foreground mb-2">
                     City *
                   </label>
                   <input
@@ -593,14 +604,14 @@ export default function EventModal({
                     id="city"
                     value={formData.city}
                     onChange={(e) => handleInputChange('city', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.city ? 'border-red-500' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                      errors.city ? 'border-destructive' : 'border-border'
                     }`}
                     placeholder="e.g., Sfax"
                     disabled={loading}
                   />
                   {errors.city && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-sm text-destructive flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.city}
                     </p>
@@ -612,7 +623,7 @@ export default function EventModal({
 
           {/* Tags */}
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="tags" className="block text-sm font-medium text-foreground mb-2">
               Tags
             </label>
             <input
@@ -620,11 +631,11 @@ export default function EventModal({
               id="tags"
               value={formData.tags}
               onChange={(e) => handleInputChange('tags', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Separate multiple tags with commas"
               disabled={loading}
             />
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-muted-foreground">
               Separate multiple tags with commas
             </p>
           </div>
@@ -633,7 +644,7 @@ export default function EventModal({
           <div className="space-y-4">
             {/* Prerequisites */}
             <div>
-              <label htmlFor="prerequisites" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="prerequisites" className="block text-sm font-medium text-foreground mb-2">
                 Prerequisites
               </label>
               <textarea
@@ -641,7 +652,7 @@ export default function EventModal({
                 rows={3}
                 value={formData.prerequisites}
                 onChange={(e) => handleInputChange('prerequisites', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="Enter each prerequisite on a new line...\ne.g.:\n- Basic AWS knowledge\n- Laptop with internet connection"
                 disabled={loading}
               />
@@ -649,7 +660,7 @@ export default function EventModal({
 
             {/* Agenda */}
             <div>
-              <label htmlFor="agenda" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="agenda" className="block text-sm font-medium text-foreground mb-2">
                 Agenda
               </label>
               <textarea
@@ -657,7 +668,7 @@ export default function EventModal({
                 rows={4}
                 value={formData.agenda}
                 onChange={(e) => handleInputChange('agenda', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="Detailed agenda for the event..."
                 disabled={loading}
               />
@@ -665,7 +676,7 @@ export default function EventModal({
 
             {/* Speaker Info */}
             <div>
-              <label htmlFor="speakerInfo" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="speakerInfo" className="block text-sm font-medium text-foreground mb-2">
                 Speaker Information
               </label>
               <textarea
@@ -673,7 +684,7 @@ export default function EventModal({
                 rows={3}
                 value={formData.speakerInfo}
                 onChange={(e) => handleInputChange('speakerInfo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="Information about speakers, facilitators, or instructors..."
                 disabled={loading}
               />
@@ -681,7 +692,7 @@ export default function EventModal({
 
             {/* Materials */}
             <div>
-              <label htmlFor="materials" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="materials" className="block text-sm font-medium text-foreground mb-2">
                 Materials
               </label>
               <textarea
@@ -689,7 +700,7 @@ export default function EventModal({
                 rows={3}
                 value={formData.materials}
                 onChange={(e) => handleInputChange('materials', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 placeholder="Enter each material on a new line...\ne.g.:\n- Presentation slides\n- Code samples\n- Reference documents"
                 disabled={loading}
               />
@@ -698,16 +709,16 @@ export default function EventModal({
 
           {/* Image Upload */}
           <div>
-            <label htmlFor="image" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="image" className="block text-sm font-medium text-foreground mb-2">
               Event Image
             </label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-gray-400 transition-colors">
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-border border-dashed rounded-lg hover:border-primary/50 transition-colors">
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex text-sm text-gray-600">
+                <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
+                <div className="flex text-sm text-foreground">
                   <label
                     htmlFor="image"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                    className="relative cursor-pointer bg-background rounded-md font-medium text-primary hover:text-primary/80 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary"
                   >
                     <span>Upload an image</span>
                     <input
@@ -722,7 +733,7 @@ export default function EventModal({
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   PNG, JPG, WebP up to 5MB
                 </p>
                 {file && (
@@ -733,7 +744,7 @@ export default function EventModal({
               </div>
             </div>
             {errors.file && (
-              <p className="mt-1 text-sm text-red-600 flex items-center">
+              <p className="mt-1 text-sm text-destructive flex items-center">
                 <AlertCircle className="h-4 w-4 mr-1" />
                 {errors.file}
               </p>
@@ -744,14 +755,14 @@ export default function EventModal({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Status */}
             <div>
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="status" className="block text-sm font-medium text-foreground mb-2">
                 Status
               </label>
               <select
                 id="status"
                 value={formData.status}
                 onChange={(e) => handleInputChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                 disabled={loading}
               >
                 <option value="draft">Draft</option>
@@ -769,10 +780,10 @@ export default function EventModal({
                   id="isPublic"
                   checked={formData.isPublic}
                   onChange={(e) => handleInputChange('isPublic', e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-border text-primary focus:ring-primary"
                   disabled={loading}
                 />
-                <label htmlFor="isPublic" className="text-sm font-medium text-gray-700">
+                <label htmlFor="isPublic" className="text-sm font-medium text-foreground">
                   Public event (visible to all members)
                 </label>
               </div>
@@ -783,10 +794,10 @@ export default function EventModal({
                   id="registrationRequired"
                   checked={formData.registrationRequired}
                   onChange={(e) => handleInputChange('registrationRequired', e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-border text-primary focus:ring-primary"
                   disabled={loading}
                 />
-                <label htmlFor="registrationRequired" className="text-sm font-medium text-gray-700">
+                <label htmlFor="registrationRequired" className="text-sm font-medium text-foreground">
                   Registration required
                 </label>
               </div>
@@ -797,10 +808,10 @@ export default function EventModal({
                   id="certificateOffered"
                   checked={formData.certificateOffered}
                   onChange={(e) => handleInputChange('certificateOffered', e.target.checked)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-border text-primary focus:ring-primary"
                   disabled={loading}
                 />
-                <label htmlFor="certificateOffered" className="text-sm font-medium text-gray-700">
+                <label htmlFor="certificateOffered" className="text-sm font-medium text-foreground">
                   Certificate offered upon completion
                 </label>
               </div>
@@ -808,22 +819,22 @@ export default function EventModal({
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+          <div className="flex justify-end space-x-4 pt-6 border-t border-border">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-foreground bg-secondary rounded-lg hover:bg-secondary/80 transition-colors"
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
               disabled={loading}
             >
               {loading && (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></div>
               )}
               <span>{event ? 'Update Event' : 'Create Event'}</span>
             </button>

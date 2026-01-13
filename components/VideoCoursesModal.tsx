@@ -283,24 +283,33 @@ export default function VideoCoursesModal({
     { id: 'settings', label: 'Settings', icon: Star }
   ];
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <div 
+      className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary to-[#7C4DFF] text-primary-foreground">
+          <h2 className="text-xl font-semibold">
             {course ? 'Edit Video Course' : 'Add New Video Course'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-primary-foreground/80 hover:text-primary-foreground transition-colors p-1 rounded-lg hover:bg-primary-foreground/10"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-gray-200">
+        <div className="border-b border-border bg-card">
           <nav className="flex space-x-8 px-6">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -308,10 +317,10 @@ export default function VideoCoursesModal({
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 transition-colors ${
                     activeTab === tab.id
-                      ? 'border-purple-500 text-purple-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-primary text-primary'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -323,25 +332,25 @@ export default function VideoCoursesModal({
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-hidden">
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)]">
+          <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] bg-card">
             {/* Basic Info Tab */}
             {activeTab === 'basic' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Course Title *
                   </label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => handleInputChange('title', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      errors.title ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                      errors.title ? 'border-destructive' : 'border-border'
                     }`}
                     placeholder="Enter course title"
                   />
                   {errors.title && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-sm text-destructive flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.title}
                     </p>
@@ -349,20 +358,20 @@ export default function VideoCoursesModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Description *
                   </label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     rows={4}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      errors.description ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                      errors.description ? 'border-destructive' : 'border-border'
                     }`}
                     placeholder="Enter course description"
                   />
                   {errors.description && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-sm text-destructive flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.description}
                     </p>
@@ -371,20 +380,20 @@ export default function VideoCoursesModal({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Category *
                     </label>
                     <input
                       type="text"
                       value={formData.category}
                       onChange={(e) => handleInputChange('category', e.target.value)}
-                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                        errors.category ? 'border-red-300' : 'border-gray-300'
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                        errors.category ? 'border-destructive' : 'border-border'
                       }`}
                       placeholder="e.g., Programming, Design, Marketing"
                     />
                     {errors.category && (
-                      <p className="mt-1 text-sm text-red-600 flex items-center">
+                      <p className="mt-1 text-sm text-destructive flex items-center">
                         <AlertCircle className="h-4 w-4 mr-1" />
                         {errors.category}
                       </p>
@@ -392,13 +401,13 @@ export default function VideoCoursesModal({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Difficulty Level
                     </label>
                     <select
                       value={formData.difficulty}
                       onChange={(e) => handleInputChange('difficulty', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     >
                       <option value="beginner">Beginner</option>
                       <option value="intermediate">Intermediate</option>
@@ -408,33 +417,33 @@ export default function VideoCoursesModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Instructor
                   </label>
                   <input
                     type="text"
                     value={formData.instructor || ''}
                     onChange={(e) => handleInputChange('instructor', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="Instructor name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Tags
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     {formData.tags.map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-purple-100 text-purple-800"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary border border-primary/20"
                       >
                         {tag}
                         <button
                           type="button"
                           onClick={() => removeTag(tag)}
-                          className="ml-2 text-purple-600 hover:text-purple-800"
+                          className="ml-2 text-primary hover:text-primary/80"
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -447,13 +456,13 @@ export default function VideoCoursesModal({
                       value={newTag}
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       placeholder="Add a tag"
                     />
                     <button
                       type="button"
                       onClick={addTag}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -466,15 +475,15 @@ export default function VideoCoursesModal({
             {activeTab === 'video' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Video Type *
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
-                      { value: 'youtube', label: 'YouTube', icon: Youtube, color: 'red' },
-                      { value: 'vimeo', label: 'Vimeo', icon: Video, color: 'blue' },
-                      { value: 'direct_upload', label: 'Direct Upload', icon: Upload, color: 'green' },
-                      { value: 'embed_link', label: 'Embed Link', icon: ExternalLink, color: 'purple' }
+                      { value: 'youtube', label: 'YouTube', icon: Youtube },
+                      { value: 'vimeo', label: 'Vimeo', icon: Video },
+                      { value: 'direct_upload', label: 'Direct Upload', icon: Upload },
+                      { value: 'embed_link', label: 'Embed Link', icon: ExternalLink }
                     ].map((type) => {
                       const Icon = type.icon;
                       return (
@@ -484,15 +493,15 @@ export default function VideoCoursesModal({
                           onClick={() => handleInputChange('videoType', type.value)}
                           className={`p-4 border-2 rounded-lg flex flex-col items-center space-y-2 transition-colors ${
                             formData.videoType === type.value
-                              ? `border-${type.color}-500 bg-${type.color}-50`
-                              : 'border-gray-200 hover:border-gray-300'
+                              ? 'border-primary bg-primary/10'
+                              : 'border-border hover:border-primary/50'
                           }`}
                         >
                           <Icon className={`h-6 w-6 ${
-                            formData.videoType === type.value ? `text-${type.color}-600` : 'text-gray-400'
+                            formData.videoType === type.value ? 'text-primary' : 'text-muted-foreground'
                           }`} />
                           <span className={`text-sm font-medium ${
-                            formData.videoType === type.value ? `text-${type.color}-900` : 'text-gray-700'
+                            formData.videoType === type.value ? 'text-primary' : 'text-foreground'
                           }`}>
                             {type.label}
                           </span>
@@ -503,15 +512,15 @@ export default function VideoCoursesModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Video URL *
                   </label>
                   <input
                     type="url"
                     value={formData.videoUrl}
                     onChange={(e) => handleInputChange('videoUrl', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
-                      errors.videoUrl ? 'border-red-300' : 'border-gray-300'
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground ${
+                      errors.videoUrl ? 'border-destructive' : 'border-border'
                     }`}
                     placeholder={
                       formData.videoType === 'youtube' ? 'https://www.youtube.com/watch?v=...' :
@@ -520,7 +529,7 @@ export default function VideoCoursesModal({
                     }
                   />
                   {errors.videoUrl && (
-                    <p className="mt-1 text-sm text-red-600 flex items-center">
+                    <p className="mt-1 text-sm text-destructive flex items-center">
                       <AlertCircle className="h-4 w-4 mr-1" />
                       {errors.videoUrl}
                     </p>
@@ -529,28 +538,28 @@ export default function VideoCoursesModal({
 
                 {formData.videoType === 'embed_link' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Embed Code (Optional)
                     </label>
                     <textarea
                       value={formData.embedCode || ''}
                       onChange={(e) => handleInputChange('embedCode', e.target.value)}
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       placeholder="<iframe src=... ></iframe>"
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Thumbnail URL
                   </label>
                   <input
                     type="url"
                     value={formData.thumbnailUrl || ''}
                     onChange={(e) => handleInputChange('thumbnailUrl', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="https://example.com/thumbnail.jpg"
                   />
                   {formData.thumbnailUrl && (
@@ -558,7 +567,7 @@ export default function VideoCoursesModal({
                       <img
                         src={formData.thumbnailUrl}
                         alt="Thumbnail preview"
-                        className="h-32 w-48 object-cover rounded-lg"
+                        className="h-32 w-48 object-cover rounded-lg border border-border"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
                         }}
@@ -569,7 +578,7 @@ export default function VideoCoursesModal({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Duration (MM:SS or HH:MM:SS)
                     </label>
                     <input
@@ -588,19 +597,19 @@ export default function VideoCoursesModal({
                           setDurationInput('');
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       placeholder="10:30"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Video Quality
                     </label>
                     <select
                       value={formData.videoQuality || ''}
                       onChange={(e) => handleInputChange('videoQuality', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     >
                       <option value="">Select quality</option>
                       <option value="720p">720p HD</option>
@@ -611,14 +620,14 @@ export default function VideoCoursesModal({
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       File Size (MB)
                     </label>
                     <input
                       type="number"
                       value={formData.fileSize || ''}
                       onChange={(e) => handleInputChange('fileSize', e.target.value ? Number(e.target.value) : undefined)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       placeholder="100"
                       min="0"
                       step="0.1"
@@ -629,10 +638,10 @@ export default function VideoCoursesModal({
                 {/* Video Preview */}
                 {previewUrl && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Video Preview
                     </label>
-                    <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                    <div className="aspect-video bg-muted rounded-lg overflow-hidden border border-border">
                       <iframe
                         src={previewUrl}
                         className="w-full h-full"
@@ -649,17 +658,17 @@ export default function VideoCoursesModal({
             {activeTab === 'content' && (
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Prerequisites
                   </label>
                   <div className="space-y-2 mb-4">
                     {formData.prerequisites?.map((prereq, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-700">{prereq}</span>
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border">
+                        <span className="text-sm text-foreground">{prereq}</span>
                         <button
                           type="button"
                           onClick={() => removePrerequisite(prereq)}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -672,13 +681,13 @@ export default function VideoCoursesModal({
                       value={newPrerequisite}
                       onChange={(e) => setNewPrerequisite(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addPrerequisite())}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       placeholder="Add a prerequisite"
                     />
                     <button
                       type="button"
                       onClick={addPrerequisite}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -686,17 +695,17 @@ export default function VideoCoursesModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Learning Objectives
                   </label>
                   <div className="space-y-2 mb-4">
                     {formData.learningObjectives?.map((objective, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <span className="text-sm text-gray-700">{objective}</span>
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg border border-border">
+                        <span className="text-sm text-foreground">{objective}</span>
                         <button
                           type="button"
                           onClick={() => removeObjective(objective)}
-                          className="text-red-600 hover:text-red-800"
+                          className="text-destructive hover:text-destructive/80"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -709,13 +718,13 @@ export default function VideoCoursesModal({
                       value={newObjective}
                       onChange={(e) => setNewObjective(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addObjective())}
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      className="flex-1 px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       placeholder="Add a learning objective"
                     />
                     <button
                       type="button"
                       onClick={addObjective}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -723,7 +732,7 @@ export default function VideoCoursesModal({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-foreground mb-2">
                     Meta Description (SEO)
                   </label>
                   <textarea
@@ -731,10 +740,10 @@ export default function VideoCoursesModal({
                     onChange={(e) => handleInputChange('metaDescription', e.target.value)}
                     rows={3}
                     maxLength={160}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                     placeholder="Brief description for search engines (max 160 characters)"
                   />
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {(formData.metaDescription || '').length}/160 characters
                   </p>
                 </div>
@@ -746,71 +755,71 @@ export default function VideoCoursesModal({
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900">Visibility & Status</h3>
+                    <h3 className="text-lg font-medium text-foreground">Visibility & Status</h3>
                     
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
                       <div className="flex items-center space-x-3">
-                        <Globe className="h-5 w-5 text-gray-600" />
+                        <Globe className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="font-medium text-gray-900">Public Course</p>
-                          <p className="text-sm text-gray-500">Visible to all members</p>
+                          <p className="font-medium text-foreground">Public Course</p>
+                          <p className="text-sm text-muted-foreground">Visible to all members</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleInputChange('isPublic', !formData.isPublic)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          formData.isPublic ? 'bg-purple-600' : 'bg-gray-200'
+                          formData.isPublic ? 'bg-primary' : 'bg-border'
                         }`}
                       >
                         <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
                             formData.isPublic ? 'translate-x-6' : 'translate-x-1'
                           }`}
                         />
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
                       <div className="flex items-center space-x-3">
-                        <CheckCircle className="h-5 w-5 text-gray-600" />
+                        <CheckCircle className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="font-medium text-gray-900">Active Course</p>
-                          <p className="text-sm text-gray-500">Available for viewing</p>
+                          <p className="font-medium text-foreground">Active Course</p>
+                          <p className="text-sm text-muted-foreground">Available for viewing</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleInputChange('isActive', !formData.isActive)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          formData.isActive ? 'bg-purple-600' : 'bg-gray-200'
+                          formData.isActive ? 'bg-primary' : 'bg-border'
                         }`}
                       >
                         <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
                             formData.isActive ? 'translate-x-6' : 'translate-x-1'
                           }`}
                         />
                       </button>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border">
                       <div className="flex items-center space-x-3">
-                        <Star className="h-5 w-5 text-gray-600" />
+                        <Star className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <p className="font-medium text-gray-900">Featured Course</p>
-                          <p className="text-sm text-gray-500">Highlighted in listings</p>
+                          <p className="font-medium text-foreground">Featured Course</p>
+                          <p className="text-sm text-muted-foreground">Highlighted in listings</p>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleInputChange('isFeatured', !formData.isFeatured)}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          formData.isFeatured ? 'bg-purple-600' : 'bg-gray-200'
+                          formData.isFeatured ? 'bg-primary' : 'bg-border'
                         }`}
                       >
                         <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          className={`inline-block h-4 w-4 transform rounded-full bg-background transition-transform ${
                             formData.isFeatured ? 'translate-x-6' : 'translate-x-1'
                           }`}
                         />
@@ -819,33 +828,33 @@ export default function VideoCoursesModal({
                   </div>
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-gray-900">Publishing</h3>
+                    <h3 className="text-lg font-medium text-foreground">Publishing</h3>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Publish Date
                       </label>
                       <input
                         type="datetime-local"
                         value={formData.publishDate || ''}
                         onChange={(e) => handleInputChange('publishDate', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-foreground mb-2">
                         Sort Order
                       </label>
                       <input
                         type="number"
                         value={formData.sortOrder || 0}
                         onChange={(e) => handleInputChange('sortOrder', Number(e.target.value))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                         placeholder="0"
                         min="0"
                       />
-                      <p className="mt-1 text-sm text-gray-500">
+                      <p className="mt-1 text-sm text-muted-foreground">
                         Lower numbers appear first in listings
                       </p>
                     </div>
@@ -856,22 +865,22 @@ export default function VideoCoursesModal({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end space-x-4 p-6 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-end space-x-4 p-6 border-t border-border bg-card">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-foreground bg-secondary border border-border rounded-lg hover:bg-secondary/80 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground mr-2"></div>
                   Saving...
                 </>
               ) : (

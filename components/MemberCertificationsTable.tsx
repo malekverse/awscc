@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
   Search, 
   Plus, 
@@ -14,7 +14,8 @@ import {
   Clock,
   AlertTriangle,
   Download,
-  RefreshCw
+  RefreshCw,
+  X
 } from 'lucide-react';
 
 interface MemberCertification {
@@ -69,21 +70,31 @@ interface MemberCertificationsTableProps {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'active': return 'bg-green-100 text-green-800';
-    case 'expired': return 'bg-yellow-100 text-yellow-800';
-    case 'revoked': return 'bg-red-100 text-red-800';
-    case 'pending': return 'bg-blue-100 text-blue-800';
-    default: return 'bg-gray-100 text-gray-800';
+    case 'active':
+      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+    case 'expired':
+      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+    case 'revoked':
+      return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+    case 'pending':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
   }
 };
 
 const getLevelColor = (level: string) => {
   switch (level) {
-    case 'beginner': return 'bg-green-100 text-green-800';
-    case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-    case 'advanced': return 'bg-orange-100 text-orange-800';
-    case 'expert': return 'bg-red-100 text-red-800';
-    default: return 'bg-gray-100 text-gray-800';
+    case 'Foundational':
+      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+    case 'Associate':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+    case 'Professional':
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+    case 'Expert':
+      return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
   }
 };
 
@@ -117,6 +128,55 @@ export default function MemberCertificationsTable({
 }: MemberCertificationsTableProps) {
   const [selectedCertifications, setSelectedCertifications] = useState<string[]>([]);
 
+  // Filter and sort certifications
+  const filteredCertifications = memberCertifications.filter(cert => {
+    const matchesSearch = searchTerm === '' || 
+      cert.memberId.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cert.memberId.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cert.memberId.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      cert.certificationId.name.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesStatus = statusFilter === 'all' || cert.status === statusFilter;
+    const matchesCertification = certificationFilter === 'all' || cert.certificationId.name === certificationFilter;
+    const matchesMember = memberFilter === '' ||
+      cert.memberId.firstName.toLowerCase().includes(memberFilter.toLowerCase()) ||
+      cert.memberId.lastName.toLowerCase().includes(memberFilter.toLowerCase());
+    
+    return matchesSearch && matchesStatus && matchesCertification && matchesMember;
+  }).sort((a, b) => {
+    let aValue: any, bValue: any;
+    
+    switch (sortBy) {
+      case 'member':
+        aValue = `${a.memberId.firstName} ${a.memberId.lastName}`;
+        bValue = `${b.memberId.firstName} ${b.memberId.lastName}`;
+        break;
+      case 'certification':
+        aValue = a.certificationId.name;
+        bValue = b.certificationId.name;
+        break;
+      case 'issueDate':
+        aValue = new Date(a.issueDate);
+        bValue = new Date(b.issueDate);
+        break;
+      case 'expiryDate':
+        aValue = new Date(a.expiryDate);
+        bValue = new Date(b.expiryDate);
+        break;
+      case 'status':
+        aValue = a.status;
+        bValue = b.status;
+        break;
+      default:
+        aValue = a.issueDate;
+        bValue = b.issueDate;
+    }
+    
+    if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   const toggleCertificationSelection = (certificationId: string) => {
     setSelectedCertifications(prev => 
       prev.includes(certificationId) 
@@ -125,11 +185,11 @@ export default function MemberCertificationsTable({
     );
   };
 
-  const toggleSelectAll = () => {
+  const handleSelectAll = () => {
     setSelectedCertifications(
-      selectedCertifications.length === memberCertifications.length 
+      selectedCertifications.length === filteredCertifications.length 
         ? [] 
-        : memberCertifications.map(mc => mc._id)
+        : filteredCertifications.map(mc => mc._id)
     );
   };
 
@@ -138,12 +198,12 @@ export default function MemberCertificationsTable({
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Member Certifications</h2>
-          <p className="text-gray-600">Manage issued certifications and track member progress</p>
+          <h2 className="text-2xl font-bold text-foreground">Member Certifications</h2>
+          <p className="text-muted-foreground">Manage issued certifications and track member progress</p>
         </div>
         <button
           onClick={onIssueCertification}
-          className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+          className="inline-flex items-center px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           <Plus className="h-4 w-4 mr-2" />
           Issue Certification
@@ -151,17 +211,17 @@ export default function MemberCertificationsTable({
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200 space-y-4">
+      <div className="bg-card p-4 rounded-lg border space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <input
               type="text"
               placeholder="Search by member or certification..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             />
           </div>
 
@@ -169,27 +229,25 @@ export default function MemberCertificationsTable({
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           >
-            <option value="all">All Status</option>
+            <option value="all">All Statuses</option>
             <option value="active">Active</option>
             <option value="expired">Expired</option>
             <option value="revoked">Revoked</option>
             <option value="pending">Pending</option>
-            <option value="expiring-soon">Expiring Soon</option>
           </select>
 
           {/* Certification Filter */}
           <select
             value={certificationFilter}
             onChange={(e) => setCertificationFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           >
             <option value="all">All Certifications</option>
-            {/* This would be populated with actual certifications */}
-            <option value="aws-cloud-practitioner">AWS Cloud Practitioner</option>
-            <option value="aws-solutions-architect">AWS Solutions Architect</option>
-            <option value="aws-developer">AWS Developer</option>
+            {Array.from(new Set(memberCertifications.map(mc => mc.certificationId.name))).map(name => (
+              <option key={name} value={name}>{name}</option>
+            ))}
           </select>
 
           {/* Member Filter */}
@@ -198,7 +256,7 @@ export default function MemberCertificationsTable({
             placeholder="Filter by member..."
             value={memberFilter}
             onChange={(e) => setMemberFilter(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           />
 
           {/* Sort */}
@@ -209,77 +267,81 @@ export default function MemberCertificationsTable({
               setSortBy(field);
               setSortOrder(order);
             }}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
           >
-            <option value="issueDate-desc">Newest First</option>
-            <option value="issueDate-asc">Oldest First</option>
-            <option value="expiryDate-asc">Expiring Soon</option>
-            <option value="expiryDate-desc">Expiring Later</option>
-            <option value="memberName-asc">Member A-Z</option>
-            <option value="memberName-desc">Member Z-A</option>
+            <option value="issueDate-desc">Issue Date (Newest)</option>
+            <option value="issueDate-asc">Issue Date (Oldest)</option>
+            <option value="expiryDate-asc">Expiry Date (Soonest)</option>
+            <option value="expiryDate-desc">Expiry Date (Latest)</option>
+            <option value="member-asc">Member (A-Z)</option>
+            <option value="member-desc">Member (Z-A)</option>
+            <option value="certification-asc">Certification (A-Z)</option>
+            <option value="certification-desc">Certification (Z-A)</option>
+            <option value="status-asc">Status (A-Z)</option>
+            <option value="status-desc">Status (Z-A)</option>
           </select>
         </div>
       </div>
 
-      {/* Member Certifications Table */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+      {/* Table */}
+      <div className="bg-card rounded-lg border overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-border">
+            <thead className="bg-muted/50">
               <tr>
-                <th className="px-6 py-3 text-left">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   <input
                     type="checkbox"
-                    checked={selectedCertifications.length === memberCertifications.length && memberCertifications.length > 0}
-                    onChange={toggleSelectAll}
-                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    checked={selectedCertifications.length === filteredCertifications.length && filteredCertifications.length > 0}
+                    onChange={handleSelectAll}
+                    className="rounded border text-primary focus:ring-primary"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Member
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Certification
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Certificate #
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Issue Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Expiry Date
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {memberCertifications.map((memberCert) => (
-                <tr key={memberCert._id} className="hover:bg-gray-50">
+            <tbody className="bg-card divide-y divide-border">
+              {filteredCertifications.map((memberCert) => (
+                <tr key={memberCert._id} className="hover:bg-muted/50">
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedCertifications.includes(memberCert._id)}
                       onChange={() => toggleCertificationSelection(memberCert._id)}
-                      className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                      className="rounded border text-primary focus:ring-primary"
                     />
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center">
-                      <User className="h-5 w-5 text-gray-400 mr-3" />
+                      <User className="h-5 w-5 text-muted-foreground mr-3" />
                       <div>
                         <button
                           onClick={() => onViewMember(memberCert.memberId._id)}
-                          className="text-sm font-medium text-blue-600 hover:text-blue-900"
+                          className="text-sm font-medium text-primary hover:text-primary/80"
                         >
                           {memberCert.memberId.firstName} {memberCert.memberId.lastName}
                         </button>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-muted-foreground">
                           {memberCert.memberId.email}
                         </div>
                       </div>
@@ -289,11 +351,11 @@ export default function MemberCertificationsTable({
                     <div className="flex items-center">
                       <Award className="h-5 w-5 text-yellow-500 mr-3" />
                       <div>
-                        <div className="text-sm font-medium text-gray-900">
+                        <div className="text-sm font-medium text-foreground">
                           {memberCert.certificationId.name}
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-muted-foreground">
                             {memberCert.certificationId.provider}
                           </span>
                           <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getLevelColor(memberCert.certificationId.level)}`}>
@@ -303,18 +365,18 @@ export default function MemberCertificationsTable({
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 font-mono">
+                  <td className="px-6 py-4 text-sm text-foreground font-mono">
                     {memberCert.certificateNumber}
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-foreground">
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 text-gray-400 mr-1" />
+                      <Calendar className="h-4 w-4 text-muted-foreground mr-1" />
                       {formatDate(memberCert.issueDate)}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900">
+                  <td className="px-6 py-4 text-sm text-foreground">
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 text-gray-400 mr-1" />
+                      <Calendar className="h-4 w-4 text-muted-foreground mr-1" />
                       <span className={isExpiringSoon(memberCert.expiryDate) ? 'text-orange-600 font-medium' : ''}>
                         {formatDate(memberCert.expiryDate)}
                       </span>
@@ -332,37 +394,39 @@ export default function MemberCertificationsTable({
                       {memberCert.status}
                     </span>
                     {memberCert.renewalCount > 0 && (
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-muted-foreground mt-1">
                         Renewed {memberCert.renewalCount} time{memberCert.renewalCount !== 1 ? 's' : ''}
                       </div>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => onDownloadCertificate(memberCert._id)}
-                      className="text-blue-600 hover:text-blue-900"
-                      title="Download Certificate"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
-                    {(memberCert.status === 'expired' || memberCert.status === 'active') && (
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div className="flex space-x-2">
                       <button
-                        onClick={() => onRenewCertification(memberCert._id)}
-                        className="text-green-600 hover:text-green-900"
-                        title="Renew"
+                        onClick={() => onDownloadCertificate(memberCert._id)}
+                        className="text-primary hover:text-primary/80"
+                        title="Download Certificate"
                       >
-                        <RefreshCw className="h-4 w-4" />
+                        <Download className="h-4 w-4" />
                       </button>
-                    )}
-                    {memberCert.status === 'active' && (
-                      <button
-                        onClick={() => onRevokeCertification(memberCert._id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Revoke"
-                      >
-                        <XCircle className="h-4 w-4" />
-                      </button>
-                    )}
+                      {(memberCert.status === 'expired' || memberCert.status === 'active') && (
+                        <button
+                          onClick={() => onRenewCertification(memberCert._id)}
+                          className="text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300"
+                          title="Renew Certification"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                        </button>
+                      )}
+                      {memberCert.status === 'active' && (
+                        <button
+                          onClick={() => onRevokeCertification(memberCert._id)}
+                          className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                          title="Revoke Certification"
+                        >
+                          <XCircle className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -370,11 +434,11 @@ export default function MemberCertificationsTable({
           </table>
         </div>
 
-        {memberCertifications.length === 0 && (
+        {filteredCertifications.length === 0 && (
           <div className="text-center py-12">
-            <Award className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No certifications found</h3>
-            <p className="text-gray-500">Start by issuing certifications to members.</p>
+            <Award className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">No certifications found</h3>
+            <p className="text-muted-foreground">Start by issuing certifications to members.</p>
           </div>
         )}
       </div>

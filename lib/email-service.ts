@@ -135,7 +135,7 @@ const createHtmlEmailContent = (userData: FormValues) => {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <img src="https://awscc.tn/images/awscc-logo.jpg" alt="AWS Cloud Club Logo" class="logo">
           <h1>Welcome to AWS Cloud Club!</h1>
         </div>
         <div class="content">
@@ -283,7 +283,7 @@ const createOCTeamHtmlEmailContent = (userData: OCTeamFormValues) => {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://awscc.tn/awscc-logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <img src="https://awscc.tn/images/awscc-logo.jpg" alt="AWS Cloud Club Logo" class="logo">
           <h1>Welcome to the OC Team for ATNC!</h1>
         </div>
         <div class="content">
@@ -535,7 +535,7 @@ const createContactHtmlEmailContent = (contactData: ContactFormValues, aiRespons
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <img src="https://awscc.tn/images/awscc-logo.jpg" alt="AWS Cloud Club Logo" class="logo">
           <h1>AWS Cloud Club ISIMS</h1>
           <p style="margin: 5px 0 0 0; opacity: 0.9; color: white;">Thank you for contacting us!</p>
         </div>
@@ -826,7 +826,7 @@ const generateMemberWelcomeEmailHTML = (data: WelcomeEmailData): string => {
     <body>
       <div class="container">
         <div class="header">
-          <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+          <img src="https://awscc.tn/images/awscc-logo.jpg" alt="AWS Cloud Club Logo" class="logo">
           <h1>Welcome to AWSCC!</h1>
           <p style="color: white;">Your membership has been activated</p>
         </div>
@@ -1081,7 +1081,7 @@ This email was sent because a password reset was requested for your AWSCC accoun
         <body>
           <div class="container">
             <div class="header">
-              <img src="https://awscc.tn/logo.png" alt="AWS Cloud Club Logo" class="logo">
+              <img src="https://awscc.tn/images/awscc-logo.jpg" alt="AWS Cloud Club Logo" class="logo">
               <h1>Password Reset Request</h1>
             </div>
             <div class="content">

@@ -101,27 +101,36 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
     onClose();
   };
 
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      handleClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 text-black">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
+      <div className="bg-card border border-border rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">Add New Resource</h2>
+        <div className="flex items-center justify-between p-6 bg-gradient-to-r from-primary to-[#7C4DFF] text-white rounded-t-xl">
+          <h2 className="text-xl font-semibold">Add New Resource</h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-white/80 hover:text-white transition-colors p-1 rounded-lg hover:bg-white/10"
           >
             <X className="h-6 w-6" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 bg-card">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
               Title *
             </label>
             <input
@@ -131,14 +140,14 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               value={formData.title}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Enter resource title"
             />
           </div>
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
               Description *
             </label>
             <textarea
@@ -148,14 +157,14 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               onChange={handleInputChange}
               required
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Enter resource description"
             />
           </div>
 
           {/* Type */}
           <div>
-            <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="type" className="block text-sm font-medium text-foreground mb-2">
               Type *
             </label>
             <select
@@ -164,7 +173,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               value={formData.type}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="document">Document</option>
               <option value="link">Link</option>
@@ -175,14 +184,14 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
           {/* File Upload for Documents */}
           {formData.type === 'document' && (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-foreground mb-2">
                 File Upload *
               </label>
               <div
                 className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                   dragActive
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-300 hover:border-gray-400'
+                    ? 'border-primary bg-primary/10'
+                    : 'border-border hover:border-primary/50'
                 }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -191,23 +200,23 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               >
                 {file ? (
                   <div className="space-y-2">
-                    <FileText className="h-8 w-8 text-purple-600 mx-auto" />
-                    <p className="text-sm font-medium text-gray-900">{file.name}</p>
-                    <p className="text-xs text-gray-500">File selected successfully</p>
+                    <FileText className="h-8 w-8 text-primary mx-auto" />
+                    <p className="text-sm font-medium text-foreground">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">File selected successfully</p>
                     <button
                       type="button"
                       onClick={() => setFile(null)}
-                      className="text-sm text-red-600 hover:text-red-800"
+                      className="text-sm text-destructive hover:text-destructive/80"
                     >
                       Remove file
                     </button>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <Upload className="h-8 w-8 text-gray-400 mx-auto" />
-                    <p className="text-sm text-gray-600">
+                    <Upload className="h-8 w-8 text-muted-foreground mx-auto" />
+                    <p className="text-sm text-foreground">
                       Drag and drop a file here, or{' '}
-                      <label className="text-purple-600 hover:text-purple-800 cursor-pointer">
+                      <label className="text-primary hover:text-primary/80 cursor-pointer">
                         browse
                         <input
                           type="file"
@@ -217,7 +226,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
                         />
                       </label>
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Supported formats: PDF, DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT (No size limit)
                     </p>
                   </div>
@@ -229,11 +238,11 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
           {/* URL for Links and Video Courses */}
           {(formData.type === 'link' || formData.type === 'video_course') && (
             <div>
-              <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="url" className="block text-sm font-medium text-foreground mb-2">
                 URL *
               </label>
               <div className="relative">
-                <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                <Link className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                 <input
                   type="url"
                   id="url"
@@ -241,7 +250,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
                   value={formData.url}
                   onChange={handleInputChange}
                   required
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full pl-10 pr-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
                   placeholder="https://example.com"
                 />
               </div>
@@ -250,7 +259,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
 
           {/* Category */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
               Category *
             </label>
             <select
@@ -259,7 +268,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               value={formData.category}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="">Select a category</option>
               <option value="AWS Fundamentals">AWS Fundamentals</option>
@@ -277,7 +286,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
 
           {/* Tags */}
           <div>
-            <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="tags" className="block text-sm font-medium text-foreground mb-2">
               Tags
             </label>
             <input
@@ -286,15 +295,15 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               name="tags"
               value={formData.tags}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
               placeholder="Enter tags separated by commas"
             />
-            <p className="text-xs text-gray-500 mt-1">Separate multiple tags with commas</p>
+            <p className="text-xs text-muted-foreground mt-1">Separate multiple tags with commas</p>
           </div>
 
           {/* Difficulty */}
           <div>
-            <label htmlFor="difficulty" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="difficulty" className="block text-sm font-medium text-foreground mb-2">
               Difficulty Level *
             </label>
             <select
@@ -303,7 +312,7 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
               value={formData.difficulty}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
             >
               <option value="beginner">Beginner</option>
               <option value="intermediate">Intermediate</option>
@@ -319,28 +328,28 @@ export default function ResourceModal({ isOpen, onClose, onSubmit, loading = fal
                 name="isPublic"
                 checked={formData.isPublic}
                 onChange={handleInputChange}
-                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                className="rounded border-border text-primary focus:ring-primary"
               />
-              <span className="text-sm font-medium text-gray-700">Make this resource public</span>
+              <span className="text-sm font-medium text-foreground">Make this resource public</span>
             </label>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               Public resources are visible to all members
             </p>
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+          <div className="flex justify-end space-x-3 pt-6 border-t border-border">
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              className="px-4 py-2 text-sm font-medium text-foreground bg-secondary border border-border rounded-lg hover:bg-secondary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !formData.title || !formData.description || !formData.category || (formData.type === 'document' && !file) || ((formData.type === 'link' || formData.type === 'video_course') && !formData.url)}
-              className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary border border-transparent rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating...' : 'Create Resource'}
             </button>
