@@ -1,6 +1,6 @@
 # AWS Cloud Club ISIMS
 
-> **Version:** 0.1.0 | **Live:** [awscc.tn](https://awscc.tn)
+> **Version:** 0.1.0 | **Live:** [awscc-isims.vercel.app](https://awscc-isims.vercel.app)
 
 A full-stack web platform for the **AWS Cloud Club ISIMS** — a student-led cloud computing club at ISIMS university in Tunisia. The platform serves as the club's official digital hub, combining a public-facing website, a paid-member dashboard, and a full admin panel for managing all aspects of the club.
 
